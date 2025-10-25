@@ -1,0 +1,121 @@
+# Alternative Amvera Configuration
+# If standard amvera.yml doesn't work, rename this to amvera.yml
+
+# Option 1: Simplified version
+meta:
+  environment: node
+  toolchain:
+    name: npm
+    version: 20
+
+build:
+  script: npm install && npm run build
+
+run:
+  containerPort: 3000
+  command: npm start
+
+---
+
+# Option 2: With environment variables
+meta:
+  environment: node
+  toolchain:
+    name: npm
+    version: 20
+
+build:
+  env:
+    NODE_ENV: production
+    NEXT_TELEMETRY_DISABLED: 1
+  script: |
+    npm ci --prefer-offline --no-audit
+    npm run build
+
+run:
+  containerPort: 3000
+  command: npm start
+
+---
+
+# Option 3: Legacy peer deps (if dependency conflicts)
+meta:
+  environment: node
+  toolchain:
+    name: npm
+    version: 20
+
+build:
+  env:
+    NODE_ENV: production
+  script: |
+    npm install --legacy-peer-deps
+    npm run build
+
+run:
+  containerPort: 3000
+  command: npm start
+
+---
+
+# Option 4: With increased memory
+meta:
+  environment: node
+  toolchain:
+    name: npm
+    version: 20
+
+build:
+  env:
+    NODE_ENV: production
+    NODE_OPTIONS: --max-old-space-size=4096
+  script: |
+    npm ci
+    npm run build
+
+run:
+  containerPort: 3000
+  command: npm start
+
+---
+
+# Option 5: Custom start command (if npm start doesn't work)
+meta:
+  environment: node
+  toolchain:
+    name: npm
+    version: 20
+
+build:
+  env:
+    NODE_ENV: production
+  script: |
+    npm ci
+    npm run build
+
+run:
+  containerPort: 3000
+  command: node_modules/.bin/next start
+
+---
+
+# Option 6: With explicit paths
+meta:
+  environment: node
+  toolchain:
+    name: npm
+    version: 20
+
+build:
+  env:
+    NODE_ENV: production
+  script: |
+    npm ci
+    npm run build
+    echo "Contents after build:"
+    ls -laR .next
+
+run:
+  containerPort: 3000
+  workDir: /app
+  command: npm start
