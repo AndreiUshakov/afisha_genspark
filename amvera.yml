@@ -2,16 +2,19 @@ meta:
   environment: node
   toolchain:
     name: npm
-    version: latest
+    version: 20
 
 build:
   env:
     NODE_ENV: production
-  commands:
-    - npm ci
-    - npm run build
+  script: |
+    echo "Installing dependencies..."
+    npm ci
+    echo "Building Next.js application..."
+    npm run build
+    echo "Build completed! Checking .next directory..."
+    ls -la .next || echo ".next directory not found!"
 
 run:
-  port: 3000
-  persistStore: /app/.next
-  command: npm run start
+  containerPort: 3000
+  command: npm start
