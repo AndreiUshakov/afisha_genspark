@@ -10,7 +10,10 @@ build:
   script: |
     npm ci
     npm run build
+    echo "Contents after build:"
+    ls -laR .next
 
 run:
   containerPort: 3000
-  command: node_modules/.bin/next start
+  workDir: /app
+  command: npm start
