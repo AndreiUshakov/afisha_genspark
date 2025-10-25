@@ -5,7 +5,12 @@ meta:
     version: 20
 
 build:
-  script: npm install && npm run build
+  env:
+    NODE_ENV: production
+    NEXT_TELEMETRY_DISABLED: 1
+  script: |
+    npm ci --prefer-offline --no-audit
+    npm run build
 
 run:
   containerPort: 3000
