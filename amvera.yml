@@ -5,15 +5,8 @@ meta:
     version: 20
 
 build:
-  env:
-    NODE_ENV: production
-  script: |
-    npm ci
-    npm run build
-    echo "Contents after build:"
-    ls -laR .next
+  script: next build
 
 run:
   containerPort: 3000
-  workDir: /app
   command: npm start
