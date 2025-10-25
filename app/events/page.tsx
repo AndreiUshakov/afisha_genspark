@@ -1,76 +1,10 @@
 import EventFilters from '@/components/events/EventFilters';
 import EventCard from '@/components/events/EventCard';
+import { mockEvents } from '@/data/mockEvents';
 
 export default function EventsPage() {
-  // Временные данные для демонстрации
-  const events = [
-    {
-      id: 1,
-      title: 'Детский спектакль "Золушка"',
-      category: 'Семейное',
-      date: '28 октября 2025',
-      time: '12:00',
-      price: 'от 500 ₽',
-      location: 'Драматический театр',
-      ageCategory: 'Дети 0-6',
-      format: 'Офлайн',
-    },
-    {
-      id: 2,
-      title: 'Выставка современного искусства',
-      category: 'Культура',
-      date: '30 октября 2025',
-      time: '10:00 - 20:00',
-      price: 'Бесплатно',
-      location: 'Художественный музей',
-      ageCategory: 'Взрослые',
-      format: 'Офлайн',
-    },
-    {
-      id: 3,
-      title: 'Лекция по астрономии',
-      category: 'Наука',
-      date: '2 ноября 2025',
-      time: '18:00',
-      price: 'Бесплатно',
-      location: 'ИГУ, главный корпус',
-      ageCategory: 'Школьники 7-12',
-      format: 'Онлайн',
-    },
-    {
-      id: 4,
-      title: 'Мастер-класс по керамике',
-      category: 'Образование',
-      date: '3 ноября 2025',
-      time: '15:00',
-      price: '1200 ₽',
-      location: 'Творческая мастерская',
-      ageCategory: 'Взрослые',
-      format: 'Офлайн',
-    },
-    {
-      id: 5,
-      title: 'Семейный забег',
-      category: 'Спорт',
-      date: '5 ноября 2025',
-      time: '10:00',
-      price: 'Бесплатно',
-      location: 'Парк культуры',
-      ageCategory: 'Семейное',
-      format: 'Офлайн',
-    },
-    {
-      id: 6,
-      title: 'Концерт джазовой музыки',
-      category: 'Музыка',
-      date: '7 ноября 2025',
-      time: '20:00',
-      price: 'от 800 ₽',
-      location: 'Филармония',
-      ageCategory: 'Взрослые',
-      format: 'Офлайн',
-    },
-  ];
+  // Используем реальные mock данные с детальными страницами
+  const events = mockEvents.filter(event => event.is_published);
 
   return (
     <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">

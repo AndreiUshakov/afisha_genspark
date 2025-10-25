@@ -1,62 +1,9 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import { mockExperts, formatRating } from '@/data/mockExperts';
 
 export default function ExpertsPage() {
-  const experts = [
-    {
-      id: 1,
-      name: 'Анна Петрова',
-      specialization: 'Театральный режиссёр',
-      bio: 'Профессиональный режиссёр с 15-летним опытом. Организует театральные постановки и мастер-классы.',
-      rating: 4.9,
-      reviews: 42,
-      upcomingEvents: 3,
-    },
-    {
-      id: 2,
-      name: 'Дмитрий Соколов',
-      specialization: 'Астроном',
-      bio: 'Кандидат физико-математических наук. Читает лекции по астрономии и космологии.',
-      rating: 5.0,
-      reviews: 67,
-      upcomingEvents: 5,
-    },
-    {
-      id: 3,
-      name: 'Екатерина Волкова',
-      specialization: 'Художник',
-      bio: 'Художник-живописец, член Союза художников. Проводит мастер-классы по живописи и рисунку.',
-      rating: 4.8,
-      reviews: 38,
-      upcomingEvents: 4,
-    },
-    {
-      id: 4,
-      name: 'Иван Смирнов',
-      specialization: 'Спортивный тренер',
-      bio: 'Мастер спорта по лёгкой атлетике. Организует беговые тренировки и марафоны.',
-      rating: 4.9,
-      reviews: 55,
-      upcomingEvents: 7,
-    },
-    {
-      id: 5,
-      name: 'Мария Козлова',
-      specialization: 'Психолог',
-      bio: 'Практикующий психолог. Проводит лекции и тренинги по саморазвитию и психологии.',
-      rating: 5.0,
-      reviews: 89,
-      upcomingEvents: 6,
-    },
-    {
-      id: 6,
-      name: 'Александр Новиков',
-      specialization: 'Фотограф',
-      bio: 'Профессиональный фотограф с опытом более 10 лет. Проводит фотопрогулки и мастер-классы.',
-      rating: 4.7,
-      reviews: 31,
-      upcomingEvents: 2,
-    },
-  ];
+  const experts = mockExperts.filter(expert => expert.is_published);
 
   return (
     <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
@@ -91,47 +38,78 @@ export default function ExpertsPage() {
         {experts.map((expert) => (
           <div
             key={expert.id}
-            className="group flex flex-col h-full bg-white border border-gray-200 shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700"
+            className="group flex flex-col h-full bg-white border border-gray-200 shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700 overflow-hidden hover:shadow-lg transition-shadow"
           >
-            <div className="p-4 md:p-6">
-              <div className="flex flex-col items-center text-center mb-4">
-                <div className="size-20 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 rounded-full text-white font-bold text-3xl mb-3">
-                  {expert.name.charAt(0)}
+            {/* Cover Image */}
+            <div className="relative h-40 w-full">
+              <Image
+                src={expert.cover_url}
+                alt={expert.name}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              
+              {/* Avatar overlay */}
+              <div className="absolute bottom-3 left-3 w-16 h-16 rounded-full overflow-hidden border-2 border-white">
+                <Image
+                  src={expert.avatar_url}
+                  alt={expert.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              
+              {expert.is_verified && (
+                <div className="absolute top-3 right-3">
+                  <svg className="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-neutral-300">
+              )}
+            </div>
+
+            <div className="p-4 md:p-6">
+              <div className="mb-3">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-neutral-300 mb-1">
                   {expert.name}
                 </h3>
-                <span className="inline-flex items-center gap-1.5 py-1 px-3 mt-2 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                <span className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                   {expert.specialization}
                 </span>
               </div>
 
-              <p className="text-gray-600 dark:text-neutral-400 text-sm mb-4 text-center">
+              <p className="text-gray-600 dark:text-neutral-400 text-sm mb-4 line-clamp-2">
                 {expert.bio}
               </p>
 
-              <div className="flex items-center justify-center gap-x-4 text-sm mb-4">
-                <div className="flex items-center gap-x-1 text-yellow-500">
-                  <svg className="size-4 fill-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <div className="flex items-center gap-x-4 text-sm mb-4">
+                <div className="flex items-center gap-x-1">
+                  <svg className="size-4 fill-current text-yellow-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                     <path d="M12 .587l3.668 7.568 8.332 1.151-6.064 5.828 1.48 8.279-7.416-3.967-7.417 3.967 1.481-8.279-6.064-5.828 8.332-1.151z"/>
                   </svg>
-                  <span className="font-semibold text-gray-800 dark:text-neutral-200">{expert.rating}</span>
-                  <span className="text-gray-500 dark:text-neutral-500">({expert.reviews})</span>
+                  <span className="font-semibold text-gray-800 dark:text-neutral-200">{formatRating(expert.rating)}</span>
+                  <span className="text-gray-500 dark:text-neutral-500">({expert.reviews_count})</span>
                 </div>
                 <div className="flex items-center gap-x-1 text-gray-500 dark:text-neutral-500">
                   <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
-                    <line x1="16" x2="16" y1="2" y2="6"/>
-                    <line x1="8" x2="8" y1="2" y2="6"/>
-                    <line x1="3" x2="21" y1="10" y2="10"/>
+                    <path d="M12 2v20M2 12h20"/>
                   </svg>
-                  <span>{expert.upcomingEvents} событий</span>
+                  <span>{expert.experience_years} {expert.experience_years === 1 ? 'год' : expert.experience_years < 5 ? 'года' : 'лет'}</span>
                 </div>
               </div>
 
+              {expert.price_from && (
+                <div className="mb-4 text-center">
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
+                    от {expert.price_from.toLocaleString('ru-RU')} ₽
+                  </span>
+                </div>
+              )}
+
               <div className="flex gap-2">
                 <Link
-                  href={`/experts/${expert.id}`}
+                  href={`/experts/${expert.slug}`}
                   className="flex-1 py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700"
                 >
                   Подробнее
