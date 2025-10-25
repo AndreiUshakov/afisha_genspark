@@ -23,11 +23,23 @@ export interface Expert {
     website?: string;
   };
   contact_email?: string;
+  email?: string;
   contact_phone?: string;
+  phone?: string;
   location: string;
   services?: string[];
   price_from?: number;
+  price_max?: number;
+  consultations_count: number;
+  response_time?: string;
+  subscribers_count: number;
+  education?: string[];
+  working_hours?: string;
+  languages?: string[];
+  tags?: string[];
+  website?: string;
   is_verified: boolean;
+  is_published: boolean;
   created_at: string;
   updated_at: string;
 }

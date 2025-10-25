@@ -22,9 +22,17 @@ export interface Community {
     facebook?: string;
   };
   contact_email?: string;
+  email?: string;
   contact_phone?: string;
+  phone?: string;
   upcoming_events_count?: number;
+  events_count: number;
+  activities?: string[];
+  meeting_schedule?: string;
+  rules?: string[];
+  tags?: string[];
   is_verified: boolean;
+  is_published: boolean;
   created_at: string;
   updated_at: string;
 }

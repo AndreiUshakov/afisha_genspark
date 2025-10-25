@@ -15,7 +15,7 @@ export default async function ExpertDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const relatedExperts = getRelatedExperts(expert.id, expert.specialization);
+  const relatedExperts = getRelatedExperts(slug);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
@@ -222,7 +222,10 @@ export default async function ExpertDetailPage({ params }: PageProps) {
           <div className="lg:col-span-1 space-y-6">
             {/* Action Card */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 sticky top-6">
-              <ExpertActions expert={expert} />
+              <ExpertActions 
+                expertId={expert.id}
+                expertName={expert.name}
+              />
 
               {/* Pricing */}
               {expert.price_from && (

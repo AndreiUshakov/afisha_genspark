@@ -15,7 +15,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const relatedCommunities = getRelatedCommunities(community.id, community.category_id);
+  const relatedCommunities = getRelatedCommunities(slug);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
@@ -174,7 +174,10 @@ export default async function CommunityDetailPage({ params }: PageProps) {
           <div className="lg:col-span-1 space-y-6">
             {/* Action Card */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 sticky top-6">
-              <CommunityActions community={community} />
+              <CommunityActions 
+                communityId={community.id}
+                communityName={community.name}
+              />
 
               {/* Quick Info */}
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-4">
