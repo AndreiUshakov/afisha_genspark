@@ -5,15 +5,7 @@ meta:
     version: 20
 
 build:
-  env:
-    NODE_ENV: production
-  script: |
-    echo "Installing dependencies..."
-    npm ci
-    echo "Building Next.js application..."
-    npm run build
-    echo "Build completed! Checking .next directory..."
-    ls -la .next || echo ".next directory not found!"
+  script: npm install && npm run build
 
 run:
   containerPort: 3000
