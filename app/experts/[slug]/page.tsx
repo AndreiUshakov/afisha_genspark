@@ -77,7 +77,7 @@ export default async function ExpertDetailPage({ params }: PageProps) {
                   <span>Опыт {expert.experience_years} {expert.experience_years === 1 ? 'год' : expert.experience_years < 5 ? 'года' : 'лет'}</span>
                 </div>
 
-                {expert.consultations_count > 0 && (
+                {expert.consultations_count && expert.consultations_count > 0 && (
                   <div className="flex items-center gap-2">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
@@ -272,7 +272,7 @@ export default async function ExpertDetailPage({ params }: PageProps) {
                   </span>
                 </div>
 
-                {expert.consultations_count > 0 && (
+                {expert.consultations_count && expert.consultations_count > 0 && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">Консультаций</span>
                     <span className="font-semibold text-gray-900 dark:text-white">
@@ -290,7 +290,7 @@ export default async function ExpertDetailPage({ params }: PageProps) {
                   </div>
                 )}
 
-                {expert.subscribers_count > 0 && (
+                {expert.subscribers_count && expert.subscribers_count > 0 && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">Подписчиков</span>
                     <span className="font-semibold text-gray-900 dark:text-white">

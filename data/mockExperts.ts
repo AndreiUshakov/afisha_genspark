@@ -30,16 +30,16 @@ export interface Expert {
   services?: string[];
   price_from?: number;
   price_max?: number;
-  consultations_count: number;
+  consultations_count?: number;
   response_time?: string;
-  subscribers_count: number;
+  subscribers_count?: number;
   education?: string[];
   working_hours?: string;
   languages?: string[];
   tags?: string[];
   website?: string;
   is_verified: boolean;
-  is_published: boolean;
+  is_published?: boolean;
   created_at: string;
   updated_at: string;
 }

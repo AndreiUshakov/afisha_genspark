@@ -26,13 +26,13 @@ export interface Community {
   contact_phone?: string;
   phone?: string;
   upcoming_events_count?: number;
-  events_count: number;
+  events_count?: number;
   activities?: string[];
   meeting_schedule?: string;
   rules?: string[];
   tags?: string[];
   is_verified: boolean;
-  is_published: boolean;
+  is_published?: boolean;
   created_at: string;
   updated_at: string;
 }
