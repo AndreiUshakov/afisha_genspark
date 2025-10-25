@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { mockCommunities, formatMembersCount } from '@/data/mockCommunities';
 
 export default function CommunitiesPage() {
-  const communities = mockCommunities.filter(community => community.is_published);
+  const communities = mockCommunities;
 
   return (
     <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">

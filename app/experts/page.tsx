@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { mockExperts, formatRating } from '@/data/mockExperts';
 
 export default function ExpertsPage() {
-  const experts = mockExperts.filter(expert => expert.is_published);
+  const experts = mockExperts;
 
   return (
     <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
