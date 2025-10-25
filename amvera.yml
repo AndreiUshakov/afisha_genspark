@@ -7,8 +7,9 @@ meta:
 build:
   env:
     NODE_ENV: production
+    NODE_OPTIONS: --max-old-space-size=4096
   script: |
-    npm install --legacy-peer-deps
+    npm ci
     npm run build
 
 run:
