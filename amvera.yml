@@ -2,11 +2,12 @@ meta:
   environment: node
   toolchain:
     name: npm
-    version: 20
-
+    version: 22
 build:
-  script: next build
-
-run:
-  containerPort: 3000
+  artifacts:
+    '*': /
+  additionalCommands: npm run build
   command: npm start
+run:
+  persistenceMount: /data
+  containerPort: 3000
