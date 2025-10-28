@@ -14,7 +14,7 @@ export default function PopularEvents() {
       if (!a.is_featured && b.is_featured) return 1;
       return b.views_count - a.views_count;
     })
-    .slice(0, 3);
+    .slice(0, 8);
 
   return (
     <div>
@@ -27,7 +27,7 @@ export default function PopularEvents() {
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {popularEvents.map((event) => {
           const dateText = formatEventDate(event.event_date, event.end_date);
           const priceText = formatPrice(event);
@@ -70,13 +70,13 @@ export default function PopularEvents() {
                     </svg>
                     <span className="truncate">{event.location}</span>
                   </div>
-                  <div className="flex items-center gap-x-2 text-sm font-semibold text-blue-600 dark:text-blue-400">
+               {/*    <div className="flex items-center gap-x-2 text-sm font-semibold text-blue-600 dark:text-blue-400">
                     <svg className="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="12" x2="12" y1="2" y2="22"/>
                       <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                     </svg>
                     {priceText}
-                  </div>
+                  </div> */}
                 </div>
                 <div className="mt-4 flex gap-2">
                   <button 

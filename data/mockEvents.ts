@@ -476,6 +476,342 @@ export const mockEvents: Event[] = [
     created_at: '2025-02-10T12:00:00Z',
     updated_at: '2025-02-25T15:00:00Z',
   },
+  {
+    id: '7',
+    title: 'Театральный фестиваль "Золотая Маска"',
+    slug: 'teatralny-festival-zolotaya-maska',
+    description: 'Гастроли лучших спектаклей России по версии национальной театральной премии',
+    full_description: `Фестиваль "Золотая Маска" представляет лучшие спектакли сезона из разных городов России. В программе: драма, комедия, современный танец и экспериментальные постановки.
+
+**Программа фестиваля:**
+- "Вишневый сад" (МХТ им. Чехова, Москва)
+- "Гроза" (Александринский театр, Санкт-Петербург)
+- "Три сестры" (Театр Наций, Москва)
+- Современная хореография от театра "Провинциальные танцы" (Екатеринбург)
+
+**Даты показов:**
+15-25 апреля 2025 года
+
+**Особенности:**
+- Встречи с режиссерами после спектаклей
+- Мастер-классы по актерскому мастерству
+- Выставка театральных костюмов и декораций`,
+    cover_image_url: 'https://images.unsplash.com/photo-1625737251459-017c301457d8?w=800',
+    category_id: 'cat-culture',
+    category_name: 'Культура',
+    organizer_type: 'commercial',
+    organizer_id: 'org-7',
+    organizer_name: 'Фонд "Золотая Маска"',
+    organizer_avatar: 'https://images.unsplash.com/photo-1576085898323-218337e3e43c?w=200',
+    event_date: '2025-04-15T19:00:00Z',
+    end_date: '2025-04-25T22:00:00Z',
+    location: 'Иркутский драматический театр',
+    address: 'г. Иркутск, ул. Карла Маркса, 14',
+    price_type: 'paid',
+    price_min: 1000,
+    price_max: 3500,
+    age_restriction: '16+',
+    format: 'offline',
+    capacity: 800,
+    registered_count: 450,
+    tags: ['театр', 'фестиваль', 'культура', 'спектакли'],
+    views_count: 7890,
+    favorites_count: 567,
+    contact_phone: '+7 (3952) 22-33-44',
+    contact_email: 'info@goldenmask.ru',
+    website_url: 'https://goldenmask.ru',
+    social_links: {
+      vk: 'https://vk.com/goldenmask',
+      telegram: 'https://t.me/goldenmask',
+    },
+    requirements: 'Дресс-код: вечерний наряд. Фото- и видеосъемка запрещены.',
+    program: 'Спектакли, встречи с режиссерами, мастер-классы, выставка.',
+    is_featured: true,
+    is_published: true,
+    created_at: '2025-01-25T12:00:00Z',
+    updated_at: '2025-03-10T15:00:00Z',
+  },
+  {
+    id: '8',
+    title: 'Йога-тур на Ольхоне',
+    slug: 'yoga-tur-na-olhone',
+    description: 'Недельный ретрит с йогой и медитациями на берегу Байкала',
+    full_description: `Погрузитесь в практику йоги и медитации в одном из самых энергетически сильных мест Байкала - острове Ольхон. Ежедневные занятия на берегу озера, вегетарианское питание и прогулки по священным местам.
+
+**Программа тура:**
+- Ежедневные утренние и вечерние занятия йогой
+- Медитации на восходе и закате солнца
+- Экскурсия к мысу Бурхан и скале Шаманка
+- Посещение песчаных дюн Сарайского пляжа
+- Лекции по философии йоги и здоровому питанию
+
+**В стоимость включено:**
+- Проживание в эко-отеле
+- 3-разовое вегетарианское питание
+- Трансфер из Иркутска и обратно
+- Все занятия и экскурсии`,
+    cover_image_url: 'https://images.unsplash.com/photo-1723406230636-aa8c4ac1e6c5?w=800',
+    category_id: 'cat-sport',
+    category_name: 'Спорт',
+    organizer_type: 'community',
+    organizer_id: 'org-8',
+    organizer_name: 'Йога-студия "Байкальский ветер"',
+    organizer_avatar: 'https://images.unsplash.com/photo-1603988363607-e1e4a66962c6?w=200',
+    event_date: '2025-06-10T08:00:00Z',
+    end_date: '2025-06-17T18:00:00Z',
+    location: 'Остров Ольхон',
+    address: 'Иркутская область, остров Ольхон, пос. Хужир',
+    price_type: 'paid',
+    price_min: 25000,
+    age_restriction: '18+',
+    format: 'offline',
+    capacity: 15,
+    registered_count: 12,
+    tags: ['йога', 'ретрит', 'байкал', 'здоровье', 'медитация'],
+    views_count: 4321,
+    favorites_count: 289,
+    contact_phone: '+7 (902) 111-22-33',
+    contact_email: 'yoga@baikalwind.ru',
+    website_url: 'https://baikalwind-yoga.ru',
+    social_links: {
+      instagram: 'https://instagram.com/baikalwind_yoga',
+    },
+    requirements: 'При себе иметь коврик для йоги, удобную одежду, купальные принадлежности.',
+    program: '7-дневный ретрит с йогой, медитациями и экскурсиями.',
+    is_featured: true,
+    is_published: true,
+    created_at: '2025-02-15T10:00:00Z',
+    updated_at: '2025-03-20T14:00:00Z',
+  },
+  {
+    id: '9',
+    title: 'IT-конференция "Байкал Digital"',
+    slug: 'it-konferentsiya-baykal-digital',
+    description: 'Главная технологическая конференция Сибири о digital-трендах',
+    full_description: `"Байкал Digital" - ежегодная конференция для IT-специалистов, предпринимателей и digital-маркетологов. В программе: кейсы ведущих компаний, мастер-классы, нетворкинг.
+
+**Основные темы:**
+- Искусственный интеллект в бизнесе
+- Digital-маркетинг 2025
+- Кибербезопасность
+- Управление IT-проектами
+- Стартапы и инвестиции
+
+**Спикеры:**
+- Иван Петров (Head of AI, Яндекс)
+- Мария Сидорова (CEO, Digital Agency)
+- Алексей Иванов (Основатель стартапа "NeuroTech")
+- Ольга Смирнова (CTO, СберТех)
+
+**Для участников:**
+- Доступ ко всем докладам
+- Раздаточные материалы
+- Обед и кофе-брейки
+- Сертификат участника
+- Доступ к записям выступлений`,
+    cover_image_url: 'https://images.unsplash.com/photo-1708795446274-a3314a154688?w=800',
+    category_id: 'cat-education',
+    category_name: 'Образование',
+    organizer_type: 'commercial',
+    organizer_id: 'org-9',
+    organizer_name: 'IT-сообщество Сибири',
+    organizer_avatar: 'https://images.unsplash.com/photo-1536104968055-4d61aa56f46a?w=200',
+    event_date: '2025-05-22T09:00:00Z',
+    end_date: '2025-05-23T18:00:00Z',
+    location: 'Конференц-центр "Сибирь"',
+    address: 'г. Иркутск, ул. Байкальская, 279',
+    price_type: 'paid',
+    price_min: 5000,
+    price_max: 15000,
+    age_restriction: '18+',
+    format: 'hybrid',
+    capacity: 300,
+    registered_count: 245,
+    tags: ['IT', 'конференция', 'технологии', 'образование', 'стартапы'],
+    views_count: 8765,
+    favorites_count: 654,
+    contact_phone: '+7 (3952) 55-66-77',
+    contact_email: 'info@baikaldigital.ru',
+    website_url: 'https://baikaldigital.ru',
+    social_links: {
+      vk: 'https://vk.com/baikaldigital',
+      telegram: 'https://t.me/baikaldigital_conf',
+    },
+    requirements: 'Для очного участия необходима предварительная регистрация.',
+    program: '2 дня докладов, мастер-классов и нетворкинга. Онлайн-трансляция доступна.',
+    is_featured: true,
+    is_published: true,
+    created_at: '2025-01-30T11:00:00Z',
+    updated_at: '2025-03-15T12:00:00Z',
+  },
+  {
+    id: '10',
+    title: 'Фестиваль красок Холи',
+    slug: 'festival-krasok-holi',
+    description: 'Яркий праздник весны с музыкой и разноцветными красками',
+    full_description: `Традиционный индийский праздник Холи теперь в Иркутске! Танцы под зажигательную музыку, море ярких красок и отличное настроение.
+
+**Программа:**
+- 12:00 - Начало фестиваля, раздача красок
+- 13:00 - Танцевальный флешмоб
+- 14:00 - Концерт этнической музыки
+- 15:00 - Конкурс на самый яркий образ
+- 16:00 - Запуск цветных дымов
+- 17:00 - Закрытие фестиваля
+
+**Что взять с собой:**
+- Белую футболку, которую не жалко испачкать
+- Солнцезащитные очки
+- Воду
+- Хорошее настроение!
+
+**Краски:**
+Безопасные экологичные краски на основе кукурузного крахмала будут предоставлены организаторами.`,
+    cover_image_url: 'https://images.unsplash.com/photo-1603228254119-e6a4d095dc59?w=800', 
+    category_id: 'cat-entertainment',
+    category_name: 'Развлечения',
+    organizer_type: 'community',
+    organizer_id: 'org-10',
+    organizer_name: 'Культурный центр "Индия"',
+    organizer_avatar: 'https://images.unsplash.com/photo-1542640244-7e672d6cef4e?w=200',
+    event_date: '2025-04-12T12:00:00Z',
+    end_date: '2025-04-12T17:00:00Z',
+    location: 'Парк Парижской Коммуны',
+    address: 'г. Иркутск, ул. Рабочая, 18',
+    price_type: 'free',
+    age_restriction: '6+',
+    format: 'offline',
+    capacity: 2000,
+    registered_count: 1567,
+    tags: ['фестиваль', 'холи', 'краски', 'музыка', 'танцы'],
+    views_count: 11234,
+    favorites_count: 987,
+    contact_phone: '+7 (902) 444-55-66',
+    contact_email: 'holi@india-center.ru',
+    website_url: 'https://india-center.ru',
+    social_links: {
+      vk: 'https://vk.com/india_center',
+      instagram: 'https://instagram.com/india_center_irk',
+    },
+    requirements: 'Дети до 12 лет только в сопровождении взрослых.',
+    program: 'Танцы, музыка, конкурсы, запуск красок.',
+    is_featured: true,
+    is_published: true,
+    created_at: '2025-02-20T14:00:00Z',
+    updated_at: '2025-03-25T10:00:00Z',
+  },
+  {
+    id: '11',
+    title: 'Мастер-класс по сыроварению',
+    slug: 'master-klass-po-syrovareniyu',
+    description: 'Научитесь готовить домашние сыры под руководством опытного сыровара',
+    full_description: `На мастер-классе вы освоите технологию приготовления разных видов сыра и узнаете все секреты сыроварения.
+
+**Программа:**
+1. Теоретическая часть:
+   - Виды сыров и их особенности
+   - Необходимое оборудование и ингредиенты
+   - Технологии приготовления
+
+2. Практическая часть:
+   - Приготовление моцареллы
+   - Приготовление творожного сыра
+   - Приготовление твердого сыра (чеддер)
+
+3. Дегустация:
+   - Проба приготовленных сыров
+   - Подбор вина к сырам
+   - Ответы на вопросы
+
+**Вы получите:**
+- Рецепты всех приготовленных сыров
+- Список необходимого оборудования
+- Контакты поставщиков качественных ингредиентов
+- Приготовленные своими руками сыры (около 1 кг)`,
+    cover_image_url: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=800',
+    category_id: 'cat-food',
+    category_name: 'Еда',
+    organizer_type: 'individual',
+    organizer_id: 'org-11',
+    organizer_name: 'Андрей Семенов',
+    organizer_avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200',
+    event_date: '2025-04-18T11:00:00Z',
+    end_date: '2025-04-18T15:00:00Z',
+    location: 'Фермерский кооператив "Свои продукты"',
+    address: 'г. Иркутск, ул. Полярная, 15',
+    price_type: 'paid',
+    price_min: 3500,
+    age_restriction: '16+',
+    format: 'offline',
+    capacity: 10,
+    registered_count: 8,
+    tags: ['мастер-класс', 'сыр', 'кулинария', 'еда', 'фермерство'],
+    views_count: 2987,
+    favorites_count: 198,
+    contact_phone: '+7 (902) 777-88-99',
+    contact_email: 'cheese@ferma.ru',
+    social_links: {
+      telegram: 'https://t.me/cheese_master_irk',
+    },
+    requirements: 'Фартуки и все материалы предоставляются.',
+    program: 'Теория сыроварения, практическое приготовление 3 видов сыра, дегустация.',
+    is_featured: false,
+    is_published: true,
+    created_at: '2025-03-01T09:00:00Z',
+    updated_at: '2025-03-28T16:00:00Z',
+  },
+  {
+    id: '12',
+    title: 'Ночная экскурсия в Ботанический сад',
+    slug: 'nochnaya-ekskursiya-v-botanicheskiy-sad',
+    description: 'Уникальная возможность увидеть ночную жизнь растений',
+    full_description: `Ботанический сад Иркутского государственного университета приглашает на необычную ночную экскурсию. С фонариками вы пройдете по тропинкам сада и увидите, как растения ведут себя ночью.
+
+**Программа экскурсии:**
+- Знакомство с ночными опылителями
+- Демонстрация растений, цветущих ночью
+- Рассказ о биоритмах растений
+- Наблюдение за ночными животными сада
+- Чаепитие с травами из сада
+
+**Особенности:**
+- Группа не более 15 человек
+- Выдаются специальные фонарики с красным светом
+- Возможность сделать уникальные фотографии
+- Сувенир на память - набор семян ночных цветов`,
+    cover_image_url: 'https://images.unsplash.com/photo-1636616467462-b0d6c8286955?w=800', 
+    category_id: 'cat-nature',
+    category_name: 'Природа',
+    organizer_type: 'community',
+    organizer_id: 'org-12',
+    organizer_name: 'Ботанический сад ИГУ',
+    organizer_avatar: 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?w=200',
+    event_date: '2025-05-15T21:00:00Z',
+    end_date: '2025-05-15T23:30:00Z',
+    location: 'Ботанический сад ИГУ',
+    address: 'г. Иркутск, ул. Кольцова, 93',
+    price_type: 'paid',
+    price_min: 800,
+    age_restriction: '12+',
+    format: 'offline',
+    capacity: 15,
+    registered_count: 14,
+    tags: ['экскурсия', 'природа', 'ботаника', 'ночь', 'растения'],
+    views_count: 3456,
+    favorites_count: 256,
+    contact_phone: '+7 (3952) 44-55-66',
+    contact_email: 'botanicalsad@isu.ru',
+    website_url: 'https://botan.isu.ru',
+    social_links: {
+      vk: 'https://vk.com/botsad_irk',
+    },
+    requirements: 'Удобная обувь, одежда по погоде. Фотоаппараты приветствуются.',
+    program: 'Ночная прогулка по ботаническому саду с гидом, наблюдение за растениями, чаепитие.',
+    is_featured: true,
+    is_published: true,
+    created_at: '2025-03-10T10:00:00Z',
+    updated_at: '2025-04-05T12:00:00Z',
+  },
 ];
 
 // Helper function to get event by slug
