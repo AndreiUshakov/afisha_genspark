@@ -13,11 +13,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@craftjs/core": "^0.2.12",
+    "@craftjs/utils": "^0.2.5",
     "@types/node": "^24.9.1",
     "@types/react": "^19.2.2",
     "next": "^16.0.0",
     "preline": "^3.2.3",
     "react": "^19.2.0",
+    "react-contenteditable": "^3.3.7",
     "react-dom": "^19.2.0",
     "typescript": "^5.9.3"
   },

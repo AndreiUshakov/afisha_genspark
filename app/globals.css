@@ -22,3 +22,18 @@ body {
 .hs-dropdown-toggle:focus {
   outline: none;
 }
+
+/* Dashboard styles */
+.dashboard-wrapper + footer,
+.dashboard-wrapper ~ footer {
+  display: none;
+}
+
+body:has(.dashboard-wrapper) > header {
+  display: none;
+}
+
+body:has(.dashboard-wrapper) > main {
+  min-height: 100vh;
+  margin: 0;
+}
