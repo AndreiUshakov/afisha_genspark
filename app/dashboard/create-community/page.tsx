@@ -1,6 +1,6 @@
 'use client';
 
-import { Editor, Frame, Element } from '@craftjs/core';
+import { Editor, Frame, Element, useEditor } from '@craftjs/core';
 import React, { useState } from 'react';
 import { Container } from '@/components/page-builder/Container';
 import { Text } from '@/components/page-builder/Text';
@@ -10,6 +10,30 @@ import { Heading } from '@/components/page-builder/Heading';
 import { Card } from '@/components/page-builder/Card';
 import { Toolbox } from '@/components/page-builder/Toolbox';
 import { SettingsPanel } from '@/components/page-builder/SettingsPanel';
+
+// Save button component that uses useEditor hook
+const SaveButton = ({ formData }: { formData: any }) => {
+  const { query } = useEditor();
+  
+  const handleSave = () => {
+    const pageContent = query.serialize();
+    console.log('Saving community:', {
+      ...formData,
+      pageContent: JSON.parse(pageContent)
+    });
+    // Here you would send to API
+    alert('Сообщество создано! (это демо)');
+  };
+
+  return (
+    <button
+      onClick={handleSave}
+      className="px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl text-sm"
+    >
+      Создать сообщество
+    </button>
+  );
+};
 
 export default function CreateCommunityPage() {
   const [enabled, setEnabled] = useState(true);
@@ -50,83 +74,54 @@ export default function CreateCommunityPage() {
     }));
   };
 
-  const handleSave = (getSerializedState: () => string) => {
-    const pageContent = getSerializedState();
-    console.log('Saving community:', {
-      ...formData,
-      pageContent: JSON.parse(pageContent)
-    });
-    // Here you would send to API
-    alert('Сообщество создано! (это демо)');
-  };
-
   return (
-    <div className="h-screen flex flex-col">
-      {/* Header */}
-      <div className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-700 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Создание сообщества
-            </h1>
-            <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
-              Шаг 2 из 2: Дизайн страницы сообщества
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setEnabled(!enabled)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                enabled
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 hover:bg-gray-300 dark:hover:bg-neutral-600'
-              }`}
-            >
-              {enabled ? 'Режим редактирования' : 'Режим просмотра'}
-            </button>
-            <a
-              href="/dashboard/community"
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              Отменить
-            </a>
-            <Editor
-              resolver={{
-                Container,
-                Text,
-                Button,
-                ImageBlock,
-                Heading,
-                Card
-              }}
-              enabled={enabled}
-            >
-              {({ query }) => (
-                <button
-                  onClick={() => handleSave(() => query.serialize())}
-                  className="px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl text-sm"
-                >
-                  Создать сообщество
-                </button>
-              )}
-            </Editor>
+    <Editor
+      resolver={{
+        Container,
+        Text,
+        Button,
+        ImageBlock,
+        Heading,
+        Card
+      }}
+      enabled={enabled}
+    >
+      <div className="h-screen flex flex-col">
+        {/* Header */}
+        <div className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-neutral-700 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Создание сообщества
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+                Шаг 2 из 2: Дизайн страницы сообщества
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setEnabled(!enabled)}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  enabled
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 hover:bg-gray-300 dark:hover:bg-neutral-600'
+                }`}
+              >
+                {enabled ? 'Режим редактирования' : 'Режим просмотра'}
+              </button>
+              <a
+                href="/dashboard/community"
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                Отменить
+              </a>
+              <SaveButton formData={formData} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        <Editor
-          resolver={{
-            Container,
-            Text,
-            Button,
-            ImageBlock,
-            Heading,
-            Card
-          }}
-          enabled={enabled}
-        >
+        {/* Main Content */}
+        <div className="flex-1 flex overflow-hidden">
           {/* Left Sidebar - Toolbox */}
           <div className="w-64 flex-shrink-0 overflow-y-auto">
             <Toolbox />
@@ -358,8 +353,8 @@ export default function CreateCommunityPage() {
           <div className="w-80 flex-shrink-0 overflow-y-auto">
             <SettingsPanel />
           </div>
-        </Editor>
+        </div>
       </div>
-    </div>
+    </Editor>
   );
 }
