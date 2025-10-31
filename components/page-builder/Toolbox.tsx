@@ -82,7 +82,11 @@ export const Toolbox = () => {
         {blocks.map((block, index) => (
           <button
             key={index}
-            ref={(ref) => ref && connectors.create(ref, block.element)}
+            ref={(ref: HTMLButtonElement | null) => {
+              if (ref) {
+                connectors.create(ref, block.element);
+              }
+            }}
             className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-gray-700 dark:text-neutral-300 bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors cursor-move"
           >
             {block.icon}

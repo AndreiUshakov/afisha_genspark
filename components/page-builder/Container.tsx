@@ -16,7 +16,11 @@ export const Container = ({ background = '#ffffff', padding = 20, children }: Co
 
   return (
     <div
-      ref={(ref) => ref && connect(drag(ref))}
+      ref={(ref: HTMLDivElement | null) => {
+        if (ref) {
+          connect(drag(ref));
+        }
+      }}
       style={{
         background,
         padding: `${padding}px`,

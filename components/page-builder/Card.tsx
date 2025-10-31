@@ -25,7 +25,11 @@ export const Card = ({
 
   return (
     <div
-      ref={(ref) => ref && connect(drag(ref))}
+      ref={(ref: HTMLDivElement | null) => {
+        if (ref) {
+          connect(drag(ref));
+        }
+      }}
       style={{
         background,
         padding: `${padding}px`,
