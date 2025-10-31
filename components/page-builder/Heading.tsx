@@ -26,7 +26,7 @@ export const Heading = ({
 
   const [editable, setEditable] = useState(false);
 
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  const Tag = `h${level}` as keyof React.JSX.IntrinsicElements;
 
   const fontSizes = {
     1: '2.5rem',
