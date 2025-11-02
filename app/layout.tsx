@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
+import ConditionalHeader from '@/components/layout/ConditionalHeader';
+import ConditionalFooter from '@/components/layout/ConditionalFooter';
 import PrelineScript from '@/components/PrelineScript';
 
 export const metadata: Metadata = {
@@ -17,11 +17,11 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className="antialiased">
-        <Header />
+        <ConditionalHeader />
         <main className="min-h-screen">
           {children}
         </main>
-        <Footer />
+        <ConditionalFooter />
         <PrelineScript />
       </body>
     </html>

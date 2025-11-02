@@ -63,6 +63,57 @@ export default function DashboardLayout({ children, userRole = 'user' }: Dashboa
     }
   ];
 
+  // Навигационные ссылки из основного сайта
+  const navigationMenuItems: MenuItem[] = [
+    {
+      href: '/events',
+      label: 'Мероприятия',
+      icon: (
+        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+          <line x1="16" x2="16" y1="2" y2="6"/>
+          <line x1="8" x2="8" y1="2" y2="6"/>
+          <line x1="3" x2="21" y1="10" y2="10"/>
+        </svg>
+      )
+    },
+    {
+      href: '/communities',
+      label: 'Сообщества',
+      icon: (
+        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      )
+    },
+    {
+      href: '/experts',
+      label: 'Эксперты',
+      icon: (
+        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      )
+    },
+    {
+      href: '/blog',
+      label: 'Блог',
+      icon: (
+        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <path d="M2 15h10"/>
+          <path d="m5 12-3 3 3 3"/>
+        </svg>
+      )
+    }
+  ];
+
   // Пункты меню для сообщества
   const communityMenuItems: MenuItem[] = [
     {
@@ -139,7 +190,18 @@ export default function DashboardLayout({ children, userRole = 'user' }: Dashboa
   const getMenuItems = () => {
     let items = [...baseMenuItems];
     
-    if (userRole === 'community' || userRole === 'expert') {
+    // Добавляем разделитель перед разделами сайта
+    /* items.push({
+      href: '#',
+      label: '─────',
+      icon: null
+    }); */
+    
+    // Добавляем навигацию по основному сайту
+    //items = [...items, ...navigationMenuItems];
+    
+    
+    /* if (userRole === 'community' || userRole === 'expert') {
       items.push({
         href: '#',
         label: '─────',
@@ -153,7 +215,25 @@ export default function DashboardLayout({ children, userRole = 'user' }: Dashboa
 
     if (userRole === 'expert') {
       items = [...items, ...expertMenuItems];
-    }
+    } */
+
+    items.push({
+        href: '#',
+        label: '─────',
+        icon: null
+      });
+      
+      // add to items communityMenuItems
+      items = [...items, ...communityMenuItems];
+
+      items.push({
+        href: '#',
+        label: '─────',
+        icon: null
+      });
+
+      items = [...items, ...expertMenuItems];
+      
 
     return items;
   };
@@ -177,29 +257,92 @@ export default function DashboardLayout({ children, userRole = 'user' }: Dashboa
         />
       )}
 
-      {/* Боковая панель */}
+      {/* Компактная боковая панель (только иконки) - всегда видна на мобильных */}
+      <aside className="fixed top-0 left-0 z-30 h-full w-16 bg-white border-r border-gray-200 dark:bg-neutral-800 dark:border-neutral-700 lg:hidden">
+        <div className="flex flex-col h-full">
+          {/* Кнопка гамбургера */}
+          <div className="flex items-center justify-center h-16 border-b border-gray-200 dark:border-neutral-700">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700"
+            >
+              <svg className="size-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" x2="21" y1="6" y2="6"/>
+                <line x1="3" x2="21" y1="12" y2="12"/>
+                <line x1="3" x2="21" y1="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          
+          {/* Компактные иконки меню */}
+          <nav className="flex-1 overflow-y-auto p-2">
+            <div className="space-y-1">
+              {menuItems.slice(0, 4).map((item, index) => {
+                if (item.label === '─────') return null;
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center justify-center p-3 rounded-lg transition-colors ${
+                      active
+                        ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                        : 'text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                    }`}
+                    title={item.label}
+                  >
+                    {item.icon}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+          
+          {/* Кнопка уведомлений */}
+          <div className="p-2 border-t border-gray-200 dark:border-neutral-700">
+            <button className="w-full p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 flex items-center justify-center">
+              <svg className="size-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* Полная боковая панель */}
       <aside
         className={`fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 dark:bg-neutral-800 dark:border-neutral-700 transition-transform duration-300 lg:translate-x-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         <div className="flex flex-col h-full">
-          {/* Лого */}
+          {/* Лого и кнопки */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-neutral-700">
             <Link href="/" className="flex items-center gap-2">
               <span className="text-xl font-bold text-gray-800 dark:text-white">
                 Афиша
               </span>
             </Link>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700"
-            >
-              <svg className="size-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 6 6 18"/>
-                <path d="m6 6 12 12"/>
-              </svg>
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Кнопка уведомлений */}
+              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700">
+                <svg className="size-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                </svg>
+              </button>
+              {/* Кнопка закрытия для мобильных */}
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700"
+              >
+                <svg className="size-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 6 6 18"/>
+                  <path d="m6 6 12 12"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Меню навигации */}
@@ -285,32 +428,7 @@ export default function DashboardLayout({ children, userRole = 'user' }: Dashboa
       </aside>
 
       {/* Основной контент */}
-      <div className="lg:pl-64">
-        {/* Шапка */}
-        <header className="sticky top-0 z-30 bg-white border-b border-gray-200 dark:bg-neutral-800 dark:border-neutral-700">
-          <div className="flex items-center justify-between h-16 px-4 sm:px-6">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700"
-            >
-              <svg className="size-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" x2="21" y1="6" y2="6"/>
-                <line x1="3" x2="21" y1="12" y2="12"/>
-                <line x1="3" x2="21" y1="18" y2="18"/>
-              </svg>
-            </button>
-
-            <div className="flex items-center gap-4 ml-auto">
-              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700">
-                <svg className="size-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-                  <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </header>
-
+      <div className="pl-16 lg:pl-64 min-h-screen">
         {/* Контент страницы */}
         <main className="p-4 sm:p-6 lg:p-8">
           {children}
