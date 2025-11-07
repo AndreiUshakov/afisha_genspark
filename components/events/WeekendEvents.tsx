@@ -3,7 +3,7 @@ export default function WeekendEvents() {
     {
       id: 1,
       title: 'Мастер-класс по рисованию',
-      category: 'Семейное',
+      category: 'Для Детей',
       day: 'Суббота',
       time: '11:00',
       duration: '2 часа',
@@ -12,7 +12,7 @@ export default function WeekendEvents() {
     {
       id: 2,
       title: 'Экскурсия по историческим местам',
-      category: 'Образование',
+      category: 'Образование и Развитие',
       day: 'Суббота',
       time: '14:00',
       duration: '3 часа',
@@ -21,7 +21,7 @@ export default function WeekendEvents() {
     {
       id: 3,
       title: 'Концерт классической музыки',
-      category: 'Культура',
+      category: 'Концерты и Музыка',
       day: 'Воскресенье',
       time: '19:00',
       duration: '2.5 часа',
@@ -30,7 +30,7 @@ export default function WeekendEvents() {
     {
       id: 4,
       title: 'Семейный пикник в парке',
-      category: 'Активный отдых',
+      category: 'Экология и ЗОЖ',
       day: 'Воскресенье',
       time: '12:00',
       duration: '4 часа',
@@ -66,7 +66,7 @@ export default function WeekendEvents() {
               </div>
             </div>
 
-            <div className="grow">
+            <div className="grow ps-4">
               <span className="inline-flex items-center gap-1.5 py-1 px-2 rounded-md text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                 {event.category}
               </span>

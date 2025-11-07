@@ -1,6 +1,104 @@
 import Link from 'next/link';
+import { getCategoriesFeaturedOnHero } from '@/data/mockCategories';
+import React from 'react';
+
+// Константы для стилей карточки "Все события" - улучшение читаемости и переиспользования
+const ALL_EVENTS_CARD_STYLES = {
+  base: "group relative p-2 md:p-3 rounded-xl focus:outline-none transition-all duration-300",
+  background: "bg-white dark:bg-neutral-900",
+  gradientBorder: "before:absolute before:inset-0 before:rounded-xl before:p-[2px] before:bg-gradient-to-r before:from-blue-500 before:via-purple-500 before:to-pink-500 before:-z-10",
+  innerBorder: "relative z-10 bg-white dark:bg-neutral-900 rounded-xl",
+  hover: "hover:shadow-lg hover:scale-[1.02] before:hover:from-blue-600 before:hover:via-purple-600 before:hover:to-pink-600",
+  focus: "focus:shadow-lg focus:ring-4 focus:ring-blue-500/20 dark:focus:ring-blue-400/20"
+} as const;
+
+// Утилита для объединения классов
+const cn = (...classes: (string | undefined | null | false)[]): string => {
+  return classes.filter(Boolean).join(' ');
+};
+
+// Helper function to get icon for category
+function getCategoryIcon(iconType: string) {
+  const iconProps = "shrink-0 size-6 text-white";
+  
+  switch (iconType) {
+    case 'music':
+      return (
+        <svg className={iconProps} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 18V5l12-2v13"/>
+          <circle cx="6" cy="18" r="3"/>
+          <circle cx="18" cy="16" r="3"/>
+        </svg>
+      );
+    case 'theater':
+      return (
+        <svg className={iconProps} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 16.1A5 5 0 0 1 5.9 20M6.3 20.7l13.38-13.38"/>
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L2 8"/>
+          <path d="M12 12V9a4 4 0 0 1 4-4h0l1.07 1.07a6 6 0 0 1 1.76 4.24l-.43 1.8"/>
+        </svg>
+      );
+    case 'palette':
+      return (
+        <svg className={iconProps} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="13.5" cy="6.5" r=".5"/>
+          <circle cx="17.5" cy="10.5" r=".5"/>
+          <circle cx="8.5" cy="7.5" r=".5"/>
+          <circle cx="6.5" cy="12.5" r=".5"/>
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+        </svg>
+      );
+    case 'celebration':
+      return (
+        <svg className={iconProps} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      );
+    case 'sport':
+      return (
+        <svg className={iconProps} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M8 22V12l-2-2 2-10 2 2 2-2 2 2 2-2 2 10-2 2v10"/>
+          <path d="M16 6h4"/>
+          <path d="M16 10h4"/>
+          <path d="M16 14h4"/>
+          <path d="M16 18h4"/>
+          <path d="M8 6H4"/>
+          <path d="M8 10H4"/>
+          <path d="M8 14H4"/>
+          <path d="M8 18H4"/>
+        </svg>
+      );
+    default:
+      return (
+        <svg className={iconProps} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      );
+  }
+}
+
+// Helper function to get color classes for category
+function getCategoryColorClasses(color: string) {
+  switch (color) {
+    case 'blue':
+      return { bg: 'bg-blue-600', hover: 'group-hover:text-blue-600' };
+    case 'purple':
+      return { bg: 'bg-purple-600', hover: 'group-hover:text-purple-600' };
+    case 'pink':
+      return { bg: 'bg-pink-600', hover: 'group-hover:text-pink-600' };
+    case 'orange':
+      return { bg: 'bg-orange-600', hover: 'group-hover:text-orange-600' };
+    case 'green':
+      return { bg: 'bg-green-600', hover: 'group-hover:text-green-600' };
+    default:
+      return { bg: 'bg-gray-600', hover: 'group-hover:text-gray-600' };
+  }
+}
 
 export default function Hero() {
+  const featuredCategories = getCategoriesFeaturedOnHero();
   return (
     <div className="relative overflow-hidden">
       <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-24">
@@ -55,57 +153,67 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="mt-10 sm:mt-20 grid grid-cols-1 sm:grid-cols-3 gap-5 lg:gap-8">
-            <Link href="/events?filter=family" className="group p-4 md:p-7 bg-white border border-gray-200 rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition dark:bg-neutral-900 dark:border-neutral-700">
-              <div className="flex justify-center items-center size-12 bg-blue-600 rounded-lg mx-auto">
-                <svg className="shrink-0 size-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-              </div>
-              <div className="mt-5">
-                <h3 className="group-hover:text-blue-600 text-lg font-semibold text-gray-800 dark:text-white dark:group-hover:text-gray-400">
-                  Семейные события
-                </h3>
-                <p className="mt-1 text-gray-600 dark:text-neutral-400">
-                  Все лучшие детские и семейные мероприятия в одном месте
-                </p>
-              </div>
-            </Link>
+          <div className="mt-10 sm:mt-20 grid grid-cols-2 sm:grid-cols-3 gap-4 lg:gap-6">
+            {/* Category Cards - 5 categories from featured list */}
+            {featuredCategories.map((category) => {
+              const colorClasses = getCategoryColorClasses(category.color);
+              return (
+                <Link
+                  key={category.id}
+                  href={`/events?category=${category.slug}`}
+                  className="group p-3 md:p-4 bg-white border border-gray-200 rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition dark:bg-neutral-900 dark:border-neutral-700"
+                >
+                  <div className={`flex justify-center items-center size-10 ${colorClasses.bg} rounded-lg mx-auto`}>
+                    {getCategoryIcon(category.icon || 'default')}
+                  </div>
+                  <div className="mt-3">
+                    <h3 className={`${colorClasses.hover} text-base font-semibold text-gray-800 dark:text-white dark:group-hover:text-gray-400 text-center`}>
+                      {category.name}
+                    </h3>
+                  </div>
+                </Link>
+              );
+            })}
 
-            <Link href="/events?filter=culture" className="group p-4 md:p-7 bg-white border border-gray-200 rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition dark:bg-neutral-900 dark:border-neutral-700">
-              <div className="flex justify-center items-center size-12 bg-purple-600 rounded-lg mx-auto">
-                <svg className="shrink-0 size-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                  <polyline points="9 22 9 12 15 12 15 22"/>
-                </svg>
-              </div>
-              <div className="mt-5">
-                <h3 className="group-hover:text-purple-600 text-lg font-semibold text-gray-800 dark:text-white dark:group-hover:text-gray-400">
-                  Культура и искусство
-                </h3>
-                <p className="mt-1 text-gray-600 dark:text-neutral-400">
-                  Театр, выставки, классика - будьте в центре культурной жизни
-                </p>
-              </div>
-            </Link>
-
-            <Link href="/events?filter=education" className="group p-4 md:p-7 bg-white border border-gray-200 rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition dark:bg-neutral-900 dark:border-neutral-700">
-              <div className="flex justify-center items-center size-12 bg-green-600 rounded-lg mx-auto">
-                <svg className="shrink-0 size-6 text-white" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                </svg>
-              </div>
-              <div className="mt-5">
-                <h3 className="group-hover:text-green-600 text-lg font-semibold text-gray-800 dark:text-white dark:group-hover:text-gray-400">
-                  Наука и образование
-                </h3>
-                <p className="mt-1 text-gray-600 dark:text-neutral-400">
-                  Не пропускай научные события и найди единомышленников
-                </p>
+            {/* "All Events" Special Card */}
+            <Link
+              href="/events"
+              className={cn(
+                ALL_EVENTS_CARD_STYLES.base,
+                ALL_EVENTS_CARD_STYLES.gradientBorder,
+                ALL_EVENTS_CARD_STYLES.hover,
+                ALL_EVENTS_CARD_STYLES.focus
+              )}
+              aria-label="Просмотреть все события"
+              role="button"
+              prefetch={false}
+            >
+              <div className={cn(ALL_EVENTS_CARD_STYLES.innerBorder, "p-3 md:p-3")}>
+                <div className="flex justify-center items-center size-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg mx-auto group-hover:from-blue-700 group-hover:to-purple-700 transition-all duration-300">
+                  <svg
+                    className="shrink-0 size-6 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M8 2v4"/>
+                    <path d="M16 2v4"/>
+                    <rect width="18" height="18" x="3" y="4" rx="2"/>
+                    <path d="M3 10h18"/>
+                  </svg>
+                </div>
+                <div className="mt-3">
+                  <h3 className="group-hover:text-blue-600 dark:group-hover:text-blue-400 text-base font-semibold text-gray-800 dark:text-white text-center transition-colors duration-300">
+                    Все события
+                  </h3>
+                </div>
               </div>
             </Link>
           </div>

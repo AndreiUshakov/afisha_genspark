@@ -37,3 +37,76 @@ body:has(.dashboard-wrapper) > main {
   min-height: 100vh;
   margin: 0;
 }
+
+/* Swiper календаря - правильное скрытие полосы прокрутки и переполнения */
+.calendar-swiper {
+  overflow: hidden !important;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.calendar-swiper::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.calendar-swiper .swiper-wrapper {
+  overflow: hidden !important;
+}
+
+.calendar-swiper .swiper-container {
+  overflow: hidden !important;
+}
+
+.calendar-swiper .swiper {
+  overflow: hidden !important;
+}
+
+.calendar-swiper .swiper::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Общие стили для всех Swiper компонентов */
+.swiper::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.swiper {
+  overflow: hidden !important;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Swiper календаря - полное скрытие полосы прокрутки */
+.calendar-swiper {
+  overflow: visible !important;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.calendar-swiper::-webkit-scrollbar {
+  display: none !important;
+}
+
+.calendar-swiper .swiper-wrapper {
+  overflow: visible !important;
+}
+
+.calendar-swiper .swiper-container {
+  overflow: hidden !important;
+}
+
+/* Общие стили для всех Swiper компонентов */
+.swiper::-webkit-scrollbar {
+  display: none !important;
+}
+
+.swiper {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
