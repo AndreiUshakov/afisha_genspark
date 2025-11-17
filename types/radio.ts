@@ -45,7 +45,7 @@ export const RADIO_CONSTANTS = {
   /** Ключ для localStorage */
   VOLUME_STORAGE_KEY: 'irkutsk-radio-volume',
   /** Громкость по умолчанию */
-  DEFAULT_VOLUME: 0.7,
+  DEFAULT_VOLUME: 0.5,
   /** Задержка для debounce сохранения */
   SAVE_DEBOUNCE_MS: 300,
 } as const;
