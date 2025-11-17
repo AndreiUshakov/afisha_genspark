@@ -1,13 +1,19 @@
 import Link from 'next/link';
+import RadioPlayer from '@/components/radio/RadioPlayer';
 
 export default function Header() {
   return (
     <header className="sticky top-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full bg-white border-b border-gray-200 dark:bg-neutral-800 dark:border-neutral-700">
       <nav className="relative max-w-[85rem] w-full mx-auto md:flex md:items-center md:justify-between md:gap-3 py-2 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex-none font-semibold text-xl text-black focus:outline-none focus:opacity-80 dark:text-white">
+          <Link href="/" className="flex font-semibold text-xl text-black focus:outline-none focus:opacity-80 dark:text-white whitespace-nowrap">
             🎭 Афиша Иркутска
           </Link>
+          
+          {/* Радио-плеер на мобильных устройствах */}
+          <div className="md:hidden">
+            <RadioPlayer />
+          </div>
           
           <div className="md:hidden">
             <button
@@ -36,6 +42,11 @@ export default function Header() {
         <div id="hs-header-base" className="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow md:block" aria-labelledby="hs-header-base-collapse">
           <div className="overflow-hidden overflow-y-auto max-h-[75vh] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500">
             <div className="py-2 md:py-0 flex flex-col md:flex-row md:items-center gap-0.5 md:gap-1">
+              {/* Радио-плеер на desktop - в начале навигации */}
+              <div className="hidden md:flex grow justify-end items-center dark:border-neutral-700 pr-4 mr-4">
+                <RadioPlayer />
+              </div>
+              
               <div className="grow">
                 <div className="flex flex-col md:flex-row md:justify-end md:items-center gap-0.5 md:gap-1">
                   <Link href="/events" className="p-2 flex items-center text-sm text-gray-800 hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
