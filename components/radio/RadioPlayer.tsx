@@ -74,7 +74,7 @@ const RadioPlayer: React.FC = memo(() => {
         : 'Включить радио';
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 py-1">
       {/* Иконка радио - только на desktop */}
       {/* <div className="hidden md:block text-2xl" aria-hidden="true">
         📻
@@ -111,12 +111,12 @@ const RadioPlayer: React.FC = memo(() => {
         {getButtonIcon()}
         
         {/* Индикатор воспроизведения */}
-        {isPlaying && !isLoading && !error && (
-          <span className="absolute -top-1 -right-1 flex h-3 w-3">
+       {/*  {isPlaying && !isLoading && !error && (
+          <span className="absolute top-3 -right-1 flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
           </span>
-        )}
+        )} */}
       </button>
 
       {/* Управление громкостью - только на desktop */}

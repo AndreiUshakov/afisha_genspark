@@ -6,7 +6,7 @@ export default function Header() {
     <header className="sticky top-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full bg-white border-b border-gray-200 dark:bg-neutral-800 dark:border-neutral-700">
       <nav className="relative max-w-[85rem] w-full mx-auto md:flex md:items-center md:justify-between md:gap-3 py-2 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex font-semibold text-xl text-black focus:outline-none focus:opacity-80 dark:text-white whitespace-nowrap">
+          <Link href="/" className="flex font-semibold text-xl leading-loose text-black focus:outline-none focus:opacity-80 dark:text-white whitespace-nowrap">
             🎭 Афиша Иркутска
           </Link>
           
