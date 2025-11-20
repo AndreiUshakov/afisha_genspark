@@ -110,3 +110,38 @@ body:has(.dashboard-wrapper) > main {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
+
+/* Date Picker Styles */
+.date-picker-container .rdp {
+  --rdp-cell-size: 36px;
+  --rdp-accent-color: #2563eb;
+  --rdp-background-color: #eff6ff;
+  margin: 0;
+}
+
+.dark .date-picker-container .rdp {
+  --rdp-accent-color: #3b82f6;
+  --rdp-background-color: rgba(59, 130, 246, 0.1);
+}
+
+.date-picker-container .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+  background-color: #f3f4f6;
+}
+
+.dark .date-picker-container .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+  background-color: #262626;
+}
+
+.date-picker-container .rdp-day_selected {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+.dark .date-picker-container .rdp-day_selected {
+  background-color: #3b82f6 !important;
+}
+
+.date-picker-container .rdp-day_today {
+  font-weight: 600;
+}
