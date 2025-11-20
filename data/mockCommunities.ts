@@ -1,6 +1,13 @@
 // Mock data for communities - matches Supabase schema
 // This data will be replaced with real Supabase queries later
 
+export interface GalleryImage {
+  id: string;
+  url: string;
+  thumbnail_url: string;
+  caption?: string;
+}
+
 export interface Community {
   id: string;
   owner_id: string;
@@ -31,6 +38,7 @@ export interface Community {
   meeting_schedule?: string;
   rules?: string[];
   tags?: string[];
+  gallery_images?: GalleryImage[];
   is_verified: boolean;
   is_published?: boolean;
   created_at: string;
@@ -82,6 +90,38 @@ export const mockCommunities: Community[] = [
     contact_email: 'info@it-irkutsk.ru',
     contact_phone: '+7 (902) 123-45-67',
     upcoming_events_count: 3,
+    gallery_images: [
+      {
+        id: 'img-1-1',
+        url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400',
+        caption: 'Хакатон 2024 - команды за работой'
+      },
+      {
+        id: 'img-1-2',
+        url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400',
+        caption: 'Митап по веб-разработке'
+      },
+      {
+        id: 'img-1-3',
+        url: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400',
+        caption: 'Презентация проектов'
+      },
+      {
+        id: 'img-1-4',
+        url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400',
+        caption: 'Командная работа над проектом'
+      },
+      {
+        id: 'img-1-5',
+        url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400',
+        caption: 'Нетворкинг после мероприятия'
+      }
+    ],
     is_verified: true,
     created_at: '2023-01-15T10:00:00Z',
     updated_at: '2025-02-20T14:00:00Z',
@@ -135,6 +175,44 @@ export const mockCommunities: Community[] = [
     },
     contact_email: 'art@baikal-artists.ru',
     upcoming_events_count: 5,
+    gallery_images: [
+      {
+        id: 'img-2-1',
+        url: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400',
+        caption: 'Пленэр на берегу Байкала'
+      },
+      {
+        id: 'img-2-2',
+        url: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400',
+        caption: 'Выставка работ участников'
+      },
+      {
+        id: 'img-2-3',
+        url: 'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=400',
+        caption: 'Мастер-класс по акварели'
+      },
+      {
+        id: 'img-2-4',
+        url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400',
+        caption: 'Творческий процесс'
+      },
+      {
+        id: 'img-2-5',
+        url: 'https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1561214115-f2f134cc4912?w=400',
+        caption: 'Коллективная работа'
+      },
+      {
+        id: 'img-2-6',
+        url: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?w=400',
+        caption: 'Открытие выставки'
+      }
+    ],
     is_verified: true,
     created_at: '2020-06-10T12:00:00Z',
     updated_at: '2025-02-18T16:00:00Z',
@@ -194,6 +272,32 @@ export const mockCommunities: Community[] = [
     contact_email: 'run@sibirski-marathon.ru',
     contact_phone: '+7 (902) 555-77-88',
     upcoming_events_count: 4,
+    gallery_images: [
+      {
+        id: 'img-3-1',
+        url: 'https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=400',
+        caption: 'Групповая тренировка в парке'
+      },
+      {
+        id: 'img-3-2',
+        url: 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=400',
+        caption: 'Участники марафона'
+      },
+      {
+        id: 'img-3-3',
+        url: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=400',
+        caption: 'Финиш полумарафона'
+      },
+      {
+        id: 'img-3-4',
+        url: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=1200',
+        thumbnail_url: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=400',
+        caption: 'Командный дух'
+      }
+    ],
     is_verified: true,
     created_at: '2019-03-20T09:00:00Z',
     updated_at: '2025-02-22T11:00:00Z',

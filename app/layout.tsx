@@ -17,6 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/jodit@4/es2021/jodit.min.css"
+        />
+      </head>
       <body className="antialiased">
         <AudioProvider>
           <ConditionalHeader />

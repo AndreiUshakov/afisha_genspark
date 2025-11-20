@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { getCommunityBySlug, getRelatedCommunities, formatMembersCount } from '@/data/mockCommunities';
 import CommunityActions from '@/components/communities/CommunityActions';
+import ImageGallery from '@/components/communities/ImageGallery';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -167,6 +168,11 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* Gallery */}
+            {community.gallery_images && community.gallery_images.length > 0 && (
+              <ImageGallery images={community.gallery_images} title="Фотогалерея" />
             )}
           </div>
 
