@@ -1,11 +1,49 @@
 'use client';
 
 export default function EventFilters() {
+  const wishes = [
+    'Поиграть',
+    'Посмотреть',
+    'Учиться',
+    'Познакомиться',
+    'Удивиться',
+    'Вдохновиться',
+    'Оттянуться',
+    'Поразмышлять',
+    'Отдохнуть',
+    'Развлечься',
+    'Потусоваться',
+    'Получить опыт',
+    'Проявить себя',
+    'Погулять',
+    'Почувствовать атмосферу',
+    'Творить',
+    'Исследовать'
+  ];
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 dark:bg-neutral-900 dark:border-neutral-700">
       <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
         Фильтры
       </h3>
+
+      {/* Я хочу */}
+      <div className="mb-6">
+        <h4 className="text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+          Я хочу..
+        </h4>
+        <div className="space-y-2 max-h-64 overflow-y-auto">
+          {wishes.map((wish) => (
+            <label key={wish} className="flex items-center">
+              <input
+                type="checkbox"
+                className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+              />
+              <span className="text-sm text-gray-600 ms-3 dark:text-neutral-400">{wish}</span>
+            </label>
+          ))}
+        </div>
+      </div>
 
       {/* Возрастная категория */}
       <div className="mb-6">
@@ -13,7 +51,7 @@ export default function EventFilters() {
           Возрастная категория
         </h4>
         <div className="space-y-2">
-          {['Дети 0-6', 'Школьники 7-12', 'Подростки 13-17', 'Взрослые', '55+'].map((age) => (
+          {['Малыши 0+', 'Младшие школьники 6+', 'Старшие школьники 12+', 'Подростки 16+', 'Взрослые 18+'].map((age) => (
             <label key={age} className="flex items-center">
               <input
                 type="checkbox"

@@ -6,19 +6,73 @@ export default function HorizontalFilters() {
   const [showAllAges, setShowAllAges] = useState(false);
   const [showAllTypes, setShowAllTypes] = useState(false);
   const [showAllPrices, setShowAllPrices] = useState(false);
+  const [showAllWishes, setShowAllWishes] = useState(false);
 
-  const ages = ['Дети 0-6', 'Школьники 7-12', 'Подростки 13-17', 'Взрослые', '55+'];
+  const ages = ['Малыши 0+', 'Младшие школьники 6+', 'Старшие школьники 12+', 'Подростки 16+', 'Взрослые 18+'];
   const types = ['Театр', 'Лекции', 'Мастер-классы', 'Выставки', 'Спорт', 'Семейное', 'Концерты', 'Кино'];
   const prices = ['Бесплатные', 'До 500 ₽', 'До 1000 ₽', 'Премиум'];
   const formats = ['Офлайн', 'Онлайн'];
   const dates = ['Сегодня', 'Завтра', 'Выходные', 'Эта неделя', 'Этот месяц'];
+  const wishes = [
+    'Поиграть',
+    'Посмотреть',
+    'Учиться',
+    'Познакомиться',
+    'Удивиться',
+    'Вдохновиться',
+    'Оттянуться',
+    'Поразмышлять',
+    'Отдохнуть',
+    'Развлечься',
+    'Потусоваться',
+    'Получить опыт',
+    'Проявить себя',
+    'Погулять',
+    'Почувствовать атмосферу',
+    'Творить',
+    'Исследовать'
+  ];
 
   const visibleAges = showAllAges ? ages : ages.slice(0, 3);
   const visibleTypes = showAllTypes ? types : types.slice(0, 4);
   const visiblePrices = showAllPrices ? prices : prices.slice(0, 3);
+  const visibleWishes = showAllWishes ? wishes : wishes.slice(0, 6);
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-4 mb-6 dark:bg-neutral-900 dark:border-neutral-700">
+      {/* Я хочу */}
+      <div className="mb-4 pb-4 border-b border-gray-200 dark:border-neutral-700">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-semibold text-gray-800 dark:text-white">
+            Я хочу..
+          </h4>
+          {wishes.length > 6 && (
+            <button
+              onClick={() => setShowAllWishes(!showAllWishes)}
+              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            >
+              {showAllWishes ? 'Скрыть' : `Еще ${wishes.length - 6}`}
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {visibleWishes.map((wish) => (
+            <label
+              key={wish}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-700 hover:border-blue-600 hover:bg-blue-50 cursor-pointer transition-colors dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-blue-500 dark:hover:bg-blue-900/20"
+            >
+              <input
+                type="checkbox"
+                className="sr-only peer"
+              />
+              <span className="peer-checked:text-blue-600 peer-checked:font-medium dark:peer-checked:text-blue-400">
+                {wish}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
       {/* Возрастная категория */}
       <div className="mb-4 pb-4 border-b border-gray-200 dark:border-neutral-700">
         <div className="flex items-center justify-between mb-3">

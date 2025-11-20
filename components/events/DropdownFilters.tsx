@@ -5,6 +5,26 @@ import { useState } from 'react';
 export default function DropdownFilters() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
+  const wishes = [
+    'Поиграть',
+    'Посмотреть',
+    'Учиться',
+    'Познакомиться',
+    'Удивиться',
+    'Вдохновиться',
+    'Оттянуться',
+    'Поразмышлять',
+    'Отдохнуть',
+    'Развлечься',
+    'Потусоваться',
+    'Получить опыт',
+    'Проявить себя',
+    'Погулять',
+    'Почувствовать атмосферу',
+    'Творить',
+    'Исследовать'
+  ];
+
   const toggleDropdown = (name: string) => {
     setOpenDropdown(openDropdown === name ? null : name);
   };
@@ -16,6 +36,43 @@ export default function DropdownFilters() {
   return (
     <div className="mb-6">
       <div className="flex flex-wrap items-center gap-3">
+        {/* Я хочу */}
+        <div className="relative inline-flex">
+          <button
+            type="button"
+            onClick={() => toggleDropdown('wishes')}
+            className="py-2.5 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-700"
+          >
+            Я хочу..
+            <svg className={`size-4 transition-transform ${openDropdown === 'wishes' ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          {openDropdown === 'wishes' && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={closeDropdown}></div>
+              <div className="absolute top-full left-0 mt-2 min-w-60 max-h-96 overflow-y-auto bg-white shadow-lg rounded-xl p-3 z-50 dark:bg-neutral-800 dark:border dark:border-neutral-700">
+                <div className="space-y-2">
+                  {wishes.map((wish) => (
+                    <label key={wish} className="flex items-center py-1.5 px-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="shrink-0 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-600"
+                      />
+                      <span className="text-sm text-gray-700 ms-3 dark:text-neutral-300">{wish}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="pt-3 mt-3 border-t border-gray-200 dark:border-neutral-700">
+                  <button onClick={closeDropdown} className="w-full py-2 px-3 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                    Применить
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
         {/* Тип мероприятия */}
         <div className="relative inline-flex">
           <button
@@ -70,7 +127,7 @@ export default function DropdownFilters() {
               <div className="fixed inset-0 z-40" onClick={closeDropdown}></div>
               <div className="absolute top-full left-0 mt-2 min-w-60 bg-white shadow-lg rounded-xl p-3 z-50 dark:bg-neutral-800 dark:border dark:border-neutral-700">
                 <div className="space-y-2">
-                  {['Дети 0-6', 'Школьники 7-12', 'Подростки 13-17', 'Взрослые', '55+'].map((age) => (
+                  {['Малыши 0+', 'Младшие школьники 6+', 'Старшие школьники 12+', 'Подростки 16+', 'Взрослые 18+'].map((age) => (
                     <label key={age} className="flex items-center py-1.5 px-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer">
                       <input
                         type="checkbox"
