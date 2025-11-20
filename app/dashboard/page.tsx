@@ -98,7 +98,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Посмотреть сохраненные события</p>
               </div>
             </a>
-            <a href="/dashboard/create" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors">
+            <a href="/dashboard/create-community" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors">
               <div className="p-2 bg-green-50 rounded-lg dark:bg-green-900/20">
                 <svg className="size-5 text-green-600 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -107,7 +107,18 @@ export default function DashboardPage() {
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">Создать сообщество</p>
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Стать организатором событий</p>
+              </div>              
+            </a>
+            <a href="/dashboard/become-expert" className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-700 transition-colors">
+              <div className="p-2 bg-purple-50 rounded-lg dark:bg-purple-900/20">
+                <svg className="size-5 text-purple-600 dark:text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
               </div>
+              <div>
+                <p className="font-medium text-gray-900 dark:text-white">Стать экспертом</p>
+                <p className="text-sm text-gray-600 dark:text-neutral-400">Предложить свои услуги</p>
+              </div>              
             </a>
           </div>
         </div>
