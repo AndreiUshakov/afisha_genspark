@@ -72,7 +72,7 @@ export default function EventCard({ event }: EventCardProps) {
       priceText = 'Уточняется';
     }
     
-    formatText = event.format === 'online' ? 'Онлайн' : event.format === 'offline' ? 'Оффлайн' : 'Гибрид';
+    formatText = event.format === 'online' ? 'Онлайн' :  'Оффлайн' ;
     hasCoverImage = !!event.cover_image_url;
     coverImageUrl = event.cover_image_url;
   } else {

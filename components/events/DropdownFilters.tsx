@@ -264,7 +264,7 @@ export default function DropdownFilters() {
               <div className="fixed inset-0 z-40" onClick={closeDropdown}></div>
               <div className="absolute top-full left-0 mt-2 min-w-48 bg-white shadow-lg rounded-xl p-3 z-50 dark:bg-neutral-800 dark:border dark:border-neutral-700">
                 <div className="space-y-2">
-                  {['Офлайн', 'Онлайн', 'Гибрид'].map((format) => (
+                  {['Офлайн', 'Онлайн'].map((format) => (
                     <label key={format} className="flex items-center py-1.5 px-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer">
                       <input
                         type="radio"
