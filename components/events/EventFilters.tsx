@@ -31,6 +31,33 @@ export default function EventFilters() {
     'Исследовать'
   ];
 
+  const socialAudience = [
+    'Для родителей с детьми',
+    'Для школьных классов',
+    'Для студентов',
+    'Для работающих',
+    'Для предпринимателей',
+    'Для людей с ОВЗ (ограниченными возможностями здоровья)',
+    'Для творческих людей',
+    'Для спортсменов',
+    'Для пенсионеров',
+    'Для волонтёров',
+    'Для иностранцев/экспатов',
+    'Для религиозных общин',
+    'Для профессиональных сообществ',
+    'Для молодежных объединений',
+    'Для семейных пар',
+    'Для одиноких',
+    'Для учителей и педагогов',
+    'Для общественных организаций',
+    'Для безработных',
+    'Для многодетных семей',
+    'Для военнослужащих и ветеранов',
+    'Для туристов и гостей города',
+    'Для всех социально активных',
+    'Для всех желающих'
+  ];
+
   // Преднастроенные периоды
   const datePresets = [
     { label: 'Сегодня', getValue: () => ({ from: new Date(), to: new Date() }) },
@@ -187,6 +214,24 @@ export default function EventFilters() {
                 className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
               />
               <span className="text-sm text-gray-600 ms-3 dark:text-neutral-400">{price}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Для кого */}
+      <div className="mb-6">
+        <h4 className="text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
+          Для кого
+        </h4>
+        <div className="space-y-2 max-h-64 overflow-y-auto">
+          {socialAudience.map((audience) => (
+            <label key={audience} className="flex items-center">
+              <input
+                type="checkbox"
+                className="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800"
+              />
+              <span className="text-sm text-gray-600 ms-3 dark:text-neutral-400">{audience}</span>
             </label>
           ))}
         </div>

@@ -32,6 +32,33 @@ export default function DropdownFilters() {
     'Исследовать'
   ];
 
+  const socialAudience = [
+    'Для родителей с детьми',
+    'Для школьных классов',
+    'Для студентов',
+    'Для работающих',
+    'Для предпринимателей',
+    'Для людей с ОВЗ (ограниченными возможностями здоровья)',
+    'Для творческих людей',
+    'Для спортсменов',
+    'Для пенсионеров',
+    'Для волонтёров',
+    'Для иностранцев/экспатов',
+    'Для религиозных общин',
+    'Для профессиональных сообществ',
+    'Для молодежных объединений',
+    'Для семейных пар',
+    'Для одиноких',
+    'Для учителей и педагогов',
+    'Для общественных организаций',
+    'Для безработных',
+    'Для многодетных семей',
+    'Для военнослужащих и ветеранов',
+    'Для туристов и гостей города',
+    'Для всех социально активных',
+    'Для всех желающих'
+  ];
+
   // Преднастроенные периоды
   const datePresets = [
     { label: 'Сегодня', getValue: () => ({ from: new Date(), to: new Date() }) },
@@ -361,6 +388,43 @@ export default function DropdownFilters() {
                     onClick={closeDropdown}
                     className="flex-1 py-2 px-3 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                   >
+                    Применить
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Для кого */}
+        <div className="relative inline-flex">
+          <button
+            type="button"
+            onClick={() => toggleDropdown('audience')}
+            className="py-2.5 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-full border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors dark:bg-neutral-800 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-700"
+          >
+            Для кого
+            <svg className={`size-4 transition-transform ${openDropdown === 'audience' ? 'rotate-180' : ''}`} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+          {openDropdown === 'audience' && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={closeDropdown}></div>
+              <div className="absolute top-full left-0 mt-2 min-w-80 max-h-96 overflow-y-auto bg-white shadow-lg rounded-xl p-3 z-50 dark:bg-neutral-800 dark:border dark:border-neutral-700">
+                <div className="space-y-2">
+                  {socialAudience.map((audience) => (
+                    <label key={audience} className="flex items-center py-1.5 px-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="shrink-0 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-600"
+                      />
+                      <span className="text-sm text-gray-700 ms-3 dark:text-neutral-300">{audience}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="pt-3 mt-3 border-t border-gray-200 dark:border-neutral-700">
+                  <button onClick={closeDropdown} className="w-full py-2 px-3 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
                     Применить
                   </button>
                 </div>

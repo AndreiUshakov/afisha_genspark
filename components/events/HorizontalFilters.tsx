@@ -11,6 +11,7 @@ export default function HorizontalFilters() {
   const [showAllTypes, setShowAllTypes] = useState(false);
   const [showAllPrices, setShowAllPrices] = useState(false);
   const [showAllWishes, setShowAllWishes] = useState(false);
+  const [showAllAudience, setShowAllAudience] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedPreset, setSelectedPreset] = useState<string>('');
@@ -59,10 +60,38 @@ export default function HorizontalFilters() {
     'Исследовать'
   ];
 
+  const socialAudience = [
+    'Для родителей с детьми',
+    'Для школьных классов',
+    'Для студентов',
+    'Для работающих',
+    'Для предпринимателей',
+    'Для людей с ОВЗ (ограниченными возможностями здоровья)',
+    'Для творческих людей',
+    'Для спортсменов',
+    'Для пенсионеров',
+    'Для волонтёров',
+    'Для иностранцев/экспатов',
+    'Для религиозных общин',
+    'Для профессиональных сообществ',
+    'Для молодежных объединений',
+    'Для семейных пар',
+    'Для одиноких',
+    'Для учителей и педагогов',
+    'Для общественных организаций',
+    'Для безработных',
+    'Для многодетных семей',
+    'Для военнослужащих и ветеранов',
+    'Для туристов и гостей города',
+    'Для всех социально активных',
+    'Для всех желающих'
+  ];
+
   const visibleAges = showAllAges ? ages : ages.slice(0, 3);
   const visibleTypes = showAllTypes ? types : types.slice(0, 4);
   const visiblePrices = showAllPrices ? prices : prices.slice(0, 3);
   const visibleWishes = showAllWishes ? wishes : wishes.slice(0, 6);
+  const visibleAudience = showAllAudience ? socialAudience : socialAudience.slice(0, 6);
 
   // Закрытие date picker при клике вне его
   useEffect(() => {
@@ -344,6 +373,39 @@ export default function HorizontalFilters() {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Для кого */}
+      <div className="mb-4 pb-4 border-b border-gray-200 dark:border-neutral-700">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-semibold text-gray-800 dark:text-white">
+            Для кого
+          </h4>
+          {socialAudience.length > 6 && (
+            <button
+              onClick={() => setShowAllAudience(!showAllAudience)}
+              className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
+            >
+              {showAllAudience ? 'Скрыть' : `Еще ${socialAudience.length - 6}`}
+            </button>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {visibleAudience.map((audience) => (
+            <label
+              key={audience}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-700 hover:border-blue-600 hover:bg-blue-50 cursor-pointer transition-colors dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-blue-500 dark:hover:bg-blue-900/20"
+            >
+              <input
+                type="checkbox"
+                className="sr-only peer"
+              />
+              <span className="peer-checked:text-blue-600 peer-checked:font-medium dark:peer-checked:text-blue-400">
+                {audience}
+              </span>
+            </label>
+          ))}
         </div>
       </div>
 
