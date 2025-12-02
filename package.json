@@ -6,7 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:connection": "tsx scripts/test-connection.ts",
+    "test:supabase": "tsx scripts/test-supabase-connection.ts",
+    "migrate:categories": "tsx scripts/migrate-categories.ts",
+    "migrate:events": "tsx scripts/migrate-events.ts",
+    "migrate:communities": "tsx scripts/migrate-communities.ts",
+    "migrate:experts": "tsx scripts/migrate-experts.ts",
+    "migrate:posts": "tsx scripts/migrate-posts.ts",
+    "migrate:all": "npm run migrate:categories && npm run migrate:events && npm run migrate:communities && npm run migrate:experts && npm run migrate:posts"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +23,8 @@
   "dependencies": {
     "@craftjs/core": "^0.2.12",
     "@craftjs/utils": "^0.2.5",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.85.0",
     "@tiptap/extension-image": "^3.11.0",
     "@tiptap/extension-link": "^3.11.0",
     "@tiptap/extension-placeholder": "^3.11.0",
@@ -35,6 +45,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.16",
-    "tailwindcss": "^4.1.16"
+    "dotenv": "^17.2.3",
+    "tailwindcss": "^4.1.16",
+    "tsx": "^4.20.6"
   }
 }
