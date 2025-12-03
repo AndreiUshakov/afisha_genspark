@@ -8,6 +8,17 @@ export async function register() {
   }
   
   if (typeof window === 'undefined') {
-    (global as any).window = global;
+    (global as any).window = {
+      location: {
+        protocol: 'http:',
+        host: 'localhost:3000',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/',
+        search: '',
+        hash: '',
+        href: 'http://localhost:3000/'
+      }
+    };
   }
 }
