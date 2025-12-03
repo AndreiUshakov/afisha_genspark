@@ -18,6 +18,16 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Полифилл для self (требуется для jodit-react на SSR)
+              if (typeof self === 'undefined') {
+                self = window;
+              }
+            `,
+          }}
+        />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/jodit@4/es2021/jodit.min.css"

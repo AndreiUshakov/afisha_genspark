@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Пустая конфигурация Turbopack для подавления предупреждения
+  turbopack: {},
 };
 
 export default nextConfig;
