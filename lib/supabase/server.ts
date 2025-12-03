@@ -1,5 +1,9 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+import { config } from 'dotenv'
+
+// Загружаем переменные окружения из .env.local
+config({ path: '.env.local' })
 
 export async function createClient() {
   const cookieStore = await cookies()

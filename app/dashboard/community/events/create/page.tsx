@@ -234,7 +234,6 @@ export default function CreateEventPage() {
               >
                 <option value="offline">Офлайн</option>
                 <option value="online">Онлайн</option>
-                <option value="hybrid">Гибрид</option>
               </select>
             </div>
 

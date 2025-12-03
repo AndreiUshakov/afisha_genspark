@@ -161,7 +161,6 @@ export default async function EventDetailPage({ params }: PageProps) {
                   <span className="px-2 py-1 bg-gray-100 rounded">
                     {event.format === 'online' && 'Онлайн'}
                     {event.format === 'offline' && 'Оффлайн'}
-                    {event.format === 'hybrid' && 'Гибридный формат'}
                   </span>
                 </div>
               </div>
