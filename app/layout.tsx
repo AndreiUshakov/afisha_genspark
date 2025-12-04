@@ -3,7 +3,7 @@ import './globals.css';
 import ConditionalHeader from '@/components/layout/ConditionalHeader';
 import ConditionalFooter from '@/components/layout/ConditionalFooter';
 import PrelineScript from '@/components/PrelineScript';
-import { AudioProvider } from '@/contexts/AudioContext';
+import ClientProviders from '@/components/providers/ClientProviders';
 
 export const metadata: Metadata = {
   title: 'Афиша Иркутска | Календарь событий города',
@@ -18,29 +18,19 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              // Полифилл для self (требуется для jodit-react на SSR)
-              if (typeof self === 'undefined') {
-                self = window;
-              }
-            `,
-          }}
-        />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/jodit@4/es2021/jodit.min.css"
         />
       </head>
       <body className="antialiased">
-        <AudioProvider>
+        <ClientProviders>
           <ConditionalHeader />
           <main className="min-h-screen">
             {children}
           </main>
           <ConditionalFooter />
-        </AudioProvider>
+        </ClientProviders>
         <PrelineScript />
       </body>
     </html>

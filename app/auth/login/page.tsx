@@ -1,11 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useTransition, useEffect } from 'react'
+import { useState, useTransition, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { signIn } from './actions'
 
-export default function LoginPage() {
+function LoginForm() {
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const searchParams = useSearchParams()
@@ -179,5 +179,27 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-neutral-900 dark:border-neutral-700">
+            <div className="p-4 sm:p-7">
+              <div className="text-center">
+                <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">
+                  Загрузка...
+                </h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
