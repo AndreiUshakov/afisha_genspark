@@ -33,6 +33,11 @@ export async function signUp(formData: FormData) {
     // Получаем URL сайта из переменных окружения
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     
+    console.log('=== НАЧАЛО РЕГИСТРАЦИИ ===')
+    console.log('Email:', email)
+    console.log('Site URL:', siteUrl)
+    console.log('Password length:', password.length)
+    
     // Регистрация пользователя
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -46,7 +51,12 @@ export async function signUp(formData: FormData) {
     })
 
     if (error) {
-      console.error('Ошибка регистрации:', error)
+      console.error('=== ОШИБКА ОТ SUPABASE ===')
+      console.error('Error code:', error.code)
+      console.error('Error message:', error.message)
+      console.error('Error status:', error.status)
+      console.error('Full error:', JSON.stringify(error, null, 2))
+      console.error('========================')
       
       // Игнорируем ошибку email если пользователь создан
       if (error.message.includes('confirmation email') && data?.user) {
@@ -60,14 +70,35 @@ export async function signUp(formData: FormData) {
     }
 
     if (!data.user) {
+      console.error('=== НЕТ ДАННЫХ ПОЛЬЗОВАТЕЛЯ ===')
+      console.error('Data object:', JSON.stringify(data, null, 2))
+      console.error('==============================')
       return { error: 'Не удалось создать пользователя' }
     }
+
+    console.log('=== УСПЕШНАЯ РЕГИСТРАЦИЯ ===')
+    console.log('User ID:', data.user.id)
+    console.log('User email:', data.user.email)
+    console.log('Session:', data.session ? 'Создана' : 'Не создана')
+    console.log('===========================')
 
     // Успешная регистрация - сразу входим в систему
     // Профиль будет создан автоматически через триггер handle_new_user в БД
     redirect('/dashboard')
   } catch (err) {
-    console.error('Неожиданная ошибка:', err)
-    return { error: 'Произошла неожиданная ошибка' }
+    // Подробное журналирование ошибки
+    console.error('=== ОШИБКА РЕГИСТРАЦИИ ===')
+    console.error('Тип ошибки:', err instanceof Error ? err.constructor.name : typeof err)
+    console.error('Сообщение:', err instanceof Error ? err.message : String(err))
+    console.error('Stack trace:', err instanceof Error ? err.stack : 'N/A')
+    console.error('Полный объект ошибки:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2))
+    console.error('Email:', email)
+    console.error('=========================')
+    
+    // Возвращаем детальное сообщение об ошибке (временно для отладки)
+    const errorMessage = err instanceof Error ? err.message : String(err)
+    return {
+      error: `Произошла неожиданная ошибка: ${errorMessage}. Проверьте консоль сервера для деталей.`
+    }
   }
 }
