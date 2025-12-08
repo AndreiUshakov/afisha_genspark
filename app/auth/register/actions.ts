@@ -30,11 +30,15 @@ export async function signUp(formData: FormData) {
   }
 
   try {
+    // Получаем URL сайта из переменных окружения
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    
     // Регистрация пользователя
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo: `${siteUrl}/auth/callback`,
         data: {
           email,
         }

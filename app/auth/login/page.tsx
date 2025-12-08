@@ -6,10 +6,11 @@ import { useSearchParams } from 'next/navigation'
 import { signIn } from './actions'
 
 function LoginForm() {
-  const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
   const searchParams = useSearchParams()
+  const urlError = searchParams.get('error')
   const registered = searchParams.get('registered')
+  const [error, setError] = useState<string | null>(urlError)
+  const [isPending, startTransition] = useTransition()
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
