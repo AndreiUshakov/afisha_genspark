@@ -29,15 +29,15 @@ export async function signUp(formData: FormData) {
     return { error: 'Некорректный email адрес' }
   }
 
+  // Получаем URL сайта из переменных окружения
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  
+  console.log('=== НАЧАЛО РЕГИСТРАЦИИ ===')
+  console.log('Email:', email)
+  console.log('Site URL:', siteUrl)
+  console.log('Password length:', password.length)
+  
   try {
-    // Получаем URL сайта из переменных окружения
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-    
-    console.log('=== НАЧАЛО РЕГИСТРАЦИИ ===')
-    console.log('Email:', email)
-    console.log('Site URL:', siteUrl)
-    console.log('Password length:', password.length)
-    
     // Регистрация пользователя
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -81,10 +81,6 @@ export async function signUp(formData: FormData) {
     console.log('User email:', data.user.email)
     console.log('Session:', data.session ? 'Создана' : 'Не создана')
     console.log('===========================')
-
-    // Успешная регистрация - сразу входим в систему
-    // Профиль будет создан автоматически через триггер handle_new_user в БД
-    redirect('/dashboard')
   } catch (err) {
     // Подробное журналирование ошибки
     console.error('=== ОШИБКА РЕГИСТРАЦИИ ===')
@@ -95,10 +91,14 @@ export async function signUp(formData: FormData) {
     console.error('Email:', email)
     console.error('=========================')
     
-    // Возвращаем детальное сообщение об ошибке (временно для отладки)
+    // Возвращаем детальное сообщение об ошибке
     const errorMessage = err instanceof Error ? err.message : String(err)
     return {
       error: `Произошла неожиданная ошибка: ${errorMessage}. Проверьте консоль сервера для деталей.`
     }
   }
+
+  // Успешная регистрация - редирект ПОСЛЕ try-catch
+  // Профиль будет создан автоматически через триггер handle_new_user в БД
+  redirect('/dashboard')
 }
