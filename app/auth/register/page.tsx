@@ -6,11 +6,13 @@ import { signUp } from './actions'
 
 export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
+    setSuccess(false)
 
     const formData = new FormData(event.currentTarget)
     
@@ -25,6 +27,8 @@ export default function RegisterPage() {
       const result = await signUp(formData)
       if (result?.error) {
         setError(result.error)
+      } else if (result?.success) {
+        setSuccess(true)
       }
     })
   }
@@ -87,6 +91,23 @@ export default function RegisterPage() {
               <div className="py-3 flex items-center text-xs text-gray-400 uppercase before:flex-1 before:border-t before:border-gray-200 before:me-6 after:flex-1 after:border-t after:border-gray-200 after:ms-6 dark:text-neutral-500 dark:before:border-neutral-600 dark:after:border-neutral-600">
                 Или
               </div>
+
+              {/* Сообщение об успехе */}
+              {success && (
+                <div className="mb-4 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/10 dark:text-green-400" role="alert">
+                  <div className="flex items-start">
+                    <svg className="flex-shrink-0 w-5 h-5 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                    <div>
+                      <span className="font-medium">Регистрация успешна!</span>
+                      <p className="mt-1">
+                        Мы отправили письмо с подтверждением на вашу почту. Пожалуйста, перейдите по ссылке в письме для активации аккаунта.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Сообщение об ошибке */}
               {error && (
@@ -173,7 +194,7 @@ export default function RegisterPage() {
 
                 <button
                   type="submit"
-                  disabled={isPending}
+                  disabled={isPending || success}
                   className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
                 >
                   {isPending ? (
@@ -184,6 +205,8 @@ export default function RegisterPage() {
                       </svg>
                       Регистрация...
                     </>
+                  ) : success ? (
+                    'Проверьте почту'
                   ) : (
                     'Зарегистрироваться'
                   )}

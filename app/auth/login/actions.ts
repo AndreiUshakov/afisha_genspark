@@ -28,17 +28,19 @@ export async function signIn(formData: FormData) {
       return { error: 'Неверный email или пароль' }
     }
     
-    // Игнорируем ошибку "Email not confirmed" - пользователи могут входить с неподтвержденным email
-    // Уведомление о необходимости подтверждения будет показано в личном кабинете
+    // Запрещаем вход с неподтвержденным email
     if (error.message.includes('Email not confirmed')) {
-      console.log('Пользователь входит с неподтвержденным email, разрешаем вход')
-      // Если есть данные пользователя, считаем вход успешным
-      if (data?.user) {
-        redirect('/dashboard')
-      }
+      return { error: 'Пожалуйста, подтвердите ваш email. Проверьте почту и перейдите по ссылке из письма.' }
     }
     
     return { error: error.message || 'Ошибка при входе' }
+  }
+
+  // Дополнительная проверка подтверждения email на стороне клиента
+  if (data?.user && !data.user.email_confirmed_at) {
+    // Выходим из системы, если email не подтвержден
+    await supabase.auth.signOut()
+    return { error: 'Пожалуйста, подтвердите ваш email. Проверьте почту и перейдите по ссылке из письма.' }
   }
 
   // Успешный вход - перенаправляем в дашборд

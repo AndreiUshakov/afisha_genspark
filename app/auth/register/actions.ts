@@ -98,7 +98,7 @@ export async function signUp(formData: FormData) {
     }
   }
 
-  // Успешная регистрация - редирект ПОСЛЕ try-catch
+  // Успешная регистрация - возвращаем success статус
   // Профиль будет создан автоматически через триггер handle_new_user в БД
-  redirect('/dashboard')
+  return { success: true }
 }
