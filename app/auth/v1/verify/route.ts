@@ -7,18 +7,20 @@ export async function GET(request: NextRequest) {
   const token = requestUrl.searchParams.get('token')
   const type = requestUrl.searchParams.get('type')
   const redirectTo = requestUrl.searchParams.get('redirect_to')
-  const origin = requestUrl.origin
+  
+  // Используем NEXT_PUBLIC_SITE_URL из переменных окружения вместо requestUrl.origin
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin
 
   console.log('=== EMAIL VERIFICATION REQUEST ===')
   console.log('Token:', token ? 'present' : 'missing')
   console.log('Type:', type)
   console.log('Redirect to:', redirectTo)
-  console.log('Origin:', origin)
+  console.log('Site URL:', siteUrl)
 
   if (!token) {
     console.error('Токен подтверждения отсутствует')
     return NextResponse.redirect(
-      `${origin}/auth/login?error=Неверная ссылка подтверждения`
+      `${siteUrl}/auth/login?error=Неверная ссылка подтверждения`
     )
   }
 
@@ -36,20 +38,32 @@ export async function GET(request: NextRequest) {
       if (error) {
         console.error('Ошибка подтверждения email:', error)
         return NextResponse.redirect(
-          `${origin}/auth/login?error=Не удалось подтвердить email. Попробуйте войти или запросите новое письмо.`
+          `${siteUrl}/auth/login?error=Не удалось подтвердить email. Попробуйте войти или запросите новое письмо.`
         )
       }
 
       console.log('Email успешно подтвержден:', data.user?.email)
 
-      // Перенаправляем на указанный URL или на дашборд
-      const finalRedirect = redirectTo || '/dashboard'
-      return NextResponse.redirect(`${origin}${finalRedirect}`)
+      // Если redirectTo уже полный URL, используем его напрямую
+      // Иначе добавляем к siteUrl
+      let finalRedirect: string
+      if (redirectTo) {
+        // Проверяем, является ли redirectTo полным URL
+        if (redirectTo.startsWith('http://') || redirectTo.startsWith('https://')) {
+          finalRedirect = redirectTo
+        } else {
+          finalRedirect = `${siteUrl}${redirectTo}`
+        }
+      } else {
+        finalRedirect = `${siteUrl}/dashboard`
+      }
+      
+      return NextResponse.redirect(finalRedirect)
       
     } catch (err) {
       console.error('Неожиданная ошибка при подтверждении:', err)
       return NextResponse.redirect(
-        `${origin}/auth/login?error=Произошла ошибка при подтверждении email`
+        `${siteUrl}/auth/login?error=Произошла ошибка при подтверждении email`
       )
     }
   }
@@ -57,6 +71,6 @@ export async function GET(request: NextRequest) {
   // Для других типов подтверждения (например, смена email)
   console.log('Неизвестный тип подтверждения:', type)
   return NextResponse.redirect(
-    `${origin}/auth/login?message=Проверьте вашу почту для завершения процесса`
+    `${siteUrl}/auth/login?message=Проверьте вашу почту для завершения процесса`
   )
 }
