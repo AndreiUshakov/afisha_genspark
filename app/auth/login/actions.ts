@@ -28,9 +28,8 @@ export async function signIn(formData: FormData) {
       return { error: 'Неверный email или пароль' }
     }
     
-    if (error.message.includes('Email not confirmed')) {
-      return { error: 'Пожалуйста, подтвердите ваш email' }
-    }
+    // Убрали проверку подтверждения email - пользователи могут входить с неподтвержденным email
+    // Уведомление о необходимости подтверждения будет показано в личном кабинете
     
     return { error: error.message || 'Ошибка при входе' }
   }

@@ -1,13 +1,107 @@
-export default function ExpertDashboardPage() {
-  // Mock data for expert statistics
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
+import EmptyState from '@/components/dashboard/EmptyState'
+
+async function getExpertData() {
+  const supabase = await createClient()
+  
+  // Получаем текущего пользователя
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError || !user) {
+    redirect('/auth/login')
+  }
+
+  // Проверяем профиль эксперта
+  const { data: expertProfile } = await supabase
+    .from('experts')
+    .select('*')
+    .eq('profile_id', user.id)
+    .single()
+
+  return {
+    user,
+    expertProfile,
+    isEmailVerified: user.email_confirmed_at !== null
+  }
+}
+
+export default async function ExpertDashboardPage() {
+  const { user, expertProfile, isEmailVerified } = await getExpertData()
+
+  // Если профиль эксперта не создан
+  if (!expertProfile) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Дашборд эксперта
+          </h1>
+          <p className="text-gray-600 dark:text-neutral-400 mt-1">
+            Управление вашими услугами и клиентами
+          </p>
+        </div>
+
+        {/* Email Verification Warning */}
+        {!isEmailVerified && (
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 dark:bg-yellow-900/20 dark:border-yellow-600">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                  Требуется подтверждение email
+                </h3>
+                <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
+                  <p>
+                    Для создания профиля эксперта необходимо подтвердить ваш email <strong>{user.email}</strong>.
+                    Проверьте вашу почту и перейдите по ссылке подтверждения.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-gray-200 dark:border-neutral-700 p-8">
+          <EmptyState
+            icon={
+              <svg className="size-16 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            }
+            title="Профиль эксперта не создан"
+            description={
+              isEmailVerified 
+                ? "Создайте профиль эксперта, чтобы предлагать свои услуги и получать заказы от клиентов"
+                : "Сначала подтвердите ваш email, затем вы сможете создать профиль эксперта"
+            }
+            action={
+              isEmailVerified 
+                ? {
+                    label: 'Создать профиль эксперта',
+                    href: '/dashboard/expert/create'
+                  }
+                : undefined
+            }
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Mock data for expert statistics (в будущем заменить на реальные данные из БД)
   const stats = {
     totalBookings: 87,
     activeServices: 5,
-    totalReviews: 42,
-    averageRating: 4.8,
+    totalReviews: expertProfile.reviews_count || 0,
+    averageRating: expertProfile.rating || 0,
     revenue: 124500,
     upcomingBookings: 12
-  };
+  }
 
   const upcomingBookings = [
     {
@@ -37,7 +131,7 @@ export default function ExpertDashboardPage() {
       duration: 60,
       price: 3000
     }
-  ];
+  ]
 
   const recentReviews = [
     {
@@ -64,7 +158,7 @@ export default function ExpertDashboardPage() {
       service: 'Консультация по организации мероприятий',
       date: '2024-10-24'
     }
-  ];
+  ]
 
   return (
     <div className="space-y-6">
@@ -117,7 +211,7 @@ export default function ExpertDashboardPage() {
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
           </div>
-          <p className="text-3xl font-bold">{stats.averageRating}</p>
+          <p className="text-3xl font-bold">{stats.averageRating.toFixed(1)}</p>
         </div>
 
         <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl p-5 text-white shadow-lg">
@@ -296,5 +390,5 @@ export default function ExpertDashboardPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
