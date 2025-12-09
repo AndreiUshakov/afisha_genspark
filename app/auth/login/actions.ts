@@ -15,7 +15,7 @@ export async function signIn(formData: FormData) {
   }
 
   // Вход пользователя
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   })
@@ -28,8 +28,15 @@ export async function signIn(formData: FormData) {
       return { error: 'Неверный email или пароль' }
     }
     
-    // Убрали проверку подтверждения email - пользователи могут входить с неподтвержденным email
+    // Игнорируем ошибку "Email not confirmed" - пользователи могут входить с неподтвержденным email
     // Уведомление о необходимости подтверждения будет показано в личном кабинете
+    if (error.message.includes('Email not confirmed')) {
+      console.log('Пользователь входит с неподтвержденным email, разрешаем вход')
+      // Если есть данные пользователя, считаем вход успешным
+      if (data?.user) {
+        redirect('/dashboard')
+      }
+    }
     
     return { error: error.message || 'Ошибка при входе' }
   }
