@@ -148,13 +148,9 @@ export async function uploadAvatar(
       return { url: null, error: 'Не удалось загрузить файл' }
     }
 
-    // Формируем публичный URL вручную, используя правильный домен
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    if (!supabaseUrl) {
-      return { url: null, error: 'Ошибка конфигурации Supabase' }
-    }
-    
-    const publicUrl = `${supabaseUrl}/storage/v1/object/public/profiles/${filePath}`
+    // Используем прокси API route для обхода проблемы Mixed Content (HTTP/HTTPS)
+    // Вместо прямой ссылки на Supabase используем наш API endpoint
+    const publicUrl = `/api/storage/profiles/${filePath}`
 
     // Обновляем профиль с новым URL аватара
     const { error: updateError } = await supabase
