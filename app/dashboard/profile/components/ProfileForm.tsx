@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import { updateProfile, uploadAvatar, type ProfileData } from '../actions'
-import Image from 'next/image'
 
 interface ProfileFormProps {
   profile: ProfileData
@@ -119,11 +118,9 @@ export default function ProfileForm({ profile, emailVerified }: ProfileFormProps
             className="size-24 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center overflow-hidden hover:opacity-80 transition-opacity disabled:opacity-50 relative group"
           >
             {avatarUrl ? (
-              <Image
+              <img
                 src={avatarUrl}
                 alt="Аватар"
-                width={96}
-                height={96}
                 className="object-cover w-full h-full"
               />
             ) : (

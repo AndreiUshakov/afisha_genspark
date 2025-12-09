@@ -9,6 +9,7 @@
     "lint": "next lint",
     "test:connection": "tsx scripts/test-connection.ts",
     "test:supabase": "tsx scripts/test-supabase-connection.ts",
+    "setup:storage": "tsx scripts/setup-storage.ts",
     "migrate:categories": "tsx scripts/migrate-categories.ts",
     "migrate:events": "tsx scripts/migrate-events.ts",
     "migrate:communities": "tsx scripts/migrate-communities.ts",
