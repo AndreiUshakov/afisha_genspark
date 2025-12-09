@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import EmailVerificationBanner from '@/components/dashboard/EmailVerificationBanner'
 import EmptyState from '@/components/dashboard/EmptyState'
+import ProtectedLink from './components/ProtectedLink'
+import SuccessBanner from './components/SuccessBanner'
 
 async function getUserData() {
   const supabase = await createClient()
@@ -83,6 +85,9 @@ export default async function DashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {/* Баннер об успешном подтверждении email */}
+      <SuccessBanner />
+      
       {/* Баннер о неподтвержденном email */}
       {!isEmailVerified && data.user.email && (
         <EmailVerificationBanner email={data.user.email} />
@@ -244,19 +249,14 @@ export default async function DashboardPage() {
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Посмотреть сохраненные события</p>
               </div>
             </a>
-            <a 
-              href="/dashboard/create-community" 
+            <ProtectedLink
+              href="/dashboard/create-community"
+              isEmailVerified={isEmailVerified}
               className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                !isEmailVerified 
-                  ? 'opacity-50 cursor-not-allowed' 
+                !isEmailVerified
+                  ? 'opacity-50 cursor-not-allowed'
                   : 'hover:bg-gray-50 dark:hover:bg-neutral-700'
               }`}
-              onClick={(e) => {
-                if (!isEmailVerified) {
-                  e.preventDefault()
-                  alert('Пожалуйста, подтвердите ваш email для создания сообщества')
-                }
-              }}
             >
               <div className="p-2 bg-green-50 rounded-lg dark:bg-green-900/20">
                 <svg className="size-5 text-green-600 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -269,21 +269,16 @@ export default async function DashboardPage() {
                   {!isEmailVerified && <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-400">🔒</span>}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Стать организатором событий</p>
-              </div>              
-            </a>
-            <a 
-              href="/dashboard/expert" 
+              </div>
+            </ProtectedLink>
+            <ProtectedLink
+              href="/dashboard/expert"
+              isEmailVerified={isEmailVerified}
               className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                !isEmailVerified 
-                  ? 'opacity-50 cursor-not-allowed' 
+                !isEmailVerified
+                  ? 'opacity-50 cursor-not-allowed'
                   : 'hover:bg-gray-50 dark:hover:bg-neutral-700'
               }`}
-              onClick={(e) => {
-                if (!isEmailVerified) {
-                  e.preventDefault()
-                  alert('Пожалуйста, подтвердите ваш email для создания профиля эксперта')
-                }
-              }}
             >
               <div className="p-2 bg-purple-50 rounded-lg dark:bg-purple-900/20">
                 <svg className="size-5 text-purple-600 dark:text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -296,8 +291,8 @@ export default async function DashboardPage() {
                   {!isEmailVerified && <span className="ml-2 text-xs text-yellow-600 dark:text-yellow-400">🔒</span>}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Предложить свои услуги</p>
-              </div>              
-            </a>
+              </div>
+            </ProtectedLink>
           </div>
         </div>
 

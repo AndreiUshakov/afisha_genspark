@@ -146,4 +146,8 @@ NEXT_PUBLIC_SITE_URL=https://afisa-ushakovandrei.amvera.io
 
 ## История изменений
 
+- **2025-12-09 (11:05)**: Исправлена проблема с редиректом на localhost в callback route и React ошибка с event handlers
+  - Обновлен [`app/auth/callback/route.ts`](../app/auth/callback/route.ts) для использования `NEXT_PUBLIC_SITE_URL` вместо `requestUrl.origin`
+  - Создан Client Component [`app/dashboard/components/ProtectedLink.tsx`](../app/dashboard/components/ProtectedLink.tsx) для интерактивных ссылок
+  - Обновлен [`app/dashboard/page.tsx`](../app/dashboard/page.tsx) для использования нового компонента
 - **2025-12-09**: Исправлена проблема с редиректом на localhost при подтверждении email
