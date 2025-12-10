@@ -1,10 +1,15 @@
 import DropdownFilters from '@/components/events/DropdownFilters';
 import EventCard from '@/components/events/EventCard';
 import { mockEvents } from '@/data/mockEvents';
+import { getUserFavorites } from '@/app/actions/favorites';
 
-export default function EventsPage() {
+export default async function EventsPage() {
   // Используем реальные mock данные с детальными страницами
   const events = mockEvents.filter(event => event.is_published);
+  
+  // Получаем избранные мероприятия пользователя
+  const { favorites } = await getUserFavorites();
+  const favoriteIds = new Set(favorites.map(fav => fav.event_id));
 
   return (
     <div className="max-w-[1920px] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
@@ -52,7 +57,11 @@ export default function EventsPage() {
       {/* Сетка событий - 4 в ряду на больших экранах */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {events.map((event) => (
-          <EventCard key={event.id} event={event} />
+          <EventCard
+            key={event.id}
+            event={event}
+            isFavorited={favoriteIds.has(event.slug)}
+          />
         ))}
       </div>
 

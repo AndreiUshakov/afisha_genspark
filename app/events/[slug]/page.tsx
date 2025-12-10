@@ -1,15 +1,16 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { 
-  getEventBySlug, 
-  getRelatedEvents, 
-  formatPrice, 
+import {
+  getEventBySlug,
+  getRelatedEvents,
+  formatPrice,
   formatEventDate,
-  getCapacityStatus 
+  getCapacityStatus
 } from '@/data/mockEvents';
 import EventActions from '@/components/events/EventActions';
 import EventCard from '@/components/events/EventCard';
+import { checkIsFavorite } from '@/app/actions/favorites';
 
 interface PageProps {
   params: Promise<{
@@ -24,6 +25,9 @@ export default async function EventDetailPage({ params }: PageProps) {
   if (!event) {
     notFound();
   }
+
+  // Проверяем, находится ли мероприятие в избранном
+  const isFavorited = await checkIsFavorite(slug);
 
   const relatedEvents = getRelatedEvents(slug, 3);
   const capacityStatus = getCapacityStatus(event);
@@ -317,9 +321,10 @@ export default async function EventDetailPage({ params }: PageProps) {
                   )}
 
                   {/* Action Buttons */}
-                  <EventActions 
-                    eventId={event.id} 
+                  <EventActions
+                    eventId={event.slug}
                     eventTitle={event.title}
+                    initialFavorited={isFavorited}
                   />
                 </div>
               </div>

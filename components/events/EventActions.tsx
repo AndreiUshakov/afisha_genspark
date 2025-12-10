@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import FavoriteButton from './FavoriteButton';
 
 interface EventActionsProps {
   eventId: string;
@@ -9,18 +10,7 @@ interface EventActionsProps {
 }
 
 export default function EventActions({ eventId, eventTitle, initialFavorited = false }: EventActionsProps) {
-  const [isFavorited, setIsFavorited] = useState(initialFavorited);
   const [showShareMenu, setShowShareMenu] = useState(false);
-
-  const handleFavoriteClick = () => {
-    setIsFavorited(!isFavorited);
-    // TODO: Save to localStorage or Supabase when integrated
-    if (!isFavorited) {
-      console.log('Added to favorites:', eventId);
-    } else {
-      console.log('Removed from favorites:', eventId);
-    }
-  };
 
   const handleShare = (platform: string) => {
     const url = window.location.href;
@@ -55,29 +45,10 @@ export default function EventActions({ eventId, eventTitle, initialFavorited = f
       </button>
 
       {/* Favorite Button */}
-      <button
-        onClick={handleFavoriteClick}
-        className={`p-3 rounded-lg border transition-all ${
-          isFavorited
-            ? 'bg-red-50 border-red-300 text-red-600 hover:bg-red-100'
-            : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
-        }`}
-        aria-label={isFavorited ? 'Удалить из избранного' : 'Добавить в избранное'}
-      >
-        <svg
-          className="w-6 h-6"
-          fill={isFavorited ? 'currentColor' : 'none'}
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-          />
-        </svg>
-      </button>
+      <FavoriteButton
+        eventId={eventId}
+        initialFavorited={initialFavorited}
+      />
 
       {/* Share Button */}
       <div className="relative">

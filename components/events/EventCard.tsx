@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import FavoriteButton from './FavoriteButton';
 
 // Support both old simple format and new detailed format
 interface SimpleEvent {
@@ -34,6 +35,7 @@ type Event = SimpleEvent | DetailedEvent;
 
 interface EventCardProps {
   event: Event;
+  isFavorited?: boolean;
 }
 
 // Type guard to check if event is DetailedEvent
@@ -41,7 +43,7 @@ function isDetailedEvent(event: Event): event is DetailedEvent {
   return 'slug' in event && 'cover_image_url' in event;
 }
 
-export default function EventCard({ event }: EventCardProps) {
+export default function EventCard({ event, isFavorited = false }: EventCardProps) {
   // Format data based on event type
   const href = isDetailedEvent(event) ? `/events/${event.slug}` : `/events/${event.id}`;
   const title = event.title;
@@ -83,10 +85,17 @@ export default function EventCard({ event }: EventCardProps) {
   }
 
   return (
-    <Link
-      href={href}
-      className="group flex flex-col h-full bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition dark:bg-neutral-900 dark:border-neutral-700"
-    >
+    <div className="group relative flex flex-col h-full bg-white border border-gray-200 shadow-sm rounded-xl hover:shadow-lg transition dark:bg-neutral-900 dark:border-neutral-700">
+      {/* Favorite Button - Positioned absolutely */}
+      <div className="absolute top-3 right-3 z-10">
+        <FavoriteButton
+          eventId={isDetailedEvent(event) ? event.slug : String(event.id)}
+          initialFavorited={isFavorited}
+          variant="compact"
+        />
+      </div>
+
+      <Link href={href} className="flex flex-col h-full">
       {hasCoverImage ? (
         <div className="relative h-48 w-full overflow-hidden rounded-t-xl">
           <Image
@@ -155,6 +164,7 @@ export default function EventCard({ event }: EventCardProps) {
           </div>
         </div>
       </div>
-    </Link>
+      </Link>
+    </div>
   );
 }
