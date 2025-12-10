@@ -18,26 +18,28 @@ export default async function FavoritesPage() {
   // Преобразуем данные для EventCard
   const favoriteEvents = favorites
     .map(fav => {
-      if (!fav.events) return null;
+      // events может быть объектом или массивом в зависимости от типизации Supabase
+      const event = Array.isArray(fav.events) ? fav.events[0] : fav.events;
+      if (!event) return null;
       
       return {
-        id: fav.events.id,
-        title: fav.events.title,
-        slug: fav.events.slug,
-        description: fav.events.description || '',
-        cover_image_url: fav.events.cover_image_url || '',
-        event_date: fav.events.start_date,
-        end_date: fav.events.end_date,
-        location: fav.events.venue_name || 'Онлайн',
-        address: fav.events.venue_address || '',
-        price_type: fav.events.is_free ? 'free' as const : 'paid' as const,
-        price_min: fav.events.price_min,
-        price_max: fav.events.price_max,
-        organizer_name: fav.events.organizer_name || '',
-        organizer_avatar: fav.events.organizer_avatar,
-        tags: fav.events.tags || [],
-        is_published: fav.events.is_published,
-        format: fav.events.location_type as 'online' | 'offline' | 'hybrid',
+        id: event.id,
+        title: event.title,
+        slug: event.slug,
+        description: event.description || '',
+        cover_image_url: event.cover_image_url || '',
+        event_date: event.start_date,
+        end_date: event.end_date,
+        location: event.venue_name || 'Онлайн',
+        address: event.venue_address || '',
+        price_type: event.is_free ? 'free' as const : 'paid' as const,
+        price_min: event.price_min,
+        price_max: event.price_max,
+        organizer_name: event.organizer_name || '',
+        organizer_avatar: event.organizer_avatar,
+        tags: event.tags || [],
+        is_published: event.is_published,
+        format: event.location_type as 'online' | 'offline' | 'hybrid',
         registered_count: 0,
         views_count: 0,
         favorites_count: 0,
