@@ -17,11 +17,12 @@ interface Community {
   name: string;
   slug: string;
   avatar_url?: string;
+  is_published: boolean;
 }
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  userRole?: 'user' | 'community' | 'expert'; // Текущая роль пользователя
+  userRole?: 'user' | 'community' | 'expert' | 'admin'; // Текущая роль пользователя
   user?: {
     email: string;
     avatar_url?: string;
@@ -136,8 +137,8 @@ export default function DashboardLayout({ children, userRole = 'user', user, com
     if (communities.length > 0) {
       communities.forEach((community) => {
         items.push({
-          href: `/dashboard/community/${community.slug}`,
-          label: community.name,
+          href: community.is_published ? `/dashboard/community/${community.slug}` : '#',
+          label: community.name + (!community.is_published ? ' (не опубликовано)' : ''),
           icon: community.avatar_url ? (
             <img src={community.avatar_url} alt={community.name} className="size-4 rounded-full object-cover" />
           ) : (
@@ -380,20 +381,30 @@ export default function DashboardLayout({ children, userRole = 'user', user, com
                 }
 
                 const active = isActive(item.href);
+                const isDisabled = item.href === '#' && item.label.includes('(не опубликовано)');
 
                 return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                        active
-                          ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-                          : 'text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-700'
-                      }`}
-                    >
-                      {item.icon}
-                      <span>{item.label}</span>
-                    </Link>
+                  <li key={item.href + index}>
+                    {isDisabled ? (
+                      <div
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 dark:text-neutral-600 cursor-not-allowed opacity-60"
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </div>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          active
+                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                            : 'text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                        }`}
+                      >
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </Link>
+                    )}
                   </li>
                 );
               })}
@@ -429,6 +440,22 @@ export default function DashboardLayout({ children, userRole = 'user', user, com
             </div>
           )}
 
+          {/* Кнопка админ-панели для администраторов */}
+          {userRole === 'admin' && (
+            <div className="p-4 border-t border-gray-200 dark:border-neutral-700">
+              <Link
+                href="/admin"
+                className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                Админ-панель
+              </Link>
+            </div>
+          )}
+
           {/* Информация о пользователе */}
           <div className="p-4 border-t border-gray-200 dark:border-neutral-700">
             <div className="flex items-center gap-3">
@@ -448,7 +475,7 @@ export default function DashboardLayout({ children, userRole = 'user', user, com
                   {user?.full_name || user?.email?.split('@')[0] || 'Пользователь'}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-neutral-400 truncate">
-                  {userRole === 'community' ? 'Сообщество' : userRole === 'expert' ? 'Эксперт' : 'Пользователь'}
+                  {userRole === 'community' ? 'Сообщество' : userRole === 'expert' ? 'Эксперт' : userRole === 'admin' ? 'Администратор' : 'Пользователь'}
                 </p>
               </div>
               {/* Кнопка выхода */}

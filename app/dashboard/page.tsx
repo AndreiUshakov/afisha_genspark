@@ -163,7 +163,7 @@ export default async function DashboardPage() {
 
      
       {/* Быстрые действия */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Быстрые действия
@@ -284,7 +284,7 @@ export default async function DashboardPage() {
       </div>
 
        {/* Медиагалерея - превью */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 mb-8">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             📸 Медиагалерея
