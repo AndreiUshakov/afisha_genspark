@@ -8,12 +8,19 @@ import { validateStep1 } from '@/utils/validation';
 import { createCommunity } from '../actions';
 import { FILTER_OPTIONS } from '@/types/community';
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface CreateCommunityFormProps {
   isEmailVerified: boolean;
   userEmail: string;
+  categories: Category[];
 }
 
-export default function CreateCommunityForm({ isEmailVerified, userEmail }: CreateCommunityFormProps) {
+export default function CreateCommunityForm({ isEmailVerified, userEmail, categories }: CreateCommunityFormProps) {
   const router = useRouter();
   const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState<Step1FormData>({
@@ -152,6 +159,7 @@ export default function CreateCommunityForm({ isEmailVerified, userEmail }: Crea
             formData={formData}
             onChange={handleFormChange}
             errors={errors}
+            categories={categories}
           />
 
           {/* Create Button */}

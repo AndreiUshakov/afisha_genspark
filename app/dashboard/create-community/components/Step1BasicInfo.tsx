@@ -6,16 +6,24 @@ import { FILTER_OPTIONS } from '@/types/community';
 import { FilterSelector } from './FilterSelector';
 import { generateSlug } from '@/utils/slug';
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 interface Step1BasicInfoProps {
   formData: Step1FormData;
   onChange: (data: Partial<Step1FormData>) => void;
   errors?: Partial<Record<keyof Step1FormData, string>>;
+  categories: Category[];
 }
 
 export const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
   formData,
   onChange,
-  errors = {}
+  errors = {},
+  categories
 }) => {
   // Auto-generate slug from name
   useEffect(() => {
@@ -101,7 +109,7 @@ export const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
               } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
             >
               <option value="">Выберите категорию</option>
-              {FILTER_OPTIONS.CATEGORIES.map(cat => (
+              {categories.map(cat => (
                 <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
             </select>

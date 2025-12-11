@@ -2,6 +2,7 @@ import React from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import CreateCommunityForm from './components/CreateCommunityForm';
+import { getCategories } from './actions';
 
 export default async function CreateCommunityPage() {
   // Получаем пользователя на сервере
@@ -15,10 +16,15 @@ export default async function CreateCommunityPage() {
   const isEmailVerified = user.email_confirmed_at !== null;
   const userEmail = user.email || '';
 
+  // Получаем категории из базы данных
+  const categoriesResult = await getCategories();
+  const categories = categoriesResult.success ? categoriesResult.data : [];
+
   return (
     <CreateCommunityForm
       isEmailVerified={isEmailVerified}
       userEmail={userEmail}
+      categories={categories}
     />
   );
 }

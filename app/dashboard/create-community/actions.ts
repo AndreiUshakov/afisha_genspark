@@ -4,6 +4,30 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
+/**
+ * Получает список категорий из базы данных
+ */
+export async function getCategories() {
+  try {
+    const supabase = await createClient();
+    
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name, slug')
+      .order('name');
+    
+    if (error) {
+      console.error('Error fetching categories:', error);
+      return { success: false, error: error.message, data: [] };
+    }
+    
+    return { success: true, data: data || [] };
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return { success: false, error: 'Непредвиденная ошибка', data: [] };
+  }
+}
+
 export interface CreateCommunityData {
   name: string;
   slug: string;
