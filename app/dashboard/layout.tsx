@@ -15,7 +15,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     : { data: null };
 
   // TODO: Получать реальную роль пользователя из базы данных
-  const userRole = 'user'; // 'user' | 'community' | 'expert'
+  const userRole: ('user' | 'community' | 'expert' | 'admin')[] = ['user']; // Массив ролей пользователя
 
   return (
     <div className="dashboard-wrapper">
