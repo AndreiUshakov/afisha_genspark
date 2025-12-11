@@ -3,6 +3,7 @@
 import { useState, ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from '@/app/auth/logout/actions';
 
 interface MenuItem {
   href: string;
@@ -14,9 +15,14 @@ interface MenuItem {
 interface DashboardLayoutProps {
   children: ReactNode;
   userRole?: 'user' | 'community' | 'expert'; // Текущая роль пользователя
+  user?: {
+    email: string;
+    avatar_url?: string;
+    full_name?: string;
+  };
 }
 
-export default function DashboardLayout({ children, userRole = 'user' }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, userRole = 'user', user }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
@@ -271,6 +277,12 @@ export default function DashboardLayout({ children, userRole = 'user' }: Dashboa
     return pathname.startsWith(href);
   };
 
+  const initials = user?.full_name
+    ?.split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase() || user?.email?.[0].toUpperCase() || 'U';
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
       {/* Мобильное меню backdrop */}
@@ -435,17 +447,39 @@ export default function DashboardLayout({ children, userRole = 'user' }: Dashboa
           {/* Информация о пользователе */}
           <div className="p-4 border-t border-gray-200 dark:border-neutral-700">
             <div className="flex items-center gap-3">
-              <div className="size-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">ИП</span>
-              </div>
+              {user?.avatar_url ? (
+                <img
+                  src={user.avatar_url}
+                  alt={user.full_name || 'User'}
+                  className="size-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="size-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{initials}</span>
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-800 dark:text-white truncate">
-                  Иван Петров
+                  {user?.full_name || user?.email?.split('@')[0] || 'Пользователь'}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-neutral-400 truncate">
                   {userRole === 'community' ? 'Сообщество' : userRole === 'expert' ? 'Эксперт' : 'Пользователь'}
                 </p>
               </div>
+              {/* Кнопка выхода */}
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 transition-colors"
+                  title="Выйти"
+                >
+                  <svg className="size-5" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" x2="9" y1="12" y2="12"/>
+                  </svg>
+                </button>
+              </form>
             </div>
           </div>
         </div>

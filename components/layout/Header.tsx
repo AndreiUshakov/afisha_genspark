@@ -1,7 +1,12 @@
 import Link from 'next/link';
 import RadioPlayer from '@/components/radio/RadioPlayer';
+import { createClient } from '@/lib/supabase/server';
+import UserMenu from './UserMenu';
 
-export default function Header() {
+export default async function Header() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <header className="sticky top-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full bg-white border-b border-gray-200 dark:bg-neutral-800 dark:border-neutral-700">
       <nav className="relative max-w-[85rem] w-full mx-auto md:flex md:items-center md:justify-between md:gap-3 py-2 px-4 sm:px-6 lg:px-8">
@@ -65,20 +70,27 @@ export default function Header() {
                     Блог
                   </Link>
 
-                  <div className="relative flex items-center gap-x-1.5 md:ps-2.5 mt-1 md:mt-0 md:ms-1.5 before:block before:absolute before:top-1/2 before:-start-px before:w-px before:h-4 before:bg-gray-300 before:-translate-y-1/2 dark:before:bg-neutral-700">
-                  
-                    <Link href="/auth/login" className="p-2 w-full flex items-center text-sm text-gray-800 hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
-                      <svg className="shrink-0 size-4 me-3 md:me-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                      </svg> 
-                      Вход
-                    </Link>
+                  {user ? (
+                    <UserMenu user={{
+                      email: user.email!,
+                      avatar_url: user.user_metadata?.avatar_url,
+                      full_name: user.user_metadata?.full_name
+                    }} />
+                  ) : (
+                    <div className="relative flex items-center gap-x-1.5 md:ps-2.5 mt-1 md:mt-0 md:ms-1.5 before:block before:absolute before:top-1/2 before:-start-px before:w-px before:h-4 before:bg-gray-300 before:-translate-y-1/2 dark:before:bg-neutral-700">
+                      <Link href="/auth/login" className="p-2 w-full flex items-center text-sm text-gray-800 hover:bg-gray-100 rounded-lg focus:outline-none focus:bg-gray-100 dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+                        <svg className="shrink-0 size-4 me-3 md:me-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Вход
+                      </Link>
 
-                    <Link href="/auth/register" className="p-2 w-full flex items-center text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg focus:outline-none focus:bg-blue-700">
-                      Регистрация
-                    </Link>
-                  </div>
+                      <Link href="/auth/register" className="p-2 w-full flex items-center text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg focus:outline-none focus:bg-blue-700">
+                        Регистрация
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
