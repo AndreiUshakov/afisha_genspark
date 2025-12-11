@@ -9,7 +9,18 @@ export async function createClient() {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Missing Supabase environment variables')
+    const missingVars = []
+    if (!supabaseUrl) missingVars.push('NEXT_PUBLIC_SUPABASE_URL')
+    if (!supabaseKey) missingVars.push('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    
+    console.error('❌ Отсутствуют переменные окружения Supabase:', missingVars.join(', '))
+    console.error('📖 Инструкция по настройке: см. AMVERA_ENV_SETUP.md')
+    
+    throw new Error(
+      `Отсутствуют переменные окружения Supabase: ${missingVars.join(', ')}. ` +
+      'Для деплоя на Amvera добавьте их в Settings → Environment Variables. ' +
+      'См. AMVERA_ENV_SETUP.md для подробных инструкций.'
+    )
   }
 
   return createServerClient(
