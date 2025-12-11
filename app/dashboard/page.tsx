@@ -161,65 +161,7 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Медиагалерея - превью */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            📸 Медиагалерея
-          </h2>
-          <a href="/dashboard/community/media" className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium">
-            Посмотреть все →
-          </a>
-        </div>
-        
-        {data.communities.length === 0 && !data.expertProfile ? (
-          <EmptyState
-            icon={
-              <svg className="size-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-              </svg>
-            }
-            title="Медиагалерея пуста"
-            description="Создайте сообщество или профиль эксперта, чтобы начать загружать фотографии и видео"
-          />
-        ) : (
-          <>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-              {[
-                'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400',
-                'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400',
-                'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400',
-                'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=400',
-                'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400',
-                'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400'
-              ].map((url, i) => (
-                <div key={i} className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-700 hover:opacity-80 transition-opacity cursor-pointer">
-                  <img src={url} alt="" className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 flex gap-2">
-              {data.communities.length > 0 && (
-                <a
-                  href="/dashboard/community/media"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center font-medium"
-                >
-                  Управление галереей
-                </a>
-              )}
-              {data.expertProfile && (
-                <a
-                  href="/dashboard/expert/media"
-                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-center font-medium"
-                >
-                  Галерея эксперта
-                </a>
-              )}
-            </div>
-          </>
-        )}
-      </div>
-
+     
       {/* Быстрые действия */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700">
@@ -340,6 +282,66 @@ export default async function DashboardPage() {
           )}
         </div>
       </div>
+
+       {/* Медиагалерея - превью */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            📸 Медиагалерея
+          </h2>
+          <a href="/dashboard/community/media" className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 font-medium">
+            Посмотреть все →
+          </a>
+        </div>
+        
+        {data.communities.length === 0 && !data.expertProfile ? (
+          <EmptyState
+            icon={
+              <svg className="size-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+            }
+            title="Медиагалерея пуста"
+            description="Создайте сообщество или профиль эксперта, чтобы начать загружать фотографии и видео"
+          />
+        ) : (
+          <>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              {[
+                'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400',
+                'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400',
+                'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400',
+                'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=400',
+                'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400',
+                'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=400'
+              ].map((url, i) => (
+                <div key={i} className="aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-700 hover:opacity-80 transition-opacity cursor-pointer">
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex gap-2">
+              {data.communities.length > 0 && (
+                <a
+                  href="/dashboard/community/media"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center font-medium"
+                >
+                  Управление галереей
+                </a>
+              )}
+              {data.expertProfile && (
+                <a
+                  href="/dashboard/expert/media"
+                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-center font-medium"
+                >
+                  Галерея эксперта
+                </a>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+
     </div>
   )
 }
