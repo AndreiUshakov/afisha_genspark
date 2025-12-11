@@ -412,7 +412,7 @@ export default function DashboardLayout({ children, userRole = ['user'], user, c
           </nav>
 
           {/* Кнопки создания для обычных пользователей */}
-          {(userRole.includes('user') && !userRole.includes('community') && !userRole.includes('expert')) && (
+          {(userRole.includes('user') ) && (
             <div className="p-4 border-t border-gray-200 dark:border-neutral-700 space-y-2">
               <Link
                 href="/dashboard/create-community"
