@@ -1,5 +1,6 @@
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { createClient } from '@/lib/supabase/server';
+import { getUserRole } from '@/lib/supabase/admin';
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -14,8 +15,8 @@ export default async function Layout({ children }: { children: React.ReactNode }
         .order('created_at', { ascending: false })
     : { data: null };
 
-  // TODO: Получать реальную роль пользователя из базы данных
-  const userRole: ('user' | 'community' | 'expert' | 'admin')[] = ['user']; // Массив ролей пользователя
+  // Получаем роли пользователя из базы данных
+  const userRole: ('user' | 'community' | 'expert' | 'admin')[] = user ? await getUserRole(user.id) : ['user'];
 
   return (
     <div className="dashboard-wrapper">

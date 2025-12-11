@@ -23,6 +23,60 @@ export interface ModerationStats {
 }
 
 /**
+ * Получить роли пользователя
+ * Проверяет:
+ * - Роль admin в таблице profiles
+ * - Наличие сообществ (роль community)
+ * - Статус эксперта (роль expert)
+ */
+export async function getUserRole(userId: string): Promise<('user' | 'community' | 'expert' | 'admin')[]> {
+  try {
+    const supabase = await createClient();
+    const roles: ('user' | 'community' | 'expert' | 'admin')[] = ['user'];
+    
+    // Проверяем роль в profiles
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single();
+    
+    if (profile?.role === 'admin') {
+      roles.push('admin');
+    }
+    
+    // Проверяем наличие сообществ
+    const { data: communities } = await supabase
+      .from('communities')
+      .select('id')
+      .eq('owner_id', userId)
+      .limit(1);
+    
+    if (communities && communities.length > 0) {
+      roles.push('community');
+    }
+    
+    // Проверяем статус эксперта
+    const { data: expert } = await supabase
+      .from('experts')
+      .select('id')
+      .eq('profile_id', userId)
+      .eq('is_active', true)
+      .limit(1)
+      .single();
+    
+    if (expert) {
+      roles.push('expert');
+    }
+    
+    return roles;
+  } catch (error) {
+    console.error('Error getting user roles:', error);
+    return ['user'];
+  }
+}
+
+/**
  * Проверка, является ли пользователь администратором
  */
 export async function isAdmin(): Promise<boolean> {
