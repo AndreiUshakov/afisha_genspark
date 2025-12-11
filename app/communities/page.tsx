@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { mockCommunities, formatMembersCount } from '@/data/mockCommunities';
+import { getCommunities, formatMembersCount, getMembersCount, getEventsCount } from '@/lib/supabase/communities';
 
-export default function CommunitiesPage() {
-  const communities = mockCommunities;
+export default async function CommunitiesPage() {
+  const communities = await getCommunities();
 
   return (
     <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
@@ -43,7 +43,7 @@ export default function CommunitiesPage() {
             {/* Cover Image */}
             <div className="relative h-40 w-full">
               <Image
-                src={community.cover_url}
+                src={community.cover_url || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200'}
                 alt={community.name}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -53,7 +53,7 @@ export default function CommunitiesPage() {
               {/* Avatar overlay */}
               <div className="absolute bottom-3 left-3 w-14 h-14 rounded-xl overflow-hidden border-2 border-white">
                 <Image
-                  src={community.avatar_url}
+                  src={community.avatar_url || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400'}
                   alt={community.name}
                   fill
                   className="object-cover"
@@ -85,9 +85,9 @@ export default function CommunitiesPage() {
                     <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                   </svg>
-                  <span>{formatMembersCount(community.members_count)}</span>
+                  <span>{formatMembersCount(getMembersCount(community.id))}</span>
                 </div>
-                {community.events_count && community.events_count > 0 && (
+                {getEventsCount(community.id) > 0 && (
                   <div className="flex items-center gap-x-1">
                     <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
@@ -95,7 +95,7 @@ export default function CommunitiesPage() {
                       <line x1="8" x2="8" y1="2" y2="6"/>
                       <line x1="3" x2="21" y1="10" y2="10"/>
                     </svg>
-                    <span>{community.events_count} {community.events_count === 1 ? 'событие' : community.events_count < 5 ? 'события' : 'событий'}</span>
+                    <span>{getEventsCount(community.id)} {getEventsCount(community.id) === 1 ? 'событие' : getEventsCount(community.id) < 5 ? 'события' : 'событий'}</span>
                   </div>
                 )}
               </div>

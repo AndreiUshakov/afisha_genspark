@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { getCommunityBySlug, getRelatedCommunities, formatMembersCount } from '@/data/mockCommunities';
+import { getCommunityBySlug, getRelatedCommunities, formatMembersCount, getMembersCount, getEventsCount } from '@/lib/supabase/communities';
 import CommunityActions from '@/components/communities/CommunityActions';
 import ImageGallery from '@/components/communities/ImageGallery';
 
@@ -10,13 +10,17 @@ interface PageProps {
 
 export default async function CommunityDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const community = getCommunityBySlug(slug);
+  const community = await getCommunityBySlug(slug);
 
   if (!community) {
     notFound();
   }
 
-  const relatedCommunities = getRelatedCommunities(slug);
+  const relatedCommunities = await getRelatedCommunities(slug, community.category_id);
+  
+  // Получаем данные для отображения
+  const membersCount = getMembersCount(community.id);
+  const eventsCount = getEventsCount(community.id);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
@@ -25,7 +29,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
         {/* Cover Image */}
         <div className="absolute inset-0">
           <Image
-            src={community.cover_url}
+            src={community.cover_url || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200'}
             alt={community.name}
             fill
             className="object-cover"
@@ -40,7 +44,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
             {/* Community Avatar */}
             <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden border-4 border-white shadow-2xl flex-shrink-0">
               <Image
-                src={community.avatar_url}
+                src={community.avatar_url || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400'}
                 alt={community.name}
                 fill
                 className="object-cover"
@@ -65,7 +69,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                   </svg>
-                  <span>{formatMembersCount(community.members_count)}</span>
+                  <span>{formatMembersCount(membersCount)}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -73,12 +77,12 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                   </svg>
                   <span>{community.location}</span>
                 </div>
-                {community.events_count && community.events_count > 0 && (
+                {eventsCount > 0 && (
                   <div className="flex items-center gap-2">
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                     </svg>
-                    <span>{community.events_count} {community.events_count === 1 ? 'событие' : community.events_count < 5 ? 'события' : 'событий'}</span>
+                    <span>{eventsCount} {eventsCount === 1 ? 'событие' : eventsCount < 5 ? 'события' : 'событий'}</span>
                   </div>
                 )}
               </div>
@@ -92,87 +96,60 @@ export default async function CommunityDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Full Description */}
-            {community.full_description && (
+            {/* Description */}
+            {community.description && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 md:p-8">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">О сообществе</h2>
                 <div className="prose prose-lg dark:prose-invert max-w-none">
-                  {community.full_description.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                      {paragraph}
-                    </p>
-                  ))}
+                  <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                    {community.description}
+                  </p>
                 </div>
               </div>
             )}
 
-            {/* Activities */}
-            {community.activities && community.activities.length > 0 && (
+            {/* Target Audience */}
+            {community.target_audience && community.target_audience.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 md:p-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Чем мы занимаемся</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Целевая аудитория</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {community.activities.map((activity, index) => (
+                  {community.target_audience.map((audience, index) => (
                     <div key={index} className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                       <svg className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      <span className="text-gray-900 dark:text-white font-medium">{activity}</span>
+                      <span className="text-gray-900 dark:text-white font-medium">{audience}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Meeting Schedule */}
-            {community.meeting_schedule && (
+            {/* Wishes */}
+            {community.wishes && community.wishes.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 md:p-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Расписание встреч</h2>
-                <div className="flex items-start gap-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                  <svg className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-gray-900 dark:text-white text-lg">{community.meeting_schedule}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Rules */}
-            {community.rules && community.rules.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 md:p-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Правила сообщества</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Пожелания участникам</h2>
                 <div className="space-y-3">
-                  {community.rules.map((rule, index) => (
+                  {community.wishes.map((wish, index) => (
                     <div key={index} className="flex items-start gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
                       <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
                         {index + 1}
                       </span>
-                      <span className="text-gray-700 dark:text-gray-300">{rule}</span>
+                      <span className="text-gray-700 dark:text-gray-300">{wish}</span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Tags */}
-            {community.tags && community.tags.length > 0 && (
+            {/* Photo Albums */}
+            {community.photo_albums && community.photo_albums.length > 0 && (
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 md:p-8">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Теги</h2>
-                <div className="flex flex-wrap gap-2">
-                  {community.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Фотоальбомы</h2>
+                <div className="text-gray-600 dark:text-gray-400">
+                  {community.photo_albums.length} {community.photo_albums.length === 1 ? 'альбом' : community.photo_albums.length < 5 ? 'альбома' : 'альбомов'}
                 </div>
               </div>
-            )}
-
-            {/* Gallery */}
-            {community.gallery_images && community.gallery_images.length > 0 && (
-              <ImageGallery images={community.gallery_images} title="Фотогалерея" />
             )}
           </div>
 
@@ -190,15 +167,15 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">Участников</span>
                   <span className="font-semibold text-gray-900 dark:text-white">
-                    {formatMembersCount(community.members_count)}
+                    {formatMembersCount(membersCount)}
                   </span>
                 </div>
 
-                {community.events_count && community.events_count > 0 && (
+                {eventsCount > 0 && (
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">Событий</span>
                     <span className="font-semibold text-gray-900 dark:text-white">
-                      {community.events_count}
+                      {eventsCount}
                     </span>
                   </div>
                 )}
@@ -221,13 +198,13 @@ export default async function CommunityDetailPage({ params }: PageProps) {
               </div>
 
               {/* Contact Links */}
-              {(community.website || community.email || community.phone || community.social_links) && (
+              {(community.social_links?.website || community.social_links?.vk || community.social_links?.telegram || community.social_links?.instagram || community.social_links?.facebook) && (
                 <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Контакты</h3>
                   <div className="space-y-3">
-                    {community.website && (
+                    {community.social_links?.website && (
                       <a
-                        href={community.website}
+                        href={community.social_links.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
@@ -238,36 +215,11 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                         <span>Веб-сайт</span>
                       </a>
                     )}
-                    
-                    {community.email && (
-                      <a
-                        href={`mailto:${community.email}`}
-                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                        </svg>
-                        <span>Email</span>
-                      </a>
-                    )}
-
-                    {community.phone && (
-                      <a
-                        href={`tel:${community.phone}`}
-                        className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                        </svg>
-                        <span>{community.phone}</span>
-                      </a>
-                    )}
 
                     {/* Social Links */}
-                    {community.social_links && (
-                      <div className="flex gap-3 pt-2">
-                        {community.social_links.vk && (
+                    {(community.social_links?.vk || community.social_links?.telegram || community.social_links?.instagram || community.social_links?.facebook) && (
+                      <div className="flex gap-3">
+                        {community.social_links?.vk && (
                           <a
                             href={community.social_links.vk}
                             target="_blank"
@@ -278,7 +230,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                             <span className="text-sm font-bold">VK</span>
                           </a>
                         )}
-                        {community.social_links.telegram && (
+                        {community.social_links?.telegram && (
                           <a
                             href={community.social_links.telegram}
                             target="_blank"
@@ -289,7 +241,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                             <span className="text-xs font-bold">TG</span>
                           </a>
                         )}
-                        {community.social_links.instagram && (
+                        {community.social_links?.instagram && (
                           <a
                             href={community.social_links.instagram}
                             target="_blank"
@@ -298,6 +250,17 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                             aria-label="Instagram"
                           >
                             <span className="text-xs font-bold">IG</span>
+                          </a>
+                        )}
+                        {community.social_links?.facebook && (
+                          <a
+                            href={community.social_links.facebook}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-8 h-8 flex items-center justify-center bg-blue-700 text-white rounded-full hover:bg-blue-800 transition-colors"
+                            aria-label="Facebook"
+                          >
+                            <span className="text-xs font-bold">FB</span>
                           </a>
                         )}
                       </div>
@@ -326,7 +289,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                 >
                   <div className="relative h-48 w-full">
                     <Image
-                      src={relatedCommunity.cover_url}
+                      src={relatedCommunity.cover_url || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200'}
                       alt={relatedCommunity.name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -336,7 +299,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                     {/* Avatar overlay */}
                     <div className="absolute bottom-3 left-3 w-16 h-16 rounded-xl overflow-hidden border-2 border-white">
                       <Image
-                        src={relatedCommunity.avatar_url}
+                        src={relatedCommunity.avatar_url || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400'}
                         alt={relatedCommunity.name}
                         fill
                         className="object-cover"
@@ -364,14 +327,14 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                         </svg>
-                        <span>{formatMembersCount(relatedCommunity.members_count)}</span>
+                        <span>{formatMembersCount(getMembersCount(relatedCommunity.id))}</span>
                       </div>
-                      {relatedCommunity.events_count && relatedCommunity.events_count > 0 && (
+                      {getEventsCount(relatedCommunity.id) > 0 && (
                         <div className="flex items-center gap-1">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                           </svg>
-                          <span>{relatedCommunity.events_count}</span>
+                          <span>{getEventsCount(relatedCommunity.id)}</span>
                         </div>
                       )}
                     </div>
