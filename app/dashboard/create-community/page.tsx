@@ -6,11 +6,14 @@ import { Step1BasicInfo } from './components/Step1BasicInfo';
 import { validateStep1 } from '@/utils/validation';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { createCommunity } from './actions';
+import { FILTER_OPTIONS } from '@/types/community';
 
 export default function CreateCommunityPage() {
   const router = useRouter();
   const [isEmailVerified, setIsEmailVerified] = useState<boolean | null>(null);
   const [userEmail, setUserEmail] = useState<string>('');
+  const [isCreating, setIsCreating] = useState(false);
   const [formData, setFormData] = useState<Step1FormData>({
     name: '',
     slug: '',
@@ -62,7 +65,7 @@ export default function CreateCommunityPage() {
     }
   };
 
-  const handleCreateCommunity = () => {
+  const handleCreateCommunity = async () => {
     // Проверка подтверждения email
     if (!isEmailVerified) {
       alert('Для создания сообщества необходимо подтвердить ваш email. Проверьте вашу почту и перейдите по ссылке подтверждения.');
@@ -82,11 +85,36 @@ export default function CreateCommunityPage() {
       return;
     }
 
-    // В реальном приложении здесь будет API запрос
-    console.log('Creating community:', formData);
-    alert('Сообщество создано! Теперь вы можете настроить его внешний вид на странице "Настройка сообщества".');
-    // Redirect to community management page
-    // router.push('/dashboard/community');
+    setIsCreating(true);
+
+    try {
+      // Находим ID категории по slug
+      const category = FILTER_OPTIONS.CATEGORIES.find(cat => cat.id === formData.category);
+      
+      const result = await createCommunity({
+        name: formData.name,
+        slug: formData.slug,
+        category_id: formData.category,
+        description: formData.description,
+        location: formData.location,
+        social_links: formData.social_links,
+        target_audience: formData.target_audience,
+        wishes: formData.wishes,
+        age_category: formData.age_categories.length > 0 ? formData.age_categories[0] : undefined,
+      });
+
+      if (result.success) {
+        alert('✅ Сообщество успешно создано! Теперь вы можете управлять им в разделе "Мое сообщество".');
+        router.push('/dashboard/community');
+      } else {
+        alert('❌ Ошибка: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error creating community:', error);
+      alert('❌ Произошла ошибка при создании сообщества. Попробуйте еще раз.');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   // Показываем загрузку пока проверяем статус
@@ -163,14 +191,26 @@ export default function CreateCommunityPage() {
             </div>
             <button
               onClick={handleCreateCommunity}
-              disabled={!isEmailVerified}
+              disabled={!isEmailVerified || isCreating}
               className={`px-8 py-3 font-semibold rounded-lg transition-all duration-200 shadow-lg ${
-                isEmailVerified
+                isEmailVerified && !isCreating
                   ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white hover:shadow-xl'
                   : 'bg-gray-300 dark:bg-neutral-700 text-gray-500 dark:text-neutral-500 cursor-not-allowed'
               }`}
             >
-              {isEmailVerified ? 'Создать сообщество' : '🔒 Подтвердите email для создания'}
+              {isCreating ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Создание...
+                </span>
+              ) : isEmailVerified ? (
+                'Создать сообщество'
+              ) : (
+                '🔒 Подтвердите email для создания'
+              )}
             </button>
           </div>
         </div>
