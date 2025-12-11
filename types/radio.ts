@@ -40,8 +40,8 @@ export interface VolumeStorage {
  * Константы для радио
  */
 export const RADIO_CONSTANTS = {
-  /** URL потока радио */
-  STREAM_URL: 'https://96mp3.lradio.ru/lradio.stereo.96.mp3',
+  /** URL потока радио  'https://96mp3.lradio.ru/lradio.stereo.96.mp3', */
+  STREAM_URL: 'https://iro.su/radio/stream.mp3',
   /** Ключ для localStorage */
   VOLUME_STORAGE_KEY: 'irkutsk-radio-volume',
   /** Громкость по умолчанию */

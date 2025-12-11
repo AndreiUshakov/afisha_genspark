@@ -40,17 +40,19 @@ app/
 ├── api/
 │   └── storage/
 │       └── [...path]/
-│           └── route.ts          # Прокси для изображений
+│           └── route.ts                    # Прокси для изображений
 └── dashboard/
-    └── profile/
-        └── actions.ts             # Использует /api/storage вместо прямых ссылок
+    ├── profile/
+    │   └── actions.ts                      # Аватары профилей через прокси
+    └── create-community/
+        └── actions.ts                      # Изображения сообществ через прокси
 ```
 
 ## Использование
 
 ### В коде
 
-Аватары автоматически сохраняются с URL через прокси:
+Все изображения автоматически сохраняются с URL через прокси:
 
 ```typescript
 // Старый способ (не работает с HTTP Supabase на HTTPS сайте)
@@ -58,6 +60,9 @@ const publicUrl = `http://supabase.sober-automation.ru/storage/v1/object/public/
 
 // Новый способ (работает через прокси)
 const publicUrl = `/api/storage/profiles/${filePath}`
+
+// Для изображений сообществ
+const proxyUrl = `/api/storage/community-images/${filePath}`
 ```
 
 ### Примеры URL
@@ -174,4 +179,12 @@ API route настроен с агрессивным кешированием:
 
 - API Route: [`app/api/storage/[...path]/route.ts`](../app/api/storage/[...path]/route.ts)
 - Profile Actions: [`app/dashboard/profile/actions.ts`](../app/dashboard/profile/actions.ts)
+- Community Actions: [`app/dashboard/create-community/actions.ts`](../app/dashboard/create-community/actions.ts)
 - Next.js Config: [`next.config.ts`](../next.config.ts)
+
+## Поддерживаемые Buckets
+
+Прокси поддерживает все публичные buckets в Supabase Storage:
+- `profiles` - аватары пользователей
+- `community-images` - изображения сообществ (аватары, обложки)
+- Любые другие публичные buckets

@@ -145,12 +145,11 @@ export async function uploadCommunityImage(
       return { success: false, error: 'Ошибка загрузки изображения' };
     }
 
-    // Получаем публичный URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('community-images')
-      .getPublicUrl(filePath);
+    // Используем прокси URL для избежания mixed content ошибок
+    // Вместо прямого URL от Supabase используем наш API endpoint
+    const proxyUrl = `/api/storage/community-images/${filePath}`;
 
-    return { success: true, url: publicUrl };
+    return { success: true, url: proxyUrl };
   } catch (error) {
     console.error('Unexpected error:', error);
     return { success: false, error: 'Непредвиденная ошибка при загрузке' };
