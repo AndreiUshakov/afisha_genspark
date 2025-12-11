@@ -92,9 +92,9 @@ export default function CreateCommunityForm({ isEmailVerified, userEmail, catego
         age_category: formData.age_categories.length > 0 ? formData.age_categories[0] : undefined,
       });
 
-      if (result.success) {
-        alert('✅ Сообщество успешно создано! Теперь вы можете управлять им в разделе "Мое сообщество".');
-        router.push('/dashboard/community');
+      if (result.success && result.data) {
+        alert('✅ Сообщество успешно создано! Теперь вы можете управлять им.');
+        router.push(`/dashboard/community/${result.data.slug}`);
       } else {
         alert('❌ Ошибка: ' + result.error);
       }

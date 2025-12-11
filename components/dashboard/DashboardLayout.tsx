@@ -12,6 +12,13 @@ interface MenuItem {
   roles?: string[]; // Роли, которые могут видеть этот пункт
 }
 
+interface Community {
+  id: string;
+  name: string;
+  slug: string;
+  avatar_url?: string;
+}
+
 interface DashboardLayoutProps {
   children: ReactNode;
   userRole?: 'user' | 'community' | 'expert'; // Текущая роль пользователя
@@ -20,9 +27,10 @@ interface DashboardLayoutProps {
     avatar_url?: string;
     full_name?: string;
   };
+  communities?: Community[];
 }
 
-export default function DashboardLayout({ children, userRole = 'user', user }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, userRole = 'user', user, communities = [] }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
@@ -120,60 +128,35 @@ export default function DashboardLayout({ children, userRole = 'user', user }: D
     }
   ];
 
-  // Пункты меню для сообщества
-  const communityMenuItems: MenuItem[] = [
-    {
-      href: '/dashboard/community',
-      label: 'Моё сообщество',
-      icon: (
-        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-          <circle cx="9" cy="7" r="4"/>
-          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-      ),
-      roles: ['community']
-    },
-    {
-      href: '/dashboard/community/events',
-      label: 'Мероприятия',
-      icon: (
-        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
-          <line x1="16" x2="16" y1="2" y2="6"/>
-          <line x1="8" x2="8" y1="2" y2="6"/>
-          <line x1="3" x2="21" y1="10" y2="10"/>
-        </svg>
-      ),
-      roles: ['community']
-    },
-    {
-      href: '/dashboard/community/posts',
-      label: 'Посты блога',
-      icon: (
-        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <path d="M2 15h10"/>
-          <path d="m5 12-3 3 3 3"/>
-        </svg>
-      ),
-      roles: ['community']
-    },
-    {
-      href: '/dashboard/community/media',
-      label: 'Медиагалерея',
-      icon: (
-        <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
-          <circle cx="9" cy="9" r="2"/>
-          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-        </svg>
-      ),
-      roles: ['community']
+  // Функция для генерации пунктов меню сообществ
+  const getCommunityMenuItems = (): MenuItem[] => {
+    const items: MenuItem[] = [];
+    
+    // Если есть сообщества, создаем для каждого свой раздел
+    if (communities.length > 0) {
+      communities.forEach((community) => {
+        items.push({
+          href: `/dashboard/community/${community.slug}`,
+          label: community.name,
+          icon: community.avatar_url ? (
+            <img src={community.avatar_url} alt={community.name} className="size-4 rounded-full object-cover" />
+          ) : (
+            <svg className="size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          ),
+          roles: ['community']
+        });
+      });
     }
-  ];
+    
+    return items;
+  };
+
+  const communityMenuItems = getCommunityMenuItems();
 
   // Пункты меню для эксперта
   const expertMenuItems: MenuItem[] = [
@@ -247,22 +230,24 @@ export default function DashboardLayout({ children, userRole = 'user', user }: D
       items = [...items, ...expertMenuItems];
     } */
 
-    items.push({
-        href: '#',
-        label: '─────',
-        icon: null
-      });
-      
-      // add to items communityMenuItems
-      items = [...items, ...communityMenuItems];
-
+    // Добавляем сообщества, если они есть
+    if (communityMenuItems.length > 0) {
       items.push({
         href: '#',
         label: '─────',
         icon: null
       });
+      
+      items = [...items, ...communityMenuItems];
+    }
 
-      items = [...items, ...expertMenuItems];
+    items.push({
+      href: '#',
+      label: '─────',
+      icon: null
+    });
+
+    items = [...items, ...expertMenuItems];
       
 
     return items;

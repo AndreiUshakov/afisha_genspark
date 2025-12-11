@@ -1,7 +1,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import CreateCommunityForm from './components/CreateCommunityForm';
+import CreateCommunityForm from '@/app/dashboard/create-community/components/CreateCommunityForm';
 import { getCategories } from './actions';
 
 export default async function CreateCommunityPage() {

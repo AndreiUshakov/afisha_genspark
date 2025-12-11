@@ -5,6 +5,15 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  // Получаем список сообществ пользователя
+  const { data: communities } = user
+    ? await supabase
+        .from('communities')
+        .select('id, name, slug, avatar_url')
+        .eq('owner_id', user.id)
+        .order('created_at', { ascending: false })
+    : { data: null };
+
   // TODO: Получать реальную роль пользователя из базы данных
   const userRole = 'user'; // 'user' | 'community' | 'expert'
 
@@ -17,6 +26,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
           avatar_url: user.user_metadata?.avatar_url,
           full_name: user.user_metadata?.full_name
         } : undefined}
+        communities={communities || []}
       >
         {children}
       </DashboardLayout>
