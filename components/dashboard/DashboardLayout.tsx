@@ -22,7 +22,7 @@ interface Community {
 
 interface DashboardLayoutProps {
   children: ReactNode;
-  userRole?: 'user' | 'community' | 'expert' | 'admin'; // Текущая роль пользователя
+  userRole?: ('user' | 'community' | 'expert' | 'admin')[]; // Массив ролей пользователя
   user?: {
     email: string;
     avatar_url?: string;
@@ -31,7 +31,7 @@ interface DashboardLayoutProps {
   communities?: Community[];
 }
 
-export default function DashboardLayout({ children, userRole = 'user', user, communities = [] }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, userRole = ['user'], user, communities = [] }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
 
@@ -412,7 +412,7 @@ export default function DashboardLayout({ children, userRole = 'user', user, com
           </nav>
 
           {/* Кнопки создания для обычных пользователей */}
-          {(userRole === 'user') && (
+          {(userRole.includes('user') && !userRole.includes('community') && !userRole.includes('expert')) && (
             <div className="p-4 border-t border-gray-200 dark:border-neutral-700 space-y-2">
               <Link
                 href="/dashboard/create-community"
@@ -441,7 +441,7 @@ export default function DashboardLayout({ children, userRole = 'user', user, com
           )}
 
           {/* Кнопка админ-панели для администраторов */}
-          {userRole === 'admin' && (
+          {userRole.includes('admin') && (
             <div className="p-4 border-t border-gray-200 dark:border-neutral-700">
               <Link
                 href="/admin"
@@ -475,7 +475,11 @@ export default function DashboardLayout({ children, userRole = 'user', user, com
                   {user?.full_name || user?.email?.split('@')[0] || 'Пользователь'}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-neutral-400 truncate">
-                  {userRole === 'community' ? 'Сообщество' : userRole === 'expert' ? 'Эксперт' : userRole === 'admin' ? 'Администратор' : 'Пользователь'}
+                  {userRole.includes('admin') ? 'Администратор' :
+                   userRole.includes('expert') && userRole.includes('community') ? 'Эксперт • Сообщество' :
+                   userRole.includes('expert') ? 'Эксперт' :
+                   userRole.includes('community') ? 'Сообщество' :
+                   'Пользователь'}
                 </p>
               </div>
               {/* Кнопка выхода */}
