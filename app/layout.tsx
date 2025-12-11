@@ -6,7 +6,7 @@ import PrelineScript from '@/components/PrelineScript';
 import ClientProviders from '@/components/providers/ClientProviders';
 
 export const metadata: Metadata = {
-  title: 'Афиша Иркутска | Календарь событий города',
+  title: 'Город живёт! | Календарь событий города',
   description: 'Городская афиша Иркутска - мероприятия, сообщества, события. Найдите интересные события для всей семьи.',
 };
 
