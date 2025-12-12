@@ -9,6 +9,7 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const urlError = searchParams.get('error')
   const registered = searchParams.get('registered')
+  const passwordUpdated = searchParams.get('password_updated')
   const [error, setError] = useState<string | null>(urlError)
   const [isPending, startTransition] = useTransition()
 
@@ -92,6 +93,13 @@ function LoginForm() {
                 </div>
               )}
 
+              {/* Сообщение об успешном обновлении пароля */}
+              {passwordUpdated && (
+                <div className="mb-4 p-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-green-900/10 dark:text-green-400" role="alert">
+                  <span className="font-medium">Пароль обновлён!</span> Теперь вы можете войти с новым паролем.
+                </div>
+              )}
+
               {/* Сообщение об ошибке */}
               {error && (
                 <div className="mb-4 p-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/10 dark:text-red-400" role="alert">
@@ -123,9 +131,9 @@ function LoginForm() {
                     <label htmlFor="password" className="block text-sm mb-2 dark:text-white">
                       Пароль
                     </label>
-                    <a href="#" className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500">
+                    <Link href="/auth/forgot-password" className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline focus:outline-none focus:underline font-medium dark:text-blue-500">
                       Забыли пароль?
-                    </a>
+                    </Link>
                   </div>
                   <div className="relative">
                     <input
