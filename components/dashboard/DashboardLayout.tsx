@@ -242,15 +242,16 @@ export default function DashboardLayout({ children, userRole = ['user'], user, c
       items = [...items, ...communityMenuItems];
     }
 
-    items.push({
-      href: '#',
-      label: '─────',
-      icon: null
-    });
+    //check user role 'expert'
+    if (userRole.includes('user') ){
+      items.push({
+        href: '#',
+        label: '─────',
+        icon: null
+      });
 
-    items = [...items, ...expertMenuItems];
-      
-
+      items = [...items, ...expertMenuItems];        
+    }
     return items;
   };
 
@@ -343,7 +344,7 @@ export default function DashboardLayout({ children, userRole = ['user'], user, c
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-neutral-700">
             <Link href="/" className="flex items-center gap-2">
               <span className="text-xl font-bold text-gray-800 dark:text-white">
-                Афиша
+                Город Живёт!
               </span>
             </Link>
             <div className="flex items-center gap-2">

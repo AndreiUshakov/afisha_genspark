@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           <div className="col-span-full lg:col-span-1">
             <Link href="/" className="flex-none text-xl font-semibold text-white focus:outline-none focus:opacity-80">
-              🎭 Афиша Иркутска
+              🎭 Город Живёт!
             </Link>
             <p className="mt-3 text-xs sm:text-sm text-gray-400">
               Календарь событий города

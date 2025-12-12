@@ -182,7 +182,7 @@ export default function AdminDashboardLayout({ children, user }: AdminDashboardL
               </div>
               <div>
                 <span className="text-lg font-bold text-white block">Админ-панель</span>
-                <span className="text-xs text-red-100">Афиша Иркутска</span>
+                <span className="text-xs text-red-100">Город Живёт!</span>
               </div>
             </Link>
             {/* Кнопка закрытия для мобильных */}

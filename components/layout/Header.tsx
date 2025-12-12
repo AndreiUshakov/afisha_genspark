@@ -12,7 +12,7 @@ export default async function Header() {
       <nav className="relative max-w-[85rem] w-full mx-auto md:flex md:items-center md:justify-between md:gap-3 py-2 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex font-semibold text-xl leading-loose text-black focus:outline-none focus:opacity-80 dark:text-white whitespace-nowrap">
-            🎭 Афиша Иркутска
+            🎭 Город Живёт!
           </Link>
           
           {/* Радио-плеер на мобильных устройствах */}

@@ -283,8 +283,8 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-       {/* Медиагалерея - превью */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700">
+       {/* Медиагалерея - превью ПЕРЕНОСИМ В СТРАНИЦУ СООБЩЕСТВА */}
+        {/*     <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             📸 Медиагалерея
@@ -340,7 +340,7 @@ export default async function DashboardPage() {
             </div>
           </>
         )}
-      </div>
+      </div> */}
 
     </div>
   )

@@ -108,7 +108,7 @@ export default function Hero() {
           </h1>
 
           <p className="mt-3 text-gray-600 dark:text-neutral-400 text-lg">
-            Найдите интересные мероприятия для всей семьи
+            Найдите интересные мероприятия и сообщества для всей семьи
           </p>
 
           <div className="mt-7 sm:mt-12 mx-auto max-w-xl relative">
