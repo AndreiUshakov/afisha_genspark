@@ -4,8 +4,9 @@ import CommunitiesTable from './components/CommunitiesTable';
 export default async function AdminCommunitiesPage() {
   const communities = await getAllCommunities();
   
-  const publishedCount = communities.filter(c => c.is_published).length;
-  const unpublishedCount = communities.filter(c => !c.is_published).length;
+  const publishedCount = communities.filter(c => c.status === 'published').length;
+  const draftCount = communities.filter(c => c.status === 'draft').length;
+  const pendingCount = communities.filter(c => c.status === 'pending_moderation').length;
 
   return (
     <div className="space-y-6">
@@ -20,7 +21,7 @@ export default async function AdminCommunitiesPage() {
       </div>
 
       {/* Статистика */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-neutral-700">
           <div className="flex items-center justify-between">
             <div>
@@ -65,10 +66,10 @@ export default async function AdminCommunitiesPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                Не опубликовано
+                На модерации
               </p>
               <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
-                {unpublishedCount}
+                {pendingCount}
               </p>
             </div>
             <div className="p-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
@@ -76,6 +77,27 @@ export default async function AdminCommunitiesPage() {
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 16v-4"/>
                 <path d="M12 8h.01"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm p-6 border border-gray-200 dark:border-neutral-700">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Черновики
+              </p>
+              <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
+                {draftCount}
+              </p>
+            </div>
+            <div className="p-3 bg-gray-100 dark:bg-gray-900/20 rounded-lg">
+              <svg className="size-6 text-gray-600 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 22h14a2 2 0 0 0 2-2V7.5L14.5 2H6a2 2 0 0 0-2 2v4"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <path d="M2 15h10"/>
+                <path d="m9 18 3-3-3-3"/>
               </svg>
             </div>
           </div>

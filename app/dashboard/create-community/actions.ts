@@ -105,7 +105,8 @@ export async function createCommunity(data: CreateCommunityData) {
         cover_url: data.cover_url || null,
         page_content: data.page_content || {},
         photo_albums: data.photo_albums || [],
-        is_published: false, // По умолчанию черновик
+        status: 'draft', // По умолчанию черновик
+        is_published: false, // Deprecated, для совместимости
         is_verified: false
       })
       .select()
@@ -248,10 +249,13 @@ export async function publishCommunity(communityId: string) {
       return { success: false, error: 'У вас нет прав на публикацию этого сообщества' };
     }
 
-    // Публикуем
+    // Публикуем (устанавливаем статус published)
     const { error: publishError } = await supabase
       .from('communities')
-      .update({ is_published: true })
+      .update({
+        status: 'published',
+        is_published: true // Deprecated, для совместимости
+      })
       .eq('id', communityId);
 
     if (publishError) {
@@ -267,5 +271,58 @@ export async function publishCommunity(communityId: string) {
   } catch (error) {
     console.error('Unexpected error:', error);
     return { success: false, error: 'Непредвиденная ошибка при публикации' };
+  }
+}
+
+/**
+ * Отправить сообщество на модерацию
+ */
+export async function submitCommunityForModeration(communityId: string) {
+  try {
+    const supabase = await createClient();
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    
+    if (userError || !user) {
+      return { success: false, error: 'Необходима авторизация' };
+    }
+
+    // Проверяем владение и текущий статус
+    const { data: community } = await supabase
+      .from('communities')
+      .select('owner_id, slug, status')
+      .eq('id', communityId)
+      .single();
+
+    if (!community || community.owner_id !== user.id) {
+      return { success: false, error: 'У вас нет прав на это сообщество' };
+    }
+
+    if (community.status === 'published') {
+      return { success: false, error: 'Сообщество уже опубликовано' };
+    }
+
+    if (community.status === 'pending_moderation') {
+      return { success: false, error: 'Сообщество уже на модерации' };
+    }
+
+    // Отправляем на модерацию
+    const { error: updateError } = await supabase
+      .from('communities')
+      .update({ status: 'pending_moderation' })
+      .eq('id', communityId);
+
+    if (updateError) {
+      console.error('Submit for moderation error:', updateError);
+      return { success: false, error: 'Ошибка при отправке на модерацию' };
+    }
+
+    revalidatePath('/dashboard/community');
+    revalidatePath(`/dashboard/community/${community.slug}`);
+
+    return { success: true, slug: community.slug };
+  } catch (error) {
+    console.error('Unexpected error:', error);
+    return { success: false, error: 'Непредвиденная ошибка при отправке на модерацию' };
   }
 }

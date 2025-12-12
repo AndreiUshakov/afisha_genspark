@@ -1,5 +1,46 @@
 import Link from 'next/link'
-import { Community } from '@/lib/supabase/communities'
+
+// Типы из lib/supabase/communities (избегаем импорта серверного модуля)
+type CommunityStatus = 'draft' | 'pending_moderation' | 'published';
+
+const CommunityStatusLabels: Record<CommunityStatus, string> = {
+  draft: 'Черновик',
+  pending_moderation: 'На модерации',
+  published: 'Опубликовано',
+};
+
+interface Community {
+  id: string;
+  owner_id: string;
+  name: string;
+  slug: string;
+  description: string;
+  avatar_url: string | null;
+  cover_url: string | null;
+  category_id: string;
+  location: string;
+  social_links: {
+    vk?: string;
+    telegram?: string;
+    instagram?: string;
+    facebook?: string;
+    website?: string;
+  };
+  target_audience: string[];
+  wishes: string[];
+  age_category: string | null;
+  page_content: any;
+  photo_albums: any[];
+  status: CommunityStatus;
+  is_published: boolean;
+  is_verified: boolean;
+  created_at: string;
+  updated_at: string;
+  categories?: {
+    name: string;
+    slug: string;
+  };
+}
 
 interface UserCommunitiesProps {
   communities: Community[]
@@ -54,19 +95,26 @@ export default function UserCommunities({ communities }: UserCommunitiesProps) {
                 
                 {/* Статус публикации */}
                 <div className="mt-1">
-                  {community.is_published ? (
+                  {community.status === 'published' ? (
                     <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
-                      Опубликовано
+                      {CommunityStatusLabels[community.status]}
                     </span>
-                  ) : (
+                  ) : community.status === 'pending_moderation' ? (
                     <span className="inline-flex items-center gap-1 text-xs text-yellow-600 dark:text-yellow-400">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                       </svg>
-                      На модерации
+                      {CommunityStatusLabels[community.status]}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                      </svg>
+                      {CommunityStatusLabels[community.status]}
                     </span>
                   )}
                 </div>

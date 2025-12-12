@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { CommunityStatusLabels, CommunityStatus } from '@/lib/supabase/communities'
+import SubmitToModerationButton from './components/SubmitToModerationButton'
 
 interface SettingsPageProps {
   params: {
@@ -155,8 +157,20 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
         {/* Публикация */}
         <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-emerald-50 rounded-lg dark:bg-emerald-900/20">
-              <svg className="size-6 text-emerald-600 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+            <div className={`p-3 rounded-lg ${
+              community.status === 'published'
+                ? 'bg-emerald-50 dark:bg-emerald-900/20'
+                : community.status === 'pending_moderation'
+                ? 'bg-yellow-50 dark:bg-yellow-900/20'
+                : 'bg-gray-50 dark:bg-gray-900/20'
+            }`}>
+              <svg className={`size-6 ${
+                community.status === 'published'
+                  ? 'text-emerald-600 dark:text-emerald-400'
+                  : community.status === 'pending_moderation'
+                  ? 'text-yellow-600 dark:text-yellow-400'
+                  : 'text-gray-600 dark:text-gray-400'
+              }`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -166,18 +180,27 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
                 Статус публикации
               </h3>
               <p className="text-sm text-gray-600 dark:text-neutral-400 mb-4">
-                {community.is_published 
+                {community.status === 'published'
                   ? 'Сообщество опубликовано и видно всем'
-                  : 'Сообщество в режиме черновика'
+                  : community.status === 'pending_moderation'
+                  ? 'Сообщество находится на модерации'
+                  : 'Сообщество в режиме черновика. Отправьте на модерацию для публикации'
                 }
               </p>
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                community.is_published
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
-              }`}>
-                {community.is_published ? 'Опубликовано' : 'Черновик'}
-              </span>
+              <div className="flex items-center gap-3">
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                  community.status === 'published'
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                    : community.status === 'pending_moderation'
+                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                    : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                }`}>
+                  {CommunityStatusLabels[community.status as CommunityStatus]}
+                </span>
+                {community.status === 'draft' && (
+                  <SubmitToModerationButton communityId={community.id} />
+                )}
+              </div>
             </div>
           </div>
         </div>

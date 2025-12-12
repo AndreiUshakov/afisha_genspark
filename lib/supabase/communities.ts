@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 
+// Типы статусов сообщества
+export type CommunityStatus = 'draft' | 'pending_moderation' | 'published';
+
 export interface Community {
   id: string;
   owner_id: string;
@@ -22,7 +25,8 @@ export interface Community {
   age_category: string | null;
   page_content: any;
   photo_albums: any[];
-  is_published: boolean;
+  status: CommunityStatus;
+  is_published: boolean; // Deprecated: используйте status
   is_verified: boolean;
   created_at: string;
   updated_at: string;
@@ -31,6 +35,19 @@ export interface Community {
     slug: string;
   };
 }
+
+// Вспомогательные функции для работы со статусами
+export const CommunityStatusLabels: Record<CommunityStatus, string> = {
+  draft: 'Черновик',
+  pending_moderation: 'На модерации',
+  published: 'Опубликовано',
+};
+
+export const CommunityStatusColors: Record<CommunityStatus, string> = {
+  draft: 'gray',
+  pending_moderation: 'yellow',
+  published: 'green',
+};
 
 /**
  * Получить все опубликованные сообщества
@@ -48,7 +65,7 @@ export async function getCommunities(): Promise<Community[]> {
           slug
         )
       `)
-      .eq('is_published', true)
+      .eq('status', 'published')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -80,7 +97,7 @@ export async function getCommunityBySlug(slug: string): Promise<Community | null
         )
       `)
       .eq('slug', slug)
-      .eq('is_published', true)
+      .eq('status', 'published')
       .single();
 
     if (error) {
@@ -115,7 +132,7 @@ export async function getRelatedCommunities(
           slug
         )
       `)
-      .eq('is_published', true)
+      .eq('status', 'published')
       .eq('category_id', categoryId)
       .neq('slug', currentSlug)
       .limit(limit);

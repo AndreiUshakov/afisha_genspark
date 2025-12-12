@@ -4,12 +4,22 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { toggleCommunityPublishStatus } from '@/app/admin/communities/actions';
 
+// Типы статусов сообщества (дублируем здесь для клиентского компонента)
+export type CommunityStatus = 'draft' | 'pending_moderation' | 'published';
+
+export const CommunityStatusLabels: Record<CommunityStatus, string> = {
+  draft: 'Черновик',
+  pending_moderation: 'На модерации',
+  published: 'Опубликовано',
+};
+
 interface Community {
   id: string;
   name: string;
   slug: string;
   description: string | null;
   avatar_url: string | null;
+  status: CommunityStatus;
   is_published: boolean;
   is_verified: boolean;
   created_at: string;
@@ -29,25 +39,30 @@ interface CommunitiesTableProps {
 
 export default function CommunitiesTable({ communities: initialCommunities }: CommunitiesTableProps) {
   const [communities, setCommunities] = useState(initialCommunities);
-  const [filter, setFilter] = useState<'all' | 'published' | 'unpublished'>('all');
+  const [filter, setFilter] = useState<'all' | 'published' | 'pending_moderation' | 'draft'>('all');
   const [loading, setLoading] = useState<string | null>(null);
 
   const filteredCommunities = communities.filter(c => {
-    if (filter === 'published') return c.is_published;
-    if (filter === 'unpublished') return !c.is_published;
-    return true;
+    if (filter === 'all') return true;
+    return c.status === filter;
   });
 
-  const handleTogglePublish = async (communityId: string, currentStatus: boolean) => {
+  const handleTogglePublish = async (communityId: string, currentStatus: CommunityStatus) => {
     setLoading(communityId);
     try {
-      const result = await toggleCommunityPublishStatus(communityId, !currentStatus);
+      // Если опубликовано - снимаем, иначе публикуем
+      const newStatus = currentStatus === 'published';
+      const result = await toggleCommunityPublishStatus(communityId, !newStatus);
       
       if (result.success) {
-        setCommunities(prev => 
-          prev.map(c => 
-            c.id === communityId 
-              ? { ...c, is_published: !currentStatus }
+        setCommunities(prev =>
+          prev.map(c =>
+            c.id === communityId
+              ? {
+                  ...c,
+                  status: newStatus ? 'draft' : 'published',
+                  is_published: !newStatus
+                }
               : c
           )
         );
@@ -88,17 +103,27 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
               }`}
             >
-              Опубликованные ({communities.filter(c => c.is_published).length})
+              Опубликованные ({communities.filter(c => c.status === 'published').length})
             </button>
             <button
-              onClick={() => setFilter('unpublished')}
+              onClick={() => setFilter('pending_moderation')}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                filter === 'unpublished'
+                filter === 'pending_moderation'
                   ? 'bg-red-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
               }`}
             >
-              Не опубликованные ({communities.filter(c => !c.is_published).length})
+              На модерации ({communities.filter(c => c.status === 'pending_moderation').length})
+            </button>
+            <button
+              onClick={() => setFilter('draft')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                filter === 'draft'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
+              }`}
+            >
+              Черновики ({communities.filter(c => c.status === 'draft').length})
             </button>
           </div>
         </div>
@@ -197,19 +222,21 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      community.is_published
+                      community.status === 'published'
                         ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                        : community.status === 'pending_moderation'
+                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
                     }`}>
-                      {community.is_published ? '✓ Опубликовано' : '⏳ Не опубликовано'}
+                      {CommunityStatusLabels[community.status]}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button
-                      onClick={() => handleTogglePublish(community.id, community.is_published)}
+                      onClick={() => handleTogglePublish(community.id, community.status)}
                       disabled={loading === community.id}
                       className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                        community.is_published
+                        community.status === 'published'
                           ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30'
                           : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30'
                       } disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -222,7 +249,7 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
                           </svg>
                           Загрузка...
                         </span>
-                      ) : community.is_published ? (
+                      ) : community.status === 'published' ? (
                         'Снять с публикации'
                       ) : (
                         'Опубликовать'
