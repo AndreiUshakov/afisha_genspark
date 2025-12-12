@@ -440,7 +440,6 @@ export const mockCommunities: Community[] = [
     social_links: {
       vk: 'https://vk.com/eco_baikal',
       telegram: 'https://t.me/eco_baikal',
-      facebook: 'https://facebook.com/eco_baikal',
     },
     contact_email: 'info@eco-baikal.org',
     contact_phone: '+7 (902) 888-99-00',

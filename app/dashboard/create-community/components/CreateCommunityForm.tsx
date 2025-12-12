@@ -38,8 +38,7 @@ export default function CreateCommunityForm({ isEmailVerified, userEmail, catego
     social_links: {
       vk: '',
       telegram: '',
-      website: '',
-      facebook: ''
+      website: ''
     }
   });
 
@@ -93,8 +92,8 @@ export default function CreateCommunityForm({ isEmailVerified, userEmail, catego
       });
 
       if (result.success && result.data) {
-        alert('✅ Сообщество успешно создано! Теперь вы можете управлять им.');
-        router.push(`/dashboard/community/${result.data.slug}`);
+        // Перенаправляем на ЛК пользователя, где будут отображены все сообщества
+        router.push('/dashboard?success=community_created');
       } else {
         alert('❌ Ошибка: ' + result.error);
       }
@@ -144,7 +143,7 @@ export default function CreateCommunityForm({ isEmailVerified, userEmail, catego
             </p>
           </div>
           <a
-            href="/dashboard/community"
+            href="/dashboard"
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             Отменить

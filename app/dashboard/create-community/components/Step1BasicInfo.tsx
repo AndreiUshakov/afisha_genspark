@@ -30,7 +30,7 @@ export const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
     if (formData.name && !formData.slug) {
       onChange({ slug: generateSlug(formData.name) });
     }
-  }, [formData.name]);
+  }, [formData.name, formData.slug, onChange]);
 
   return (
     <div className="space-y-6">
@@ -70,7 +70,7 @@ export const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
             </label>
             <div className="flex">
               <span className="inline-flex items-center px-4 py-3 rounded-l-lg border border-r-0 border-gray-300 dark:border-neutral-600 bg-gray-50 dark:bg-neutral-800 text-gray-600 dark:text-neutral-400 text-sm">
-                afisha-irkutsk.ru/community/
+                адрес_сайта/community/
               </span>
               <input
                 type="text"
@@ -284,18 +284,6 @@ export const Step1BasicInfo: React.FC<Step1BasicInfoProps> = ({
             />
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="w-20 text-sm font-medium text-gray-600 dark:text-neutral-400">Facebook</span>
-            <input
-              type="url"
-              value={formData.social_links.facebook || ''}
-              onChange={(e) => onChange({ 
-                social_links: { ...formData.social_links, facebook: e.target.value }
-              })}
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
-              placeholder="https://facebook.com/your-page"
-            />
-          </div>
         </div>
       </div>
     </div>

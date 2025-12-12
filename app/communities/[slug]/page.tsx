@@ -198,7 +198,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
               </div>
 
               {/* Contact Links */}
-              {(community.social_links?.website || community.social_links?.vk || community.social_links?.telegram || community.social_links?.instagram || community.social_links?.facebook) && (
+              {(community.social_links?.website || community.social_links?.vk || community.social_links?.telegram || community.social_links?.instagram) && (
                 <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Контакты</h3>
                   <div className="space-y-3">
@@ -217,7 +217,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                     )}
 
                     {/* Social Links */}
-                    {(community.social_links?.vk || community.social_links?.telegram || community.social_links?.instagram || community.social_links?.facebook) && (
+                    {(community.social_links?.vk || community.social_links?.telegram || community.social_links?.instagram) && (
                       <div className="flex gap-3">
                         {community.social_links?.vk && (
                           <a
@@ -250,17 +250,6 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                             aria-label="Instagram"
                           >
                             <span className="text-xs font-bold">IG</span>
-                          </a>
-                        )}
-                        {community.social_links?.facebook && (
-                          <a
-                            href={community.social_links.facebook}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-8 h-8 flex items-center justify-center bg-blue-700 text-white rounded-full hover:bg-blue-800 transition-colors"
-                            aria-label="Facebook"
-                          >
-                            <span className="text-xs font-bold">FB</span>
                           </a>
                         )}
                       </div>

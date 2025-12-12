@@ -4,6 +4,7 @@ import EmailVerificationBanner from '@/components/dashboard/EmailVerificationBan
 import EmptyState from '@/components/dashboard/EmptyState'
 import ProtectedLink from './components/ProtectedLink'
 import SuccessBanner from './components/SuccessBanner'
+import UserCommunities from './components/UserCommunities'
 
 async function getUserData() {
   const supabase = await createClient()
@@ -46,11 +47,18 @@ async function getUserData() {
     .eq('user_id', user.id)
     .eq('status', 'attended')
 
-  // Получаем сообщества пользователя
+  // Получаем сообщества пользователя с категориями
   const { data: communities } = await supabase
     .from('communities')
-    .select('*')
+    .select(`
+      *,
+      categories (
+        name,
+        slug
+      )
+    `)
     .eq('owner_id', user.id)
+    .order('created_at', { ascending: false })
 
   // Получаем профиль эксперта
   const { data: expertProfile } = await supabase
@@ -161,7 +169,13 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-     
+      {/* Мои сообщества */}
+      {data.communities.length > 0 && (
+        <div className="mb-8">
+          <UserCommunities communities={data.communities} />
+        </div>
+      )}
+
       {/* Быстрые действия */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700">

@@ -9,13 +9,17 @@ export default function SuccessBanner() {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
-    if (searchParams.get('verified') === 'true') {
+    const verified = searchParams.get('verified') === 'true'
+    const communityCreated = searchParams.get('success') === 'community_created'
+    
+    if (verified || communityCreated) {
       setShow(true)
       
       // Удаляем параметр из URL через 100ms
       setTimeout(() => {
         const url = new URL(window.location.href)
         url.searchParams.delete('verified')
+        url.searchParams.delete('success')
         router.replace(url.pathname + url.search, { scroll: false })
       }, 100)
       
@@ -25,6 +29,9 @@ export default function SuccessBanner() {
       }, 5000)
     }
   }, [searchParams, router])
+
+  const isVerified = searchParams.get('verified') === 'true'
+  const isCommunityCreated = searchParams.get('success') === 'community_created'
 
   if (!show) return null
 
@@ -38,11 +45,13 @@ export default function SuccessBanner() {
         </div>
         <div className="ml-3 flex-1">
           <h3 className="text-sm font-medium text-green-800 dark:text-green-200">
-            Email успешно подтвержден! 🎉
+            {isVerified && 'Email успешно подтвержден! 🎉'}
+            {isCommunityCreated && 'Сообщество успешно создано! 🎉'}
           </h3>
           <div className="mt-2 text-sm text-green-700 dark:text-green-300">
             <p>
-              Теперь вы можете создавать сообщества и профили экспертов. Добро пожаловать!
+              {isVerified && 'Теперь вы можете создавать сообщества и профили экспертов. Добро пожаловать!'}
+              {isCommunityCreated && 'Теперь вы можете управлять своим сообществом, создавать события и публиковать посты.'}
             </p>
           </div>
         </div>
