@@ -29,8 +29,7 @@ export default async function RootLayout({
       </head>
       <body className="antialiased">
         <ClientProviders>
-          {/* Используем key для принудительного ре-рендера при смене маршрута */}
-          <ConditionalHeader key={pathname} pathname={pathname} />
+          <ConditionalHeader pathname={pathname} />
           <main className="min-h-screen">
             {children}
           </main>
