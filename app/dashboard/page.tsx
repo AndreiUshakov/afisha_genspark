@@ -15,7 +15,7 @@ async function getUserData() {
     redirect('/auth/login')
   }
 
-  // Получаем профиль пользователя
+  // Получаем профиль пользователя из таблицы profiles
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')

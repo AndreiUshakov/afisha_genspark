@@ -88,8 +88,21 @@ export async function updateProfile(
       return { success: false, error: 'Не удалось обновить профиль' }
     }
 
-    // Обновляем кеш страницы
+    // Также обновляем user_metadata для синхронизации имени
+    if (data.full_name !== undefined) {
+      const { error: metadataError } = await supabase.auth.updateUser({
+        data: { full_name: data.full_name }
+      })
+
+      if (metadataError) {
+        console.error('Ошибка обновления metadata:', metadataError)
+      }
+    }
+
+    // Обновляем кеш всех страниц с данными профиля
     revalidatePath('/dashboard/profile')
+    revalidatePath('/dashboard')
+    revalidatePath('/', 'layout') // Инвалидируем header на всех страницах
     
     return { success: true, error: null }
   } catch (error) {
@@ -163,8 +176,19 @@ export async function uploadAvatar(
       return { url: null, error: 'Не удалось обновить профиль' }
     }
 
-    // Обновляем кеш страницы
+    // Также обновляем user_metadata для синхронизации
+    const { error: metadataError } = await supabase.auth.updateUser({
+      data: { avatar_url: publicUrl }
+    })
+
+    if (metadataError) {
+      console.error('Ошибка обновления metadata:', metadataError)
+    }
+
+    // Обновляем кеш всех страниц с аватаром
     revalidatePath('/dashboard/profile')
+    revalidatePath('/dashboard')
+    revalidatePath('/', 'layout') // Инвалидируем header на всех страницах
 
     return { url: publicUrl, error: null }
   } catch (error) {

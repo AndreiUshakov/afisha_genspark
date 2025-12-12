@@ -7,6 +7,15 @@ export default async function Header() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  // Получаем профиль пользователя из базы данных
+  const { data: profile } = user
+    ? await supabase
+        .from('profiles')
+        .select('avatar_url, full_name')
+        .eq('id', user.id)
+        .single()
+    : { data: null };
+
   return (
     <header className="sticky top-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full bg-white border-b border-gray-200 dark:bg-neutral-800 dark:border-neutral-700">
       <nav className="relative max-w-[85rem] w-full mx-auto md:flex md:items-center md:justify-between md:gap-3 py-2 px-4 sm:px-6 lg:px-8">
@@ -77,8 +86,8 @@ export default async function Header() {
                   {user ? (
                     <UserMenu user={{
                       email: user.email!,
-                      avatar_url: user.user_metadata?.avatar_url,
-                      full_name: user.user_metadata?.full_name
+                      avatar_url: profile?.avatar_url || user.user_metadata?.avatar_url,
+                      full_name: profile?.full_name || user.user_metadata?.full_name
                     }} />
                   ) : (
                     <div className="relative flex items-center gap-x-1.5 md:ps-2.5 mt-1 md:mt-0 md:ms-1.5 before:block before:absolute before:top-1/2 before:-start-px before:w-px before:h-4 before:bg-gray-300 before:-translate-y-1/2 dark:before:bg-neutral-700">

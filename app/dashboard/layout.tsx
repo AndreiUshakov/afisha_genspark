@@ -6,6 +6,15 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  // Получаем профиль пользователя из базы данных
+  const { data: profile } = user
+    ? await supabase
+        .from('profiles')
+        .select('avatar_url, full_name')
+        .eq('id', user.id)
+        .single()
+    : { data: null };
+
   // Получаем список сообществ пользователя
   const { data: communities } = user
     ? await supabase
@@ -24,8 +33,8 @@ export default async function Layout({ children }: { children: React.ReactNode }
         userRole={userRole}
         user={user ? {
           email: user.email!,
-          avatar_url: user.user_metadata?.avatar_url,
-          full_name: user.user_metadata?.full_name
+          avatar_url: profile?.avatar_url || user.user_metadata?.avatar_url,
+          full_name: profile?.full_name || user.user_metadata?.full_name
         } : undefined}
         communities={communities || []}
       >

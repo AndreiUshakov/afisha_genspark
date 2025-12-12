@@ -243,7 +243,7 @@ export default function DashboardLayout({ children, userRole = ['user'], user, c
     }
 
     //check user role 'expert'
-    if (userRole.includes('user') ){
+    if (userRole.includes('expert') ){
       items.push({
         href: '#',
         label: '─────',
