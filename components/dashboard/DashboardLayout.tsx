@@ -422,7 +422,7 @@ export default function DashboardLayout({ children, userRole = ['user'], user, c
                 </svg>
                 Создать сообщество
               </Link>
-              <Link
+              {/* <Link
                 href="/dashboard/become-expert"
                 className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30"
               >
@@ -432,7 +432,7 @@ export default function DashboardLayout({ children, userRole = ['user'], user, c
                   <path d="M2 12l10 5 10-5"/>
                 </svg>
                 Стать экспертом
-              </Link>
+              </Link> */}
             </div>
           )}
 

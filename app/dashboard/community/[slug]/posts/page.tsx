@@ -11,6 +11,9 @@ interface PostsPageProps {
 export default async function CommunityPostsPage({ params }: PostsPageProps) {
   const supabase = await createClient()
   
+  // Ждем params (Next.js 15+)
+  const { slug } = await params;
+  
   const { data: { user }, error: userError } = await supabase.auth.getUser()
   
   if (userError || !user) {
@@ -21,7 +24,7 @@ export default async function CommunityPostsPage({ params }: PostsPageProps) {
   const { data: community } = await supabase
     .from('communities')
     .select('id, name, slug')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('owner_id', user.id)
     .single()
   
@@ -48,7 +51,7 @@ export default async function CommunityPostsPage({ params }: PostsPageProps) {
           </p>
         </div>
         <Link
-          href={`/dashboard/community/${params.slug}/posts/create`}
+          href={`/dashboard/community/${slug}/posts/create`}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
         >
           + Написать пост
@@ -78,7 +81,7 @@ export default async function CommunityPostsPage({ params }: PostsPageProps) {
             Создайте первый пост для вашего сообщества
           </p>
           <Link
-            href={`/dashboard/community/${params.slug}/posts/create`}
+            href={`/dashboard/community/${slug}/posts/create`}
             className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Написать пост
@@ -156,7 +159,7 @@ export default async function CommunityPostsPage({ params }: PostsPageProps) {
                   </div>
                   <div className="flex gap-2">
                     <Link
-                      href={`/dashboard/community/${params.slug}/posts/${post.id}/edit`}
+                      href={`/dashboard/community/${slug}/posts/${post.id}/edit`}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-blue-400 dark:hover:bg-blue-900/20"
                       title="Редактировать"
                     >

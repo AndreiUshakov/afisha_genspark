@@ -11,6 +11,9 @@ interface EventsPageProps {
 export default async function CommunityEventsPage({ params }: EventsPageProps) {
   const supabase = await createClient()
   
+  // Ждем params (Next.js 15+)
+  const { slug } = await params;
+  
   const { data: { user }, error: userError } = await supabase.auth.getUser()
   
   if (userError || !user) {
@@ -21,7 +24,7 @@ export default async function CommunityEventsPage({ params }: EventsPageProps) {
   const { data: community } = await supabase
     .from('communities')
     .select('id, name, slug')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('owner_id', user.id)
     .single()
   
@@ -48,7 +51,7 @@ export default async function CommunityEventsPage({ params }: EventsPageProps) {
           </p>
         </div>
         <Link
-          href={`/dashboard/community/${params.slug}/events/create`}
+          href={`/dashboard/community/${slug}/events/create`}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
         >
           + Создать событие
@@ -78,7 +81,7 @@ export default async function CommunityEventsPage({ params }: EventsPageProps) {
             Создайте первое событие для вашего сообщества
           </p>
           <Link
-            href={`/dashboard/community/${params.slug}/events/create`}
+            href={`/dashboard/community/${slug}/events/create`}
             className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
           >
             Создать событие
@@ -147,7 +150,7 @@ export default async function CommunityEventsPage({ params }: EventsPageProps) {
                   </div>
                   <div className="flex gap-2">
                     <Link
-                      href={`/dashboard/community/${params.slug}/events/${event.id}/edit`}
+                      href={`/dashboard/community/${slug}/events/${event.id}/edit`}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-blue-400 dark:hover:bg-blue-900/20"
                       title="Редактировать"
                     >

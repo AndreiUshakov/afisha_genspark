@@ -13,23 +13,36 @@ interface SettingsPageProps {
 export default async function CommunitySettingsPage({ params }: SettingsPageProps) {
   const supabase = await createClient()
   
+  // Ждем params (Next.js 15+)
+  const { slug } = await params;
+  
   const { data: { user }, error: userError } = await supabase.auth.getUser()
   
   if (userError || !user) {
     redirect('/auth/login')
   }
 
+  console.log('⚙️ Settings page - User info:', { slug, userId: user.id, email: user.email });
+
   // Проверяем, что сообщество принадлежит пользователю
-  const { data: community } = await supabase
+  const { data: community, error } = await supabase
     .from('communities')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('owner_id', user.id)
     .single()
   
+  console.log('⚙️ Settings page - Query result:', {
+    community: community ? { id: community.id, name: community.name, status: community.status, owner_id: community.owner_id } : null,
+    error: error ? { message: error.message, code: error.code, details: error.details } : null
+  });
+  
   if (!community) {
+    console.log('⚙️ Settings page - Community not found, showing 404');
     notFound()
   }
+  
+  console.log('⚙️ Settings page - Rendering for community:', community.name);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -45,7 +58,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Основные настройки */}
         <Link
-          href={`/dashboard/community/${params.slug}/settings/basic`}
+          href={`/dashboard/community/${slug}/settings/basic`}
           className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-start gap-4">
@@ -68,7 +81,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
 
         {/* Дизайн страницы */}
         <Link
-          href={`/dashboard/community/${params.slug}/settings/design`}
+          href={`/dashboard/community/${slug}/settings/design`}
           className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-start gap-4">

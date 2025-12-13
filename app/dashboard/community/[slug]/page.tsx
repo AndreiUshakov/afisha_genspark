@@ -11,6 +11,8 @@ interface CommunityPageProps {
 async function getCommunityData(slug: string, userId: string) {
   const supabase = await createClient()
   
+  console.log('🔍 getCommunityData called with:', { slug, userId });
+  
   // Получаем данные сообщества
   const { data: community, error } = await supabase
     .from('communities')
@@ -19,9 +21,17 @@ async function getCommunityData(slug: string, userId: string) {
     .eq('owner_id', userId)
     .single()
   
+  console.log('📊 Query result:', {
+    community: community ? { id: community.id, name: community.name, status: community.status, owner_id: community.owner_id } : null,
+    error: error ? { message: error.message, code: error.code, details: error.details } : null
+  });
+  
   if (error || !community) {
+    console.log('❌ Community not found or error occurred');
     return null
   }
+  
+  console.log('✅ Community found:', community.name);
 
   // Получаем статистику событий
   const { count: eventsCount } = await supabase
@@ -70,14 +80,22 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
     redirect('/auth/login')
   }
 
+  // Ждем params (Next.js 15+)
+  const { slug } = await params;
+
+  console.log('🔑 User info:', { slug, userId: user.id, email: user.email });
+  
   // Получаем данные сообщества
-  const data = await getCommunityData(params.slug, user.id)
+  const data = await getCommunityData(slug, user.id);
   
   if (!data) {
+    console.log('❌ No data returned from getCommunityData, showing not found page');
     notFound()
   }
 
   const { community, eventsCount, postsCount, recentEvents, recentPosts } = data
+  
+  console.log('📄 Rendering page for community:', { name: community.name, status: community.status });
 
   // Если сообщество в статусе draft - показываем сообщение о необходимости настройки
   if (community.status === 'draft') {
@@ -109,7 +127,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
               </div>
               <div className="mt-4">
                 <Link
-                  href={`/dashboard/community/${params.slug}/settings`}
+                  href={`/dashboard/community/${slug}/settings`}
                   className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
                   <svg className="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -161,7 +179,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
         {/* Быстрые действия */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
           <Link
-            href={`/dashboard/community/${params.slug}/settings`}
+            href={`/dashboard/community/${slug}/settings`}
             className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-6 text-white hover:from-emerald-600 hover:to-emerald-700 transition-all"
           >
             <div className="flex items-center gap-4">
@@ -291,7 +309,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
       {/* Быстрые действия */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <Link
-          href={`/dashboard/community/${params.slug}/settings`}
+          href={`/dashboard/community/${slug}/settings`}
           className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-6 text-white hover:from-emerald-600 hover:to-emerald-700 transition-all"
         >
           <div className="flex items-center gap-4">
@@ -309,7 +327,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
         </Link>
 
         <Link
-          href={`/dashboard/community/${params.slug}/events/create`}
+          href={`/dashboard/community/${slug}/events/create`}
           className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white hover:from-blue-600 hover:to-blue-700 transition-all"
         >
           <div className="flex items-center gap-4">
@@ -326,7 +344,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
         </Link>
 
         <Link
-          href={`/dashboard/community/${params.slug}/posts/create`}
+          href={`/dashboard/community/${slug}/posts/create`}
           className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white hover:from-purple-600 hover:to-purple-700 transition-all"
         >
           <div className="flex items-center gap-4">
@@ -350,7 +368,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Последние события
             </h2>
-            <Link href={`/dashboard/community/${params.slug}/events`} className="text-sm text-blue-600 hover:text-blue-700">
+            <Link href={`/dashboard/community/${slug}/events`} className="text-sm text-blue-600 hover:text-blue-700">
               Все события →
             </Link>
           </div>
@@ -385,7 +403,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Последние посты
             </h2>
-            <Link href={`/dashboard/community/${params.slug}/posts`} className="text-sm text-blue-600 hover:text-blue-700">
+            <Link href={`/dashboard/community/${slug}/posts`} className="text-sm text-blue-600 hover:text-blue-700">
               Все посты →
             </Link>
           </div>
