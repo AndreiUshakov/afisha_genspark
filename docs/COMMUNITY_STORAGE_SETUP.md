@@ -2,7 +2,7 @@
 
 ## Создание bucket в Supabase
 
-Выполните следующий SQL запрос в Supabase SQL Editor или используйте готовый файл `supabase/fix-communities-storage-policies-v2.sql`:
+Выполните следующий SQL запрос в Supabase SQL Editor или используйте готовый файл `supabase/fix-communities-storage-policies-v3.sql`:
 
 ```sql
 -- Удаляем все старые политики для бакета communities
@@ -26,8 +26,7 @@ ON storage.objects FOR SELECT
 USING (bucket_id = 'communities');
 
 -- Политика 2: Владелец сообщества может загружать изображения
--- Путь файла: {communityId}/{filename}
--- Извлекаем communityId из первой части пути используя split_part
+-- ВАЖНО: storage.objects.name - это путь файла в формате {communityId}/{filename}
 CREATE POLICY "Community owners can upload images"
 ON storage.objects FOR INSERT
 WITH CHECK (
@@ -35,9 +34,9 @@ WITH CHECK (
   AND auth.uid() IS NOT NULL
   AND EXISTS (
     SELECT 1 
-    FROM public.communities 
-    WHERE id::text = split_part(name, '/', 1)
-    AND owner_id = auth.uid()
+    FROM public.communities c
+    WHERE c.id::text = split_part(storage.objects.name, '/', 1)
+    AND c.owner_id = auth.uid()
   )
 );
 
@@ -49,9 +48,9 @@ USING (
   AND auth.uid() IS NOT NULL
   AND EXISTS (
     SELECT 1 
-    FROM public.communities 
-    WHERE id::text = split_part(name, '/', 1)
-    AND owner_id = auth.uid()
+    FROM public.communities c
+    WHERE c.id::text = split_part(storage.objects.name, '/', 1)
+    AND c.owner_id = auth.uid()
   )
 );
 
@@ -63,17 +62,17 @@ USING (
   AND auth.uid() IS NOT NULL
   AND EXISTS (
     SELECT 1 
-    FROM public.communities 
-    WHERE id::text = split_part(name, '/', 1)
-    AND owner_id = auth.uid()
+    FROM public.communities c
+    WHERE c.id::text = split_part(storage.objects.name, '/', 1)
+    AND c.owner_id = auth.uid()
   )
 );
 ```
 
-**ВАЖНО:** 
-- Эти политики используют `split_part(name, '/', 1)` для извлечения communityId из пути
-- `EXISTS` более эффективен чем подзапрос с `=` для проверки прав
-- Используется явное приведение типов `id::text` для сравнения UUID с текстом
+**КРИТИЧЕСКИ ВАЖНО:** 
+- Используется `storage.objects.name` (путь файла), а НЕ `communities.name` (slug сообщества)
+- Используется алиас `c` для таблицы `communities` для читаемости
+- `split_part(storage.objects.name, '/', 1)` извлекает communityId из пути файла
 
 ## Структура хранения
 
@@ -138,19 +137,45 @@ if (result.success) {
 
 Если вы получаете эту ошибку при загрузке изображений:
 
-1. Убедитесь, что вы выполнили SQL скрипт выше (используйте v2: `supabase/fix-communities-storage-policies-v2.sql`)
-2. Проверьте, что политики созданы в Supabase Dashboard → Storage → Policies
-3. Убедитесь, что пользователь авторизован и является владельцем сообщества
-4. Проверьте формат пути файла: должен быть `{communityId}/{filename}`
+1. **Убедитесь, что вы выполнили правильный SQL скрипт**
+   
+   Используйте **v3**: `supabase/fix-communities-storage-policies-v3.sql`
 
-### Почему используется split_part вместо string_to_array
+2. **Проверьте политики в интерфейсе Supabase**
+   
+   Storage → Policies → communities bucket
+   
+   В условии политики должно быть:
+   ```
+   split_part(storage.objects.name, '/', 1)
+   ```
+   
+   А **НЕ**:
+   ```
+   split_part(communities.name, '/', 1)  -- НЕПРАВИЛЬНО!
+   ```
 
-`split_part(name, '/', 1)` более эффективен и надёжен для извлечения первой части пути, чем `(string_to_array(name, '/'))[1]`:
-- Работает быстрее
-- Не создаёт массив в памяти
-- Более читаем
+3. **Убедитесь, что пользователь является владельцем сообщества**
 
-### Проверка политик
+4. **Проверьте формат пути файла:** `{communityId}/{filename}`
+
+### Конфликт имён в SQL политиках
+
+**Проблема:** В PostgreSQL, если не указать таблицу явно, поле `name` может относиться к неправильной таблице.
+
+```sql
+-- НЕПРАВИЛЬНО (конфликт имён):
+FROM public.communities 
+WHERE id::text = split_part(name, '/', 1)
+-- name здесь = communities.name (slug), а не путь файла!
+
+-- ПРАВИЛЬНО (явное указание):
+FROM public.communities c
+WHERE c.id::text = split_part(storage.objects.name, '/', 1)
+-- storage.objects.name = путь файла
+```
+
+### Проверка политик через SQL
 
 Выполните в SQL Editor:
 
@@ -162,15 +187,15 @@ AND schemaname = 'storage'
 AND policyname LIKE '%ommunit%';
 ```
 
-Вы должны увидеть 4 политики для бакета communities:
+Вы должны увидеть 4 политики:
 - Communities public read access (SELECT)
 - Community owners can upload images (INSERT)
 - Community owners can update images (UPDATE)
 - Community owners can delete images (DELETE)
 
-### Тестирование политик
+### Тестирование извлечения communityId
 
-Вы можете протестировать извлечение communityId из пути:
+Вы можете протестировать функцию split_part:
 
 ```sql
 -- Тест функции split_part
@@ -184,3 +209,46 @@ SELECT
 - full_path: `abc-123-uuid/avatar-123.jpg`
 - community_id: `abc-123-uuid`
 - filename: `avatar-123.jpg`
+
+### Тестирование политики с конкретным communityId
+
+```sql
+-- Замените YOUR_COMMUNITY_ID на реальный UUID сообщества
+-- и YOUR_USER_ID на реальный UUID пользователя
+SELECT 
+  c.id,
+  c.name,
+  c.owner_id,
+  split_part('YOUR_COMMUNITY_ID/avatar-123.jpg', '/', 1) as extracted_id,
+  c.id::text = split_part('YOUR_COMMUNITY_ID/avatar-123.jpg', '/', 1) as id_matches
+FROM public.communities c
+WHERE c.id::text = 'YOUR_COMMUNITY_ID';
+```
+
+Поле `id_matches` должно быть `true`.
+
+## История версий политик
+
+### v1 (НЕ РАБОТАЕТ)
+```sql
+WHERE id::text = (string_to_array(name, '/'))[1]
+```
+Проблема: неэффективно, ненадёжно
+
+### v2 (НЕ РАБОТАЕТ)
+```sql
+WHERE id::text = split_part(name, '/', 1)
+```
+Проблема: конфликт имён - `name` относится к `communities.name`
+
+### v3 (РАБОТАЕТ ✅)
+```sql
+WHERE c.id::text = split_part(storage.objects.name, '/', 1)
+```
+Решение: явное указание таблиц и алиасы
+
+## Дополнительные ресурсы
+
+- [Supabase Storage Documentation](https://supabase.com/docs/guides/storage)
+- [Row Level Security](https://supabase.com/docs/guides/auth/row-level-security)
+- [PostgreSQL split_part function](https://www.postgresql.org/docs/current/functions-string.html)

@@ -100,7 +100,7 @@ export default async function CommunityPage({ params }: CommunityPageProps) {
   // Если сообщество в статусе draft - показываем сообщение о необходимости настройки
   if (community.status === 'draft') {
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Баннер о необходимости настройки */}
         <div className="bg-blue-50 border-l-4 border-blue-400 p-6 mb-6 dark:bg-blue-900/20 dark:border-blue-600">
           <div className="flex items-start">

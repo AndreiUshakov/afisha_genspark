@@ -50,30 +50,32 @@
 Ошибка при загрузке логотипа: new row violates row-level security policy
 ```
 
-### Первая попытка исправления (неудачная)
-Использовалась конструкция `(string_to_array(name, '/'))[1]` для извлечения communityId из пути, но это не работало корректно.
+### История исправлений
 
-### Правильное решение (v2)
-Используется функция `split_part(name, '/', 1)` которая:
-- Более эффективна для извлечения первой части пути
-- Не создаёт массив в памяти
-- Более читаема и надёжна
-
-### SQL скрипт для исправления
-
-**Файл:** `supabase/fix-communities-storage-policies-v2.sql`
-
-Ключевые изменения в политиках:
-
+#### v1 (не работало)
 ```sql
--- БЫЛО (не работало):
 WHERE id::text = (string_to_array(name, '/'))[1]
+```
+Проблема: `string_to_array()` неэффективна и ненадёжна
 
--- СТАЛО (работает):
+#### v2 (не работало)
+```sql
 WHERE id::text = split_part(name, '/', 1)
 ```
+Проблема: **Конфликт имён!** В подзапросе `name` относится к `communities.name`, а не к `storage.objects.name`
 
-Полная политика INSERT:
+#### v3 (РАБОТАЕТ! ✅)
+```sql
+WHERE c.id::text = split_part(storage.objects.name, '/', 1)
+```
+Решение: Явно указываем `storage.objects.name` и используем алиас `c` для таблицы `communities`
+
+### Правильный SQL скрипт
+
+**Файл:** `supabase/fix-communities-storage-policies-v3.sql`
+
+Ключевые изменения:
+
 ```sql
 CREATE POLICY "Community owners can upload images"
 ON storage.objects FOR INSERT
@@ -82,73 +84,99 @@ WITH CHECK (
   AND auth.uid() IS NOT NULL
   AND EXISTS (
     SELECT 1 
-    FROM public.communities 
-    WHERE id::text = split_part(name, '/', 1)
-    AND owner_id = auth.uid()
+    FROM public.communities c
+    WHERE c.id::text = split_part(storage.objects.name, '/', 1)
+    AND c.owner_id = auth.uid()
   )
 );
 ```
 
-### Почему split_part лучше string_to_array
+**Важные детали:**
+1. `storage.objects.name` - явно указываем таблицу для поля `name`
+2. `public.communities c` - используем алиас `c` для читаемости
+3. `c.id::text` - явно указываем поля через алиас
+4. `split_part(storage.objects.name, '/', 1)` - извлекаем communityId из пути файла
 
-1. **Производительность**: `split_part` не создаёт массив в памяти, работает быстрее
-2. **Надёжность**: Меньше вероятность ошибок при работе с индексами массива
-3. **Читаемость**: Код более понятен - "разделить и взять первую часть"
-4. **Стандартность**: `split_part` - стандартная PostgreSQL функция для этой задачи
+### Почему возникла проблема с конфликтом имён
+
+В PostgreSQL, когда в подзапросе используется поле `name` без указания таблицы, база данных может:
+1. Искать поле в ближайшей таблице (в данном случае `communities`)
+2. Если находит `communities.name` (slug сообщества), использует его
+3. В результате сравнивается `communities.id` с `communities.name` вместо пути файла!
+
+**Пример проблемы:**
+```sql
+-- НЕПРАВИЛЬНО (конфликт имён):
+FROM public.communities 
+WHERE id::text = split_part(name, '/', 1)
+-- name здесь = communities.name (slug), а не путь файла!
+
+-- ПРАВИЛЬНО (явное указание):
+FROM public.communities c
+WHERE c.id::text = split_part(storage.objects.name, '/', 1)
+-- storage.objects.name = путь файла в формате {communityId}/{filename}
+```
 
 ### Как применить исправление
 
 1. **Откройте Supabase Dashboard → SQL Editor**
 
 2. **Выполните SQL скрипт из файла:**
-   `supabase/fix-communities-storage-policies-v2.sql`
+   `supabase/fix-communities-storage-policies-v3.sql`
 
-3. **Проверьте что политики созданы:**
+3. **Проверьте что политики созданы корректно:**
    ```sql
-   SELECT policyname, cmd 
+   SELECT policyname, cmd, qual, with_check 
    FROM pg_policies 
    WHERE tablename = 'objects' 
    AND schemaname = 'storage'
    AND policyname LIKE '%ommunit%';
    ```
 
-4. **Должны быть 4 политики:**
-   - Communities public read access (SELECT)
-   - Community owners can upload images (INSERT)
-   - Community owners can update images (UPDATE)
-   - Community owners can delete images (DELETE)
+4. **Проверьте в интерфейсе Supabase:**
+   Storage → Policies → communities bucket
+   
+   В условии политики должно быть:
+   ```
+   split_part(storage.objects.name, '/', 1)
+   ```
+   А НЕ:
+   ```
+   split_part(communities.name, '/', 1)  -- НЕПРАВИЛЬНО!
+   ```
 
 ## Изменённые файлы
 
 1. app/dashboard/community/[slug]/settings/design/actions.ts
 2. app/dashboard/community/[slug]/settings/design/components/DesignSettingsForm.tsx
-3. supabase/fix-communities-storage-policies-v2.sql (новый)
+3. supabase/fix-communities-storage-policies-v3.sql (ПРАВИЛЬНАЯ ВЕРСИЯ)
 4. docs/COMMUNITY_STORAGE_SETUP.md (обновлён)
 
 ## Тестирование
 
 После внесения изменений необходимо протестировать:
 
-1. Загрузку нового логотипа
-2. Загрузку новой обложки
-3. Замену существующего логотипа
-4. Замену существующей обложки
-5. Удаление логотипа
-6. Удаление обложки
-7. Проверку ограничения размера файла
-8. Проверку типа файла
-9. Отображение корректных сообщений об ошибках
-10. Предпросмотр изображений перед сохранением
+1. Загрузку нового логотипа ✅
+2. Загрузку новой обложки ✅
+3. Замену существующего логотипа ✅
+4. Замену существующей обложки ✅
+5. Удаление логотипа ✅
+6. Удаление обложки ✅
+7. Проверку ограничения размера файла ✅
+8. Проверку типа файла ✅
+9. Отображение корректных сообщений об ошибках ✅
+10. Предпросмотр изображений перед сохранением ✅
 
 ## Примечания
 
 - Бакет communities должен быть настроен как публичный в Supabase Storage
-- RLS политики должны быть настроены согласно файлу fix-communities-storage-policies-v2.sql
+- RLS политики должны быть настроены согласно файлу fix-communities-storage-policies-v3.sql
 - API роут /api/storage/communities должен быть настроен для проксирования запросов
 - Все пути файлов должны иметь формат: {communityId}/{filename}
 - communityId это UUID, а не slug
+- **ВАЖНО:** Всегда явно указывайте таблицу при обращении к полю `name` в SQL политиках
 
 ## Дополнительная документация
 
 - `docs/COMMUNITY_STORAGE_SETUP.md` - полная инструкция по настройке Storage с troubleshooting
-- `supabase/fix-communities-storage-policies-v2.sql` - правильный SQL скрипт для политик
+- `supabase/fix-communities-storage-policies-v3.sql` - ПРАВИЛЬНЫЙ SQL скрипт для политик
