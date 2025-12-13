@@ -17,7 +17,7 @@ interface Community {
   name: string;
   slug: string;
   avatar_url?: string;
-  is_published: boolean;
+  status: 'draft' | 'pending_moderation' | 'published';
 }
 
 interface DashboardLayoutProps {
@@ -136,9 +136,14 @@ export default function DashboardLayout({ children, userRole = ['user'], user, c
     // Если есть сообщества, создаем для каждого свой раздел
     if (communities.length > 0) {
       communities.forEach((community) => {
+        // Все сообщества доступны владельцу независимо от статуса
+        const statusLabel =
+          community.status === 'draft' ? ' (черновик)' :
+          community.status === 'pending_moderation' ? ' (на модерации)' : '';
+        
         items.push({
-          href: community.is_published ? `/dashboard/community/${community.slug}` : '#',
-          label: community.name + (!community.is_published ? ' (не опубликовано)' : ''),
+          href: `/dashboard/community/${community.slug}`,
+          label: community.name + statusLabel,
           icon: community.avatar_url ? (
             <img src={community.avatar_url} alt={community.name} className="size-4 rounded-full object-cover" />
           ) : (
@@ -382,30 +387,20 @@ export default function DashboardLayout({ children, userRole = ['user'], user, c
                 }
 
                 const active = isActive(item.href);
-                const isDisabled = item.href === '#' && item.label.includes('(не опубликовано)');
 
                 return (
                   <li key={item.href + index}>
-                    {isDisabled ? (
-                      <div
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 dark:text-neutral-600 cursor-not-allowed opacity-60"
-                      >
-                        {item.icon}
-                        <span>{item.label}</span>
-                      </div>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                          active
-                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
-                            : 'text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-700'
-                        }`}
-                      >
-                        {item.icon}
-                        <span>{item.label}</span>
-                      </Link>
-                    )}
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        active
+                          ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                          : 'text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                      }`}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </Link>
                   </li>
                 );
               })}

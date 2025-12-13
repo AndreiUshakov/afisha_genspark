@@ -19,7 +19,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   const { data: communities } = user
     ? await supabase
         .from('communities')
-        .select('id, name, slug, avatar_url, is_published')
+        .select('id, name, slug, avatar_url, status')
         .eq('owner_id', user.id)
         .order('created_at', { ascending: false })
     : { data: null };
