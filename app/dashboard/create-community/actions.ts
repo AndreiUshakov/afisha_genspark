@@ -159,7 +159,7 @@ export async function uploadCommunityImage(
 
     // Загружаем файл
     const { error: uploadError } = await supabase.storage
-      .from('community-images')
+      .from('communities')
       .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false
@@ -172,7 +172,7 @@ export async function uploadCommunityImage(
 
     // Используем прокси URL для избежания mixed content ошибок
     // Вместо прямого URL от Supabase используем наш API endpoint
-    const proxyUrl = `/api/storage/community-images/${filePath}`;
+    const proxyUrl = `/api/storage/communities/${filePath}`;
 
     return { success: true, url: proxyUrl };
   } catch (error) {

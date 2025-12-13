@@ -62,7 +62,7 @@ const publicUrl = `http://supabase.sober-automation.ru/storage/v1/object/public/
 const publicUrl = `/api/storage/profiles/${filePath}`
 
 // Для изображений сообществ
-const proxyUrl = `/api/storage/community-images/${filePath}`
+const proxyUrl = `/api/storage/communities/${filePath}`
 ```
 
 ### Примеры URL
@@ -186,5 +186,5 @@ API route настроен с агрессивным кешированием:
 
 Прокси поддерживает все публичные buckets в Supabase Storage:
 - `profiles` - аватары пользователей
-- `community-images` - изображения сообществ (аватары, обложки)
+- `communities` - изображения сообществ (аватары, обложки)
 - Любые другие публичные buckets

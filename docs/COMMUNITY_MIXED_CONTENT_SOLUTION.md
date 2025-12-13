@@ -12,8 +12,8 @@
 
 1. **Функция [`uploadCommunityImage`](../app/dashboard/create-community/actions.ts:115) в actions.ts**
    - Вместо прямого публичного URL от Supabase теперь возвращается URL через прокси
-   - Было: `https://supabase.../storage/v1/object/public/community-images/...`
-   - Стало: `/api/storage/community-images/...`
+   - Было: `https://supabase.../storage/v1/object/public/communities/...`
+   - Стало: `/api/storage/communities/...`
 
 2. **API прокси** уже поддерживал любые buckets, изменения не требовались
 
@@ -22,7 +22,7 @@
 ```
 Клиент (HTTPS) 
     ↓
-/api/storage/community-images/path/to/image.jpg (HTTPS)
+/api/storage/communities/path/to/image.jpg (HTTPS)
     ↓
 Next.js Server
     ↓
@@ -47,7 +47,7 @@ Next.js Server
 1. Откройте страницу создания сообщества
 2. Загрузите изображение (аватар или обложку)
 3. Проверьте в Developer Tools → Network:
-   - URL изображения должен быть `/api/storage/community-images/...`
+   - URL изображения должен быть `/api/storage/communities/...`
    - Статус ответа: `200 OK`
    - Content-Type: `image/jpeg` или `image/png`
 4. Проверьте консоль - не должно быть ошибок Mixed Content

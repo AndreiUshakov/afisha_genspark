@@ -71,18 +71,18 @@
 ```sql
 -- Создать bucket для изображений сообществ
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('community-images', 'community-images', true);
+VALUES ('communities', 'communities', true);
 
 -- Политика: Публичный доступ на чтение
 CREATE POLICY "Публичный доступ на чтение" ON storage.objects
   FOR SELECT
-  USING (bucket_id = 'community-images');
+  USING (bucket_id = 'communities');
 
 -- Политика: Авторизованные пользователи могут загружать
 CREATE POLICY "Авторизованные пользователи могут загружать" ON storage.objects
   FOR INSERT
   WITH CHECK (
-    bucket_id = 'community-images' 
+    bucket_id = 'communities' 
     AND auth.uid() IS NOT NULL
   );
 
@@ -90,7 +90,7 @@ CREATE POLICY "Авторизованные пользователи могут 
 CREATE POLICY "Пользователи могут обновлять свои файлы" ON storage.objects
   FOR UPDATE
   USING (
-    bucket_id = 'community-images' 
+    bucket_id = 'communities' 
     AND auth.uid() = owner
   );
 
@@ -98,7 +98,7 @@ CREATE POLICY "Пользователи могут обновлять свои �
 CREATE POLICY "Пользователи могут удалять свои файлы" ON storage.objects
   FOR DELETE
   USING (
-    bucket_id = 'community-images' 
+    bucket_id = 'communities' 
     AND auth.uid() = owner
   );
 ```
