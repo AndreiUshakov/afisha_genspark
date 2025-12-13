@@ -39,15 +39,21 @@ export async function updateCommunityDesign(formData: FormData) {
     // Загрузка аватара если есть
     if (avatarFile && avatarFile.size > 0) {
       const fileExt = avatarFile.name.split('.').pop()
-      const fileName = `${communityId}-avatar-${Date.now()}.${fileExt}`
-      const filePath = `communities/${communityId}/avatar/${fileName}`
+      const fileName = `avatar-${Date.now()}.${fileExt}`
+      const filePath = `${communityId}/${fileName}`
 
       // Удаляем старый аватар если есть
       if (community.avatar_url) {
-        const oldPath = community.avatar_url.split('/').slice(-3).join('/')
-        await supabase.storage
-          .from('communities')
-          .remove([oldPath])
+        try {
+          const oldFileName = community.avatar_url.split('/').pop()
+          if (oldFileName) {
+            await supabase.storage
+              .from('communities')
+              .remove([`${communityId}/${oldFileName}`])
+          }
+        } catch (e) {
+          console.log('Could not delete old avatar:', e)
+        }
       }
 
       // Загружаем новый аватар
@@ -74,15 +80,21 @@ export async function updateCommunityDesign(formData: FormData) {
     // Загрузка обложки если есть
     if (coverFile && coverFile.size > 0) {
       const fileExt = coverFile.name.split('.').pop()
-      const fileName = `${communityId}-cover-${Date.now()}.${fileExt}`
-      const filePath = `communities/${communityId}/cover/${fileName}`
+      const fileName = `cover-${Date.now()}.${fileExt}`
+      const filePath = `${communityId}/${fileName}`
 
       // Удаляем старую обложку если есть
       if (community.cover_url) {
-        const oldPath = community.cover_url.split('/').slice(-3).join('/')
-        await supabase.storage
-          .from('communities')
-          .remove([oldPath])
+        try {
+          const oldFileName = community.cover_url.split('/').pop()
+          if (oldFileName) {
+            await supabase.storage
+              .from('communities')
+              .remove([`${communityId}/${oldFileName}`])
+          }
+        } catch (e) {
+          console.log('Could not delete old cover:', e)
+        }
       }
 
       // Загружаем новую обложку

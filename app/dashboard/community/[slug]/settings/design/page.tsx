@@ -32,7 +32,7 @@ export default async function DesignSettingsPage({ params }: DesignSettingsPageP
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Дизайн и внешний вид
