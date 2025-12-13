@@ -43,7 +43,23 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Проверка типа файла
+      if (!file.type.startsWith('image/')) {
+        setMessage({ type: 'error', text: 'Можно загружать только изображения' })
+        e.target.value = ''
+        return
+      }
+      
+      // Проверка размера файла (максимум 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage({ type: 'error', text: 'Размер файла не должен превышать 5 МБ' })
+        e.target.value = ''
+        return
+      }
+      
       setAvatarFile(file)
+      setRemoveAvatar(false) // Сбрасываем флаг удаления при выборе нового файла
+      setMessage(null) // Очищаем предыдущие сообщения об ошибках
       const reader = new FileReader()
       reader.onloadend = () => {
         setAvatarPreview(reader.result as string)
@@ -55,7 +71,23 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
   const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Проверка типа файла
+      if (!file.type.startsWith('image/')) {
+        setMessage({ type: 'error', text: 'Можно загружать только изображения' })
+        e.target.value = ''
+        return
+      }
+      
+      // Проверка размера файла (максимум 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage({ type: 'error', text: 'Размер файла не должен превышать 5 МБ' })
+        e.target.value = ''
+        return
+      }
+      
       setCoverFile(file)
+      setRemoveCover(false) // Сбрасываем флаг удаления при выборе нового файла
+      setMessage(null) // Очищаем предыдущие сообщения об ошибках
       const reader = new FileReader()
       reader.onloadend = () => {
         setCoverPreview(reader.result as string)
@@ -64,14 +96,19 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
     }
   }
 
+  const [removeAvatar, setRemoveAvatar] = useState(false)
+  const [removeCover, setRemoveCover] = useState(false)
+
   const handleRemoveAvatar = () => {
     setAvatarFile(null)
     setAvatarPreview(null)
+    setRemoveAvatar(true)
   }
 
   const handleRemoveCover = () => {
     setCoverFile(null)
     setCoverPreview(null)
+    setRemoveCover(true)
   }
 
   const handleSave = async () => {
@@ -85,11 +122,15 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
       formDataToSend.append('description', formData.description)
       formDataToSend.append('location', formData.location)
       
-      if (avatarFile) {
+      if (removeAvatar) {
+        formDataToSend.append('removeAvatar', 'true')
+      } else if (avatarFile) {
         formDataToSend.append('avatar', avatarFile)
       }
       
-      if (coverFile) {
+      if (removeCover) {
+        formDataToSend.append('removeCover', 'true')
+      } else if (coverFile) {
         formDataToSend.append('cover', coverFile)
       }
 
@@ -100,6 +141,8 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
         setEditMode('view')
         setAvatarFile(null)
         setCoverFile(null)
+        setRemoveAvatar(false)
+        setRemoveCover(false)
         router.refresh()
       } else {
         setMessage({ type: 'error', text: result.error || 'Произошла ошибка при сохранении' })
