@@ -63,12 +63,22 @@ export default function UserCommunities({ communities }: UserCommunitiesProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {communities.map((community) => (
-          <Link
-            key={community.id}
-            href={`/dashboard/community/${community.slug}`}
-            className="group border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:shadow-md transition-all dark:border-neutral-700 dark:hover:border-blue-500"
-          >
+        {communities.map((community) => {
+          const isDraft = community.status === 'draft';
+          const isPending = community.status === 'pending_moderation';
+          
+          return (
+            <Link
+              key={community.id}
+              href={`/dashboard/community/${community.slug}`}
+              className={`group border rounded-lg p-4 hover:shadow-md transition-all ${
+                isDraft
+                  ? 'border-yellow-300 bg-yellow-50/50 hover:border-yellow-400 dark:border-yellow-600 dark:bg-yellow-900/10 dark:hover:border-yellow-500'
+                  : isPending
+                  ? 'border-blue-300 bg-blue-50/50 hover:border-blue-400 dark:border-blue-600 dark:bg-blue-900/10 dark:hover:border-blue-500'
+                  : 'border-gray-200 hover:border-blue-500 dark:border-neutral-700 dark:hover:border-blue-500'
+              }`}
+            >
             <div className="flex items-start gap-3">
               {/* Аватар сообщества */}
               <div className="flex-shrink-0">
@@ -125,6 +135,13 @@ export default function UserCommunities({ communities }: UserCommunitiesProps) {
                     {community.categories.name}
                   </p>
                 )}
+                
+                {/* Подсказка для черновиков */}
+                {isDraft && (
+                  <p className="mt-1 text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+                    Требуется настройка →
+                  </p>
+                )}
               </div>
 
               {/* Стрелка */}
@@ -135,7 +152,7 @@ export default function UserCommunities({ communities }: UserCommunitiesProps) {
               </div>
             </div>
           </Link>
-        ))}
+        )})}
       </div>
     </div>
   )
