@@ -19,7 +19,7 @@ export default function CommunityNotFound() {
           />
         </svg>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Сообщество не найдено
+          Сообщество не найдено !!!
         </h1>
         <p className="text-gray-600 dark:text-neutral-400 max-w-md mx-auto">
           Запрашиваемое сообщество не существует или вы не являетесь его владельцем
