@@ -92,8 +92,8 @@ export default function CreateCommunityForm({ isEmailVerified, userEmail, catego
       });
 
       if (result.success && result.data) {
-        // Перенаправляем на страницу настройки созданного сообщества
-        router.push(`/dashboard/community/${result.data.slug}/settings?success=community_created`);
+        // Перенаправляем на страницу сообщества, где показывается интерфейс для черновика
+        router.push(`/dashboard/community/${result.data.slug}?success=community_created`);
       } else {
         alert('❌ Ошибка: ' + result.error);
       }
