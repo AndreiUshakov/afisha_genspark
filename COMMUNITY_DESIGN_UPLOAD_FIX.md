@@ -17,6 +17,9 @@
 ### 4. Недостаточное логирование
 Отсутствовало детальное логирование для диагностики проблем.
 
+### 5. Неправильные RLS политики Storage (КРИТИЧЕСКАЯ ПРОБЛЕМА)
+Основная проблема была в Row-Level Security политиках для бакета communities в Supabase.
+
 ## Внесённые исправления
 
 ### 1. Использование прокси URL
@@ -38,10 +41,89 @@
 - Проверка размера файла (максимум 5MB)
 - Валидация на клиенте и сервере
 
+## КРИТИЧЕСКОЕ ОБНОВЛЕНИЕ: Исправление RLS политик
+
+### Проблема с политиками
+
+После внесения изменений в код обнаружилась ошибка:
+```
+Ошибка при загрузке логотипа: new row violates row-level security policy
+```
+
+### Первая попытка исправления (неудачная)
+Использовалась конструкция `(string_to_array(name, '/'))[1]` для извлечения communityId из пути, но это не работало корректно.
+
+### Правильное решение (v2)
+Используется функция `split_part(name, '/', 1)` которая:
+- Более эффективна для извлечения первой части пути
+- Не создаёт массив в памяти
+- Более читаема и надёжна
+
+### SQL скрипт для исправления
+
+**Файл:** `supabase/fix-communities-storage-policies-v2.sql`
+
+Ключевые изменения в политиках:
+
+```sql
+-- БЫЛО (не работало):
+WHERE id::text = (string_to_array(name, '/'))[1]
+
+-- СТАЛО (работает):
+WHERE id::text = split_part(name, '/', 1)
+```
+
+Полная политика INSERT:
+```sql
+CREATE POLICY "Community owners can upload images"
+ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'communities'
+  AND auth.uid() IS NOT NULL
+  AND EXISTS (
+    SELECT 1 
+    FROM public.communities 
+    WHERE id::text = split_part(name, '/', 1)
+    AND owner_id = auth.uid()
+  )
+);
+```
+
+### Почему split_part лучше string_to_array
+
+1. **Производительность**: `split_part` не создаёт массив в памяти, работает быстрее
+2. **Надёжность**: Меньше вероятность ошибок при работе с индексами массива
+3. **Читаемость**: Код более понятен - "разделить и взять первую часть"
+4. **Стандартность**: `split_part` - стандартная PostgreSQL функция для этой задачи
+
+### Как применить исправление
+
+1. **Откройте Supabase Dashboard → SQL Editor**
+
+2. **Выполните SQL скрипт из файла:**
+   `supabase/fix-communities-storage-policies-v2.sql`
+
+3. **Проверьте что политики созданы:**
+   ```sql
+   SELECT policyname, cmd 
+   FROM pg_policies 
+   WHERE tablename = 'objects' 
+   AND schemaname = 'storage'
+   AND policyname LIKE '%ommunit%';
+   ```
+
+4. **Должны быть 4 политики:**
+   - Communities public read access (SELECT)
+   - Community owners can upload images (INSERT)
+   - Community owners can update images (UPDATE)
+   - Community owners can delete images (DELETE)
+
 ## Изменённые файлы
 
 1. app/dashboard/community/[slug]/settings/design/actions.ts
 2. app/dashboard/community/[slug]/settings/design/components/DesignSettingsForm.tsx
+3. supabase/fix-communities-storage-policies-v2.sql (новый)
+4. docs/COMMUNITY_STORAGE_SETUP.md (обновлён)
 
 ## Тестирование
 
@@ -61,5 +143,12 @@
 ## Примечания
 
 - Бакет communities должен быть настроен как публичный в Supabase Storage
+- RLS политики должны быть настроены согласно файлу fix-communities-storage-policies-v2.sql
 - API роут /api/storage/communities должен быть настроен для проксирования запросов
 - Все пути файлов должны иметь формат: {communityId}/{filename}
+- communityId это UUID, а не slug
+
+## Дополнительная документация
+
+- `docs/COMMUNITY_STORAGE_SETUP.md` - полная инструкция по настройке Storage с troubleshooting
+- `supabase/fix-communities-storage-policies-v2.sql` - правильный SQL скрипт для политик
