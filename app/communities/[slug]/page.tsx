@@ -1,8 +1,12 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { getCommunityBySlug, getRelatedCommunities, formatMembersCount, getMembersCount, getEventsCount } from '@/lib/supabase/communities';
+import Link from 'next/link';
+import { getCommunityBySlug, getRelatedCommunities, formatMembersCount, getMembersCount, getEventsCount, CommunityStatusLabels } from '@/lib/supabase/communities';
 import CommunityActions from '@/components/communities/CommunityActions';
 import ImageGallery from '@/components/communities/ImageGallery';
+import ContentBlocksPreview from '@/components/content-blocks/ContentBlocksPreview';
+import { getContentBlocks } from '@/app/dashboard/community/[slug]/settings/content/actions';
+import { createClient } from '@/lib/supabase/server';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -16,14 +20,53 @@ export default async function CommunityDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  // Проверяем, является ли текущий пользователь владельцем
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isOwner = user?.id === community.owner_id;
+
   const relatedCommunities = await getRelatedCommunities(slug, community.category_id);
   
   // Получаем данные для отображения
   const membersCount = getMembersCount(community.id);
   const eventsCount = getEventsCount(community.id);
+  
+  // Получаем блоки контента
+  const blocksResult = await getContentBlocks(community.id);
+  const contentBlocks = blocksResult.success ? blocksResult.data : [];
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      {/* Preview Banner for Owners */}
+      {isOwner && community.status !== 'published' && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-800">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium text-yellow-900 dark:text-yellow-300">
+                    Режим предпросмотра
+                  </p>
+                  <p className="text-xs text-yellow-700 dark:text-yellow-400">
+                    Статус: {CommunityStatusLabels[community.status as keyof typeof CommunityStatusLabels]}.
+                    Только вы можете видеть эту страницу.
+                  </p>
+                </div>
+              </div>
+              <Link
+                href={`/dashboard/community/${slug}/settings`}
+                className="px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors"
+              >
+                Перейти к настройкам
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section - Primary Visual Hierarchy */}
       <section className="relative w-full h-[400px] md:h-[500px]">
         {/* Cover Image */}
@@ -139,6 +182,13 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Custom Content Blocks */}
+            {contentBlocks.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md overflow-hidden">
+                <ContentBlocksPreview blocks={contentBlocks} />
               </div>
             )}
 

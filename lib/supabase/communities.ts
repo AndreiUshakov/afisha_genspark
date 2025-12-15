@@ -82,12 +82,17 @@ export async function getCommunities(): Promise<Community[]> {
 
 /**
  * Получить сообщество по slug
+ * Владелец может видеть свое неопубликованное сообщество
  */
 export async function getCommunityBySlug(slug: string): Promise<Community | null> {
   try {
     const supabase = await createClient();
     
-    const { data, error } = await supabase
+    // Получаем текущего пользователя
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Сначала пытаемся получить опубликованное сообщество
+    const { data: publishedCommunity, error: publishedError } = await supabase
       .from('communities')
       .select(`
         *,
@@ -100,12 +105,33 @@ export async function getCommunityBySlug(slug: string): Promise<Community | null
       .eq('status', 'published')
       .single();
 
-    if (error) {
-      console.error('Error fetching community by slug:', error);
-      return null;
+    // Если нашли опубликованное сообщество, возвращаем его
+    if (publishedCommunity && !publishedError) {
+      return publishedCommunity;
     }
 
-    return data;
+    // Если пользователь авторизован, проверяем, является ли он владельцем
+    if (user) {
+      const { data: ownerCommunity, error: ownerError } = await supabase
+        .from('communities')
+        .select(`
+          *,
+          categories (
+            name,
+            slug
+          )
+        `)
+        .eq('slug', slug)
+        .eq('owner_id', user.id)
+        .single();
+
+      if (ownerCommunity && !ownerError) {
+        return ownerCommunity;
+      }
+    }
+
+    // Ничего не нашли
+    return null;
   } catch (error) {
     console.error('Unexpected error fetching community:', error);
     return null;

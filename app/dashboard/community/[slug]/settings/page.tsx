@@ -103,7 +103,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
 
         {/* Контент страницы */}
         <Link
-          href={`/dashboard/community/${params.slug}/settings/content`}
+          href={`/dashboard/community/${slug}/settings/content`}
           className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-start gap-4">
@@ -125,7 +125,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
 
         {/* Социальные сети */}
         <Link
-          href={`/dashboard/community/${params.slug}/settings/social`}
+          href={`/dashboard/community/${slug}/settings/social`}
           className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-start gap-4">
@@ -147,7 +147,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
 
         {/* Медиа галерея */}
         <Link
-          href={`/dashboard/community/${params.slug}/media`}
+          href={`/dashboard/community/${slug}/media`}
           className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
         >
           <div className="flex items-start gap-4">
