@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useTransition, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { signIn } from './actions'
+import { signInWithVK } from './vk-actions'
 
 function LoginForm() {
   const searchParams = useSearchParams()
@@ -12,6 +13,18 @@ function LoginForm() {
   const passwordUpdated = searchParams.get('password_updated')
   const [error, setError] = useState<string | null>(urlError)
   const [isPending, startTransition] = useTransition()
+  const [isVKPending, setIsVKPending] = useState(false)
+
+  async function handleVKLogin() {
+    setIsVKPending(true)
+    try {
+      await signInWithVK()
+    } catch (error) {
+      console.error('Ошибка VK авторизации:', error)
+      setIsVKPending(false)
+      setError('Не удалось авторизоваться через VK')
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -73,12 +86,26 @@ function LoginForm() {
 
                 <button
                   type="button"
+                  onClick={handleVKLogin}
+                  disabled={isVKPending || isPending}
                   className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
                 >
-                  <svg className="w-4 h-auto" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M13.162 18.994c.609 0 .858-.406.851-.915-.031-1.917.714-2.949 2.059-1.604 1.488 1.488 1.796 2.519 3.603 2.519h3.2c.808 0 1.126-.26 1.126-.668 0-.863-1.421-2.386-2.625-3.504-1.686-1.565-1.765-1.602-.313-3.486 1.801-2.339 4.157-5.336 2.073-5.336h-3.981c-.772 0-.828.435-1.103 1.083-.995 2.347-2.886 5.387-3.604 4.922-.751-.485-.407-2.406-.35-5.261.015-.754.011-1.271-1.141-1.539-.629-.145-1.241-.205-1.809-.205-2.273 0-3.841.953-2.95 1.119 1.571.293 1.42 3.692 1.054 5.16-.638 2.556-3.036-2.024-4.035-4.305-.241-.548-.315-.974-1.175-.974h-3.255c-.492 0-.787.16-.787.516 0 .602 2.96 6.72 5.786 9.77 2.756 2.975 5.48 2.708 7.376 2.708z" fill="#0077FF"/>
-                  </svg>
-                  <span className="hidden sm:inline">VK</span>
+                  {isVKPending ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span className="hidden sm:inline">VK...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-auto" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13.162 18.994c.609 0 .858-.406.851-.915-.031-1.917.714-2.949 2.059-1.604 1.488 1.488 1.796 2.519 3.603 2.519h3.2c.808 0 1.126-.26 1.126-.668 0-.863-1.421-2.386-2.625-3.504-1.686-1.565-1.765-1.602-.313-3.486 1.801-2.339 4.157-5.336 2.073-5.336h-3.981c-.772 0-.828.435-1.103 1.083-.995 2.347-2.886 5.387-3.604 4.922-.751-.485-.407-2.406-.35-5.261.015-.754.011-1.271-1.141-1.539-.629-.145-1.241-.205-1.809-.205-2.273 0-3.841.953-2.95 1.119 1.571.293 1.42 3.692 1.054 5.16-.638 2.556-3.036-2.024-4.035-4.305-.241-.548-.315-.974-1.175-.974h-3.255c-.492 0-.787.16-.787.516 0 .602 2.96 6.72 5.786 9.77 2.756 2.975 5.48 2.708 7.376 2.708z" fill="#0077FF"/>
+                      </svg>
+                      <span className="hidden sm:inline">VK</span>
+                    </>
+                  )}
                 </button>
               </div>
 
