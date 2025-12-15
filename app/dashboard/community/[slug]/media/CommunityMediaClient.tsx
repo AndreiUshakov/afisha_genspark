@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { uploadCommunityMedia, deleteCommunityMedia } from './actions'
 
@@ -30,6 +30,11 @@ export default function CommunityMediaClient({ community, initialMedia }: Commun
   const router = useRouter()
   const [view, setView] = useState<'grid' | 'upload'>('grid')
   const [media, setMedia] = useState<MediaItem[]>(initialMedia)
+
+  // Синхронизируем локальное состояние с initialMedia при обновлении
+  useEffect(() => {
+    setMedia(initialMedia)
+  }, [initialMedia])
   const [uploading, setUploading] = useState(false)
   const [dragActive, setDragActive] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -110,19 +115,21 @@ export default function CommunityMediaClient({ community, initialMedia }: Commun
     try {
       const formData = new FormData()
       formData.append('communityId', community.id)
-      selectedFiles.forEach(file => {
-        formData.append('files', file)
+      // Используем индексированные имена полей вместо одного имени 'files'
+      selectedFiles.forEach((file, index) => {
+        formData.append(`file_${index}`, file)
       })
 
       const result = await uploadCommunityMedia(formData)
 
       if (result.success) {
-        setMessage({ 
-          type: 'success', 
-          text: `Успешно загружено ${result.uploaded} ${result.uploaded === 1 ? 'файл' : 'файлов'}` 
+        setMessage({
+          type: 'success',
+          text: `Успешно загружено ${result.uploaded} ${result.uploaded === 1 ? 'файл' : 'файлов'}`
         })
         setSelectedFiles([])
         setView('grid')
+        // Обновляем страницу для получения новых данных
         router.refresh()
       } else {
         setMessage({ type: 'error', text: result.error || 'Ошибка при загрузке' })

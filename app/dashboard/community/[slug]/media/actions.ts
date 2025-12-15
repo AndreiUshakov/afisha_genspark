@@ -26,7 +26,16 @@ export async function uploadCommunityMedia(formData: FormData) {
     }
 
     const communityId = formData.get('communityId') as string
-    const files = formData.getAll('files') as File[]
+    
+    // Собираем все файлы из FormData
+    const files: File[] = []
+    let index = 0
+    while (true) {
+      const file = formData.get(`file_${index}`) as File | null
+      if (!file) break
+      files.push(file)
+      index++
+    }
 
     if (!communityId) {
       return { success: false, error: 'ID сообщества не указан' }

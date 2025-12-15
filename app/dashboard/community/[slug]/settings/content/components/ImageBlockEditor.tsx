@@ -1,12 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import type { ImageBlockContent, BlockEditorProps } from '@/lib/types/content-blocks'
 import { uploadBlockImage } from '../actions'
+import { getCommunityMedia } from '../../../media/actions'
+
+interface MediaItem {
+  id: string
+  file_url: string
+  file_name: string
+  uploaded_at: string
+}
 
 interface ImageBlockEditorProps extends BlockEditorProps<ImageBlockContent> {
   communityId: string
+  communitySlug: string
 }
 
 export default function ImageBlockEditor({ 
@@ -17,13 +26,50 @@ export default function ImageBlockEditor({
   onMoveDown,
   isFirst,
   isLast,
-  communityId
+  communityId,
+  communitySlug
 }: ImageBlockEditorProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [url, setUrl] = useState(content.url)
   const [alt, setAlt] = useState(content.alt)
   const [caption, setCaption] = useState(content.caption || '')
+  const [showGallery, setShowGallery] = useState(false)
+  const [galleryMedia, setGalleryMedia] = useState<MediaItem[]>([])
+  const [loadingGallery, setLoadingGallery] = useState(false)
+
+  useEffect(() => {
+    if (showGallery && galleryMedia.length === 0) {
+      loadGalleryMedia()
+    }
+  }, [showGallery])
+
+  const loadGalleryMedia = async () => {
+    setLoadingGallery(true)
+    try {
+      const result = await getCommunityMedia(communitySlug)
+      if (result.success && result.media) {
+        setGalleryMedia(result.media)
+      }
+    } catch (error) {
+      console.error('Error loading gallery:', error)
+    } finally {
+      setLoadingGallery(false)
+    }
+  }
+
+  const refreshGallery = () => {
+    setGalleryMedia([])
+    loadGalleryMedia()
+  }
+
+  const selectFromGallery = (mediaItem: MediaItem) => {
+    setUrl(mediaItem.file_url)
+    if (!alt) {
+      setAlt(mediaItem.file_name.replace(/\.[^/.]+$/, ''))
+    }
+    setShowGallery(false)
+  }
 
   const handleSave = () => {
     onChange({ url, alt, caption: caption || undefined })
@@ -66,6 +112,10 @@ export default function ImageBlockEditor({
         setUrl(result.data.url)
         if (!alt) {
           setAlt(file.name.replace(/\.[^/.]+$/, ''))
+        }
+        // Обновляем галерею после загрузки
+        if (showGallery) {
+          await loadGalleryMedia()
         }
       } else {
         alert(result.error || 'Ошибка при загрузке изображения')
@@ -139,7 +189,7 @@ export default function ImageBlockEditor({
             </div>
           )}
 
-          {/* Upload Button */}
+          {/* Upload and Gallery Buttons */}
           <div className="flex gap-2">
             <label className="flex-1 cursor-pointer">
               <div className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-center">
@@ -153,7 +203,60 @@ export default function ImageBlockEditor({
                 className="hidden"
               />
             </label>
+            <button
+              type="button"
+              onClick={() => setShowGallery(!showGallery)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              disabled={isUploading}
+            >
+              {showGallery ? 'Скрыть галерею' : 'Из галереи'}
+            </button>
+            {showGallery && (
+              <button
+                type="button"
+                onClick={refreshGallery}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                disabled={loadingGallery}
+              >
+                🔄 Обновить
+              </button>
+            )}
           </div>
+
+          {/* Gallery Selection */}
+          {showGallery && (
+            <div className="border-2 border-blue-300 dark:border-blue-600 rounded-lg p-4 bg-blue-50 dark:bg-blue-900/10">
+              <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                Выберите изображение из медиагалереи
+              </h4>
+              {loadingGallery ? (
+                <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+                  Загрузка...
+                </div>
+              ) : galleryMedia.length === 0 ? (
+                <div className="text-center py-8 text-gray-600 dark:text-gray-400">
+                  Галерея пуста. Загрузите изображения в медиагалерею.
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                  {galleryMedia.map(item => (
+                    <div
+                      key={item.id}
+                      onClick={() => selectFromGallery(item)}
+                      className="relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                    >
+                      <Image
+                        src={item.file_url}
+                        alt={item.file_name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Alt Text */}
           <div>

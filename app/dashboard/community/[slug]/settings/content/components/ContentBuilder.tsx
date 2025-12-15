@@ -15,10 +15,11 @@ import ImageBlockEditor from './ImageBlockEditor'
 
 interface ContentBuilderProps {
   communityId: string
+  communitySlug: string
   initialBlocks: ContentBlock[]
 }
 
-export default function ContentBuilder({ communityId, initialBlocks }: ContentBuilderProps) {
+export default function ContentBuilder({ communityId, communitySlug, initialBlocks }: ContentBuilderProps) {
   const router = useRouter()
   const [blocks, setBlocks] = useState<ContentBlock[]>(initialBlocks)
   const [isAddingBlock, setIsAddingBlock] = useState(false)
@@ -190,6 +191,7 @@ export default function ContentBuilder({ communityId, initialBlocks }: ContentBu
             content={block.content as any}
             onChange={(content) => handleUpdateBlock(block.id, content)}
             communityId={communityId}
+            communitySlug={communitySlug}
             {...commonProps}
           />
         )

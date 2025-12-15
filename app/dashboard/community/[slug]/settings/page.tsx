@@ -46,20 +46,93 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
 
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="mb-8">
+      {/* Заголовок страницы */}
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Настройки сообщества "{community.name}"
+          Настройки сообщества
         </h1>
         <p className="mt-2 text-gray-600 dark:text-neutral-400">
           Управляйте настройками и внешним видом вашего сообщества
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Баннер о необходимости настройки для черновиков */}
+      {community.status === 'draft' && (
+        <div className="bg-blue-50 border-l-4 border-blue-400 p-6 mb-6 dark:bg-blue-900/20 dark:border-blue-600">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="h-6 w-6 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+              </svg>
+            </div>
+            <div className="ml-3 flex-1">
+              <h3 className="text-lg font-medium text-blue-800 dark:text-blue-200">
+                Сообщество создано! Завершите настройку
+              </h3>
+              <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                <p>
+                  Ваше сообщество <strong>"{community.name}"</strong> успешно создано и находится в режиме черновика.
+                  Чтобы опубликовать сообщество и сделать его видимым для других пользователей, необходимо:
+                </p>
+                <ol className="list-decimal list-inside mt-3 space-y-1 ml-2">
+                  <li>Настроить внешний вид страницы сообщества</li>
+                  <li>Добавить логотип и обложку (рекомендуется)</li>
+                  <li>Заполнить подробное описание</li>
+                  <li>Отправить на модерацию для публикации</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Плашка с информацией о сообществе */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 dark:bg-neutral-800 dark:border-neutral-700">
+        <div className="flex items-center gap-4">
+          {community.avatar_url ? (
+            <img
+              src={community.avatar_url}
+              alt={community.name}
+              className="size-16 rounded-full object-cover"
+            />
+          ) : (
+            <div className="size-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <span className="text-white font-bold text-2xl">
+                {community.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {community.name}
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
+              {community.description || 'Описание не указано'}
+            </p>
+            <div className="mt-2">
+              <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
+                community.status === 'published'
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                  : community.status === 'pending_moderation'
+                  ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                  : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+              }`}>
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                </svg>
+                {CommunityStatusLabels[community.status as CommunityStatus]}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Настроечные разделы */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Основные настройки */}
         <Link
           href={`/dashboard/community/${slug}/settings/basic`}
-          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
         >
           <div className="flex items-start gap-4">
             <div className="p-3 bg-blue-50 rounded-lg dark:bg-blue-900/20">
@@ -82,7 +155,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
         {/* Дизайн страницы */}
         <Link
           href={`/dashboard/community/${slug}/settings/design`}
-          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
         >
           <div className="flex items-start gap-4">
             <div className="p-3 bg-purple-50 rounded-lg dark:bg-purple-900/20">
@@ -104,7 +177,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
         {/* Контент страницы */}
         <Link
           href={`/dashboard/community/${slug}/settings/content`}
-          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
         >
           <div className="flex items-start gap-4">
             <div className="p-3 bg-green-50 rounded-lg dark:bg-green-900/20">
@@ -123,32 +196,10 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
           </div>
         </Link>
 
-        {/* Социальные сети */}
-        <Link
-          href={`/dashboard/community/${slug}/settings/social`}
-          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
-        >
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-orange-50 rounded-lg dark:bg-orange-900/20">
-              <svg className="size-6 text-orange-600 dark:text-orange-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-              </svg>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                Социальные сети
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-neutral-400">
-                Ссылки на соцсети и мессенджеры
-              </p>
-            </div>
-          </div>
-        </Link>
-
         {/* Медиа галерея */}
         <Link
           href={`/dashboard/community/${slug}/media`}
-          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-shadow"
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
         >
           <div className="flex items-start gap-4">
             <div className="p-3 bg-pink-50 rounded-lg dark:bg-pink-900/20">
@@ -162,6 +213,30 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
               </h3>
               <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Фото и видео вашего сообщества
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        {/* Предпросмотр */}
+        <Link
+          href={`/communities/${slug}`}
+          target="_blank"
+          className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white hover:from-orange-600 hover:to-orange-700 transition-all hover:scale-105"
+        >
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-white/20 rounded-lg">
+              <svg className="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-1">
+                Предпросмотр
+              </h3>
+              <p className="text-sm text-orange-100">
+                Посмотреть как видят пользователи
               </p>
             </div>
           </div>
