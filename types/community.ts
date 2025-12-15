@@ -3,11 +3,12 @@
  */
 
 /**
- * Социальные ссылки сообщества (без Instagram)
+ * Социальные ссылки сообщества
  */
 export interface SocialLinks {
   vk?: string;
   telegram?: string;
+  max?: string;
   website?: string;
   facebook?: string;
 }
