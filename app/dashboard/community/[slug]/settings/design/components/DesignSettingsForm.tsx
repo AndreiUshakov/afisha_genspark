@@ -17,9 +17,10 @@ interface Community {
 
 interface DesignSettingsFormProps {
   community: Community
+  isReadOnly?: boolean
 }
 
-export default function DesignSettingsForm({ community }: DesignSettingsFormProps) {
+export default function DesignSettingsForm({ community, isReadOnly = false }: DesignSettingsFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
@@ -158,26 +159,30 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
   return (
     <div>
       {/* Заголовок и кнопки управления */}
-      <div className="mb-8 flex items-center justify-between">       
+      <div className="mb-8 flex items-center justify-between">
         <div className="flex gap-3">
-          <button
-            onClick={() => setEditMode(editMode === 'view' ? 'edit' : 'view')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              editMode === 'edit'
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 hover:bg-gray-300 dark:hover:bg-neutral-600'
-            }`}
-          >
-            {editMode === 'edit' ? '👁️ Режим просмотра' : '✏️ Режим редактирования'}
-          </button>
-          {editMode === 'edit' && (
-            <button
-              onClick={handleSave}
-              disabled={isSubmitting}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isSubmitting ? '💾 Сохранение...' : '💾 Сохранить изменения'}
-            </button>
+          {!isReadOnly && (
+            <>
+              <button
+                onClick={() => setEditMode(editMode === 'view' ? 'edit' : 'view')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  editMode === 'edit'
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-gray-200 dark:bg-neutral-700 text-gray-700 dark:text-neutral-300 hover:bg-gray-300 dark:hover:bg-neutral-600'
+                }`}
+              >
+                {editMode === 'edit' ? '👁️ Режим просмотра' : '✏️ Режим редактирования'}
+              </button>
+              {editMode === 'edit' && (
+                <button
+                  onClick={handleSave}
+                  disabled={isSubmitting}
+                  className="px-6 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isSubmitting ? '💾 Сохранение...' : '💾 Сохранить изменения'}
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -213,7 +218,7 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
             <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70"></div>
             
             {/* Кнопки управления обложкой в режиме редактирования */}
-            {editMode === 'edit' && (
+            {editMode === 'edit' && !isReadOnly && (
               <div className="absolute top-4 right-4 flex gap-2 z-20">
                 <label className="cursor-pointer px-4 py-2 bg-white/90 backdrop-blur-sm text-gray-900 rounded-lg font-medium hover:bg-white transition-colors shadow-lg flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,7 +270,7 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
                 </div>
                 
                 {/* Кнопки управления логотипом */}
-                {editMode === 'edit' && (
+                {editMode === 'edit' && !isReadOnly && (
                   <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2">
                     <label className="cursor-pointer p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors">
                       <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -294,7 +299,7 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
 
               {/* Community Info */}
               <div className="flex-1 text-white pb-2">
-                {editMode === 'edit' ? (
+                {editMode === 'edit' && !isReadOnly ? (
                   <div className="space-y-3">
                     <input
                       type="text"
@@ -341,7 +346,7 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                     </svg>
-                    {editMode === 'edit' ? (
+                    {editMode === 'edit' && !isReadOnly ? (
                       <input
                         type="text"
                         value={formData.location}
@@ -367,7 +372,7 @@ export default function DesignSettingsForm({ community }: DesignSettingsFormProp
       </div>
 
       {/* Подсказка в режиме редактирования */}
-      {editMode === 'edit' && (
+      {editMode === 'edit' && !isReadOnly && (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <div className="flex gap-3">
             <div className="flex-shrink-0">

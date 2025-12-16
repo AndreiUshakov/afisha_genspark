@@ -3,15 +3,16 @@
 import { useState, useRef, useEffect } from 'react'
 import type { TextBlockContent, BlockEditorProps } from '@/lib/types/content-blocks'
 
-export default function TextBlockEditor({ 
-  content, 
-  onChange, 
+export default function TextBlockEditor({
+  content,
+  onChange,
   onDelete,
   onMoveUp,
   onMoveDown,
   isFirst,
-  isLast
-}: BlockEditorProps<TextBlockContent>) {
+  isLast,
+  isReadOnly
+}: BlockEditorProps<TextBlockContent> & { isReadOnly?: boolean }) {
   const [isEditing, setIsEditing] = useState(false)
   const [html, setHtml] = useState(content.html)
   const editorRef = useRef<HTMLDivElement>(null)
@@ -45,8 +46,9 @@ export default function TextBlockEditor({
   return (
     <div className="group relative bg-white dark:bg-neutral-800 border-2 border-gray-200 dark:border-neutral-700 rounded-lg p-6 hover:border-purple-400 dark:hover:border-purple-600 transition-colors">
       {/* Toolbar */}
-      <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        {!isFirst && onMoveUp && (
+      {!isReadOnly && (
+        <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          {!isFirst && onMoveUp && (
           <button
             onClick={onMoveUp}
             className="p-2 bg-gray-100 dark:bg-neutral-700 rounded-lg hover:bg-gray-200 dark:hover:bg-neutral-600 transition-colors"
@@ -68,16 +70,19 @@ export default function TextBlockEditor({
             </svg>
           </button>
         )}
-        <button
-          onClick={onDelete}
-          className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-          title="Удалить блок"
-        >
-          <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </button>
-      </div>
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+            title="Удалить блок"
+          >
+            <svg className="w-4 h-4 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        )}
+        </div>
+      )}
 
       {/* Block Label */}
       <div className="mb-3 flex items-center gap-2">
@@ -211,9 +216,9 @@ export default function TextBlockEditor({
           </div>
         </div>
       ) : (
-        <div 
-          onClick={() => setIsEditing(true)}
-          className="cursor-pointer min-h-[100px]"
+        <div
+          onClick={isReadOnly ? undefined : () => setIsEditing(true)}
+          className={isReadOnly ? 'min-h-[100px]' : 'cursor-pointer min-h-[100px]'}
         >
           {content.html ? (
             <div 

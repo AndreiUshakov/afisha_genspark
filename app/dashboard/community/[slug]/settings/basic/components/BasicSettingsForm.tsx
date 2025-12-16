@@ -32,9 +32,10 @@ interface Community {
 interface BasicSettingsFormProps {
   community: Community
   categories: Category[]
+  isReadOnly?: boolean
 }
 
-export default function BasicSettingsForm({ community, categories }: BasicSettingsFormProps) {
+export default function BasicSettingsForm({ community, categories, isReadOnly = false }: BasicSettingsFormProps) {
   const [formData, setFormData] = useState<UpdateBasicSettingsData>({
     name: community.name,
     description: community.description,
@@ -132,11 +133,12 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
               id="name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              disabled={isReadOnly}
               className={`w-full px-4 py-3 rounded-lg border ${
-                errors.name 
-                  ? 'border-red-500 focus:ring-red-500' 
+                errors.name
+                  ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 dark:border-neutral-600 focus:ring-emerald-500'
-              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
+              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed`}
               placeholder="Например: Клуб любителей театра"
             />
             {errors.name && (
@@ -153,11 +155,12 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
               id="category"
               value={formData.category_id}
               onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+              disabled={isReadOnly}
               className={`w-full px-4 py-3 rounded-lg border ${
-                errors.category_id 
-                  ? 'border-red-500 focus:ring-red-500' 
+                errors.category_id
+                  ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 dark:border-neutral-600 focus:ring-emerald-500'
-              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
+              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed`}
             >
               <option value="">Выберите категорию</option>
               {categories.map(cat => (
@@ -180,11 +183,12 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
               maxLength={200}
+              disabled={isReadOnly}
               className={`w-full px-4 py-3 rounded-lg border ${
-                errors.description 
-                  ? 'border-red-500 focus:ring-red-500' 
+                errors.description
+                  ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 dark:border-neutral-600 focus:ring-emerald-500'
-              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors resize-none`}
+              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors resize-none disabled:opacity-60 disabled:cursor-not-allowed`}
               placeholder="Короткое описание вашего сообщества (до 200 символов)"
             />
             {errors.description && (
@@ -204,30 +208,36 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
         </h2>
         
         <div className="space-y-5">
-          <FilterSelector
-            label="Для кого"
-            options={FILTER_OPTIONS.TARGET_AUDIENCE}
-            selected={formData.target_audience}
-            onChange={(selected) => setFormData({ ...formData, target_audience: selected })}
-            placeholder="Поиск по аудитории..."
-          />
+          <div className={isReadOnly ? 'pointer-events-none opacity-60' : ''}>
+            <FilterSelector
+              label="Для кого"
+              options={FILTER_OPTIONS.TARGET_AUDIENCE}
+              selected={formData.target_audience}
+              onChange={(selected) => setFormData({ ...formData, target_audience: selected })}
+              placeholder="Поиск по аудитории..."
+            />
+          </div>
 
-          <FilterSelector
-            label="Я хочу"
-            options={FILTER_OPTIONS.WISHES}
-            selected={formData.wishes}
-            onChange={(selected) => setFormData({ ...formData, wishes: selected })}
-            placeholder="Поиск по целям..."
-          />
+          <div className={isReadOnly ? 'pointer-events-none opacity-60' : ''}>
+            <FilterSelector
+              label="Я хочу"
+              options={FILTER_OPTIONS.WISHES}
+              selected={formData.wishes}
+              onChange={(selected) => setFormData({ ...formData, wishes: selected })}
+              placeholder="Поиск по целям..."
+            />
+          </div>
 
-          <FilterSelector
-            label="Возрастные категории"
-            options={FILTER_OPTIONS.AGE_CATEGORIES}
-            selected={formData.age_categories}
-            onChange={(selected) => setFormData({ ...formData, age_categories: selected })}
-            placeholder="Поиск по возрасту..."
-            searchable={false}
-          />
+          <div className={isReadOnly ? 'pointer-events-none opacity-60' : ''}>
+            <FilterSelector
+              label="Возрастные категории"
+              options={FILTER_OPTIONS.AGE_CATEGORIES}
+              selected={formData.age_categories}
+              onChange={(selected) => setFormData({ ...formData, age_categories: selected })}
+              placeholder="Поиск по возрасту..."
+              searchable={false}
+            />
+          </div>
         </div>
       </div>
 
@@ -247,11 +257,12 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
               id="contact_email"
               value={formData.contact_email}
               onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
+              disabled={isReadOnly}
               className={`w-full px-4 py-3 rounded-lg border ${
-                errors.contact_email 
-                  ? 'border-red-500 focus:ring-red-500' 
+                errors.contact_email
+                  ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 dark:border-neutral-600 focus:ring-emerald-500'
-              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors`}
+              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed`}
               placeholder="community@example.com"
             />
             {errors.contact_email && (
@@ -268,7 +279,8 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
               id="contact_phone"
               value={formData.contact_phone}
               onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+              disabled={isReadOnly}
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               placeholder="+7 (999) 123-45-67"
             />
           </div>
@@ -287,11 +299,12 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
             <input
               type="url"
               value={formData.social_links.vk}
-              onChange={(e) => setFormData({ 
-                ...formData, 
+              onChange={(e) => setFormData({
+                ...formData,
                 social_links: { ...formData.social_links, vk: e.target.value }
               })}
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+              disabled={isReadOnly}
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               placeholder="https://vk.com/your-community"
             />
           </div>
@@ -301,11 +314,12 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
             <input
               type="url"
               value={formData.social_links.telegram}
-              onChange={(e) => setFormData({ 
-                ...formData, 
+              onChange={(e) => setFormData({
+                ...formData,
                 social_links: { ...formData.social_links, telegram: e.target.value }
               })}
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+              disabled={isReadOnly}
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               placeholder="https://t.me/your-channel"
             />
           </div>
@@ -315,11 +329,12 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
             <input
               type="url"
               value={formData.social_links.max}
-              onChange={(e) => setFormData({ 
-                ...formData, 
+              onChange={(e) => setFormData({
+                ...formData,
                 social_links: { ...formData.social_links, max: e.target.value }
               })}
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+              disabled={isReadOnly}
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               placeholder="https://max.ru/your-page"
             />
           </div>
@@ -329,11 +344,12 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
             <input
               type="url"
               value={formData.social_links.website}
-              onChange={(e) => setFormData({ 
-                ...formData, 
+              onChange={(e) => setFormData({
+                ...formData,
                 social_links: { ...formData.social_links, website: e.target.value }
               })}
-              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+              disabled={isReadOnly}
+              className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               placeholder="https://your-website.com"
             />
           </div>
@@ -341,15 +357,17 @@ export default function BasicSettingsForm({ community, categories }: BasicSettin
       </div>
 
       {/* Кнопка сохранения */}
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-        >
-          {isSaving ? 'Сохранение...' : 'Сохранить изменения'}
-        </button>
-      </div>
+      {!isReadOnly && (
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+          >
+            {isSaving ? 'Сохранение...' : 'Сохранить изменения'}
+          </button>
+        </div>
+      )}
     </form>
   )
 }

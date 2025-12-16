@@ -43,10 +43,10 @@ export interface UpdateBlockInput {
 // Типы для компонентов
 export interface BlockEditorProps<T extends BlockContent = BlockContent> {
   content: T
-  onChange: (content: T) => void
-  onDelete: () => void
-  onMoveUp?: () => void
-  onMoveDown?: () => void
+  onChange: (content: T) => void | Promise<void>
+  onDelete?: () => void | Promise<void>
+  onMoveUp?: () => void | Promise<void>
+  onMoveDown?: () => void | Promise<void>
   isFirst?: boolean
   isLast?: boolean
 }

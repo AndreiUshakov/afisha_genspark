@@ -17,9 +17,10 @@ interface ContentBuilderProps {
   communityId: string
   communitySlug: string
   initialBlocks: ContentBlock[]
+  isReadOnly?: boolean
 }
 
-export default function ContentBuilder({ communityId, communitySlug, initialBlocks }: ContentBuilderProps) {
+export default function ContentBuilder({ communityId, communitySlug, initialBlocks, isReadOnly = false }: ContentBuilderProps) {
   const router = useRouter()
   const [blocks, setBlocks] = useState<ContentBlock[]>(initialBlocks)
   const [isAddingBlock, setIsAddingBlock] = useState(false)
@@ -158,11 +159,12 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
 
   const renderBlock = (block: ContentBlock, index: number) => {
     const commonProps = {
-      onDelete: () => handleDeleteBlock(block.id),
-      onMoveUp: index > 0 ? () => handleMoveBlock(index, 'up') : undefined,
-      onMoveDown: index < blocks.length - 1 ? () => handleMoveBlock(index, 'down') : undefined,
+      onDelete: isReadOnly ? undefined : () => handleDeleteBlock(block.id),
+      onMoveUp: isReadOnly ? undefined : (index > 0 ? () => handleMoveBlock(index, 'up') : undefined),
+      onMoveDown: isReadOnly ? undefined : (index < blocks.length - 1 ? () => handleMoveBlock(index, 'down') : undefined),
       isFirst: index === 0,
-      isLast: index === blocks.length - 1
+      isLast: index === blocks.length - 1,
+      isReadOnly
     }
 
     switch (block.block_type) {
@@ -171,7 +173,7 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
           <HeadingBlockEditor
             key={block.id}
             content={block.content as any}
-            onChange={(content) => handleUpdateBlock(block.id, content)}
+            onChange={isReadOnly ? () => {} : (content) => handleUpdateBlock(block.id, content)}
             {...commonProps}
           />
         )
@@ -180,7 +182,7 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
           <TextBlockEditor
             key={block.id}
             content={block.content as any}
-            onChange={(content) => handleUpdateBlock(block.id, content)}
+            onChange={isReadOnly ? () => {} : (content) => handleUpdateBlock(block.id, content)}
             {...commonProps}
           />
         )
@@ -189,7 +191,7 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
           <ImageBlockEditor
             key={block.id}
             content={block.content as any}
-            onChange={(content) => handleUpdateBlock(block.id, content)}
+            onChange={isReadOnly ? () => {} : (content) => handleUpdateBlock(block.id, content)}
             communityId={communityId}
             communitySlug={communitySlug}
             {...commonProps}
@@ -250,7 +252,7 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
       )}
 
       {/* Add Block Button */}
-      {!isAddingBlock ? (
+      {!isReadOnly && !isAddingBlock ? (
         <button
           onClick={() => setIsAddingBlock(true)}
           disabled={isSaving}
