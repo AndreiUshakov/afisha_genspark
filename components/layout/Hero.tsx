@@ -1,6 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { getCategoriesFeaturedOnHero } from '@/data/mockCategories';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Константы для стилей карточки "Все события" - улучшение читаемости и переиспользования
 const ALL_EVENTS_CARD_STYLES = {
@@ -99,6 +101,7 @@ function getCategoryColorClasses(color: string) {
 
 export default function Hero() {
   const featuredCategories = getCategoriesFeaturedOnHero();
+  const [scrollY, setScrollY] = useState(0);
   
   // Настройки фона
   const BACKGROUND_CONFIG = {
@@ -112,31 +115,65 @@ export default function Hero() {
     
     // Прозрачность белого оверлея (0-1, где 0 - полностью прозрачный, 1 - полностью непрозрачный)
     overlayOpacity: 0.7,
+    
+    // Настройки паралакса
+    parallax: {
+      enabled: false, // Включить/выключить паралакс эффект
+      speed: 1, // Скорость паралакса (0.1 - медленно, 1 - быстро)
+    },
   };
+  
+  // Обработчик скролла для паралакс эффекта
+  useEffect(() => {
+    if (!BACKGROUND_CONFIG.parallax.enabled) return;
+    
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [BACKGROUND_CONFIG.parallax.enabled]);
+  
+  // Вычисляем трансформацию для паралакса
+  const parallaxTransform = BACKGROUND_CONFIG.parallax.enabled
+    ? `translateY(${scrollY * BACKGROUND_CONFIG.parallax.speed}px)`
+    : 'none';
   
   return (
     <div className="relative overflow-hidden min-h-screen flex items-center">
-      {/* Фоновое изображение */}
+      {/* Фоновое изображение с паралаксом */}
       {BACKGROUND_CONFIG.image && !BACKGROUND_CONFIG.video && (
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${BACKGROUND_CONFIG.image})` }}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform will-change-transform"
+          style={{
+            backgroundImage: `url(${BACKGROUND_CONFIG.image})`,
+            transform: parallaxTransform,
+          }}
           aria-hidden="true"
         />
       )}
       
-      {/* Фоновое видео */}
+      {/* Фоновое видео с паралаксом */}
       {BACKGROUND_CONFIG.video && (
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+        <div
+          className="absolute inset-0 transition-transform will-change-transform"
+          style={{ transform: parallaxTransform }}
           aria-hidden="true"
         >
-          <source src={BACKGROUND_CONFIG.video} type="video/mp4" />
-        </video>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover scale-110"
+          >
+            <source src={BACKGROUND_CONFIG.video} type="video/mp4" />
+          </video>
+        </div>
       )}
       
       {/* Белый оверлей с настраиваемой прозрачностью */}
