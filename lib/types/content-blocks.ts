@@ -1,6 +1,6 @@
 // Типы блоков контента для страницы "О сообществе"
 
-export type BlockType = 'heading' | 'text' | 'image'
+export type BlockType = 'heading' | 'text' | 'image' | 'carousel'
 
 export interface HeadingBlockContent {
   text: string
@@ -16,7 +16,19 @@ export interface ImageBlockContent {
   caption?: string
 }
 
-export type BlockContent = HeadingBlockContent | TextBlockContent | ImageBlockContent
+export interface CarouselImage {
+  url: string
+  alt: string
+  caption?: string
+}
+
+export interface CarouselBlockContent {
+  images: CarouselImage[]
+  slidesPerView?: number // По умолчанию 4
+  slidesPerViewMobile?: number // По умолчанию 1
+}
+
+export type BlockContent = HeadingBlockContent | TextBlockContent | ImageBlockContent | CarouselBlockContent
 
 export interface ContentBlock {
   id: string

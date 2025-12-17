@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import type { ContentBlock } from '@/lib/types/content-blocks'
+import CarouselBlock from './CarouselBlock'
 
 interface ContentBlocksPreviewProps {
   blocks: ContentBlock[]
@@ -53,6 +54,14 @@ export default function ContentBlocksPreview({ blocks }: ContentBlocksPreviewPro
                       </figcaption>
                     )}
                   </figure>
+                )
+              
+              case 'carousel':
+                const carouselContent = block.content as any
+                return (
+                  <div key={block.id} className="w-full">
+                    <CarouselBlock content={carouselContent} />
+                  </div>
                 )
               
               default:

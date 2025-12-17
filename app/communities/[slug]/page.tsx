@@ -75,14 +75,28 @@ export default async function CommunityDetailPage({ params }: PageProps) {
       <section className="relative w-full h-[400px] md:h-[500px]">
         {/* Cover Image */}
         <div className="absolute inset-0">
-          <Image
-            src={community.cover_url || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200'}
-            alt={community.name}
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70"></div>
+          {community.cover_url ? (
+            <>
+              <Image
+                src={community.cover_url}
+                alt={community.name}
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70"></div>
+            </>
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/60"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg className="w-32 h-32 text-white/20" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Hero Content */}
@@ -90,12 +104,20 @@ export default async function CommunityDetailPage({ params }: PageProps) {
           <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
             {/* Community Avatar */}
             <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl overflow-hidden border-4 border-white shadow-2xl flex-shrink-0">
-              <Image
-                src={community.avatar_url || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400'}
-                alt={community.name}
-                fill
-                className="object-cover"
-              />
+              {community.avatar_url ? (
+                <Image
+                  src={community.avatar_url}
+                  alt={community.name}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
+                  <svg className="w-16 h-16 md:w-20 md:h-20 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                  </svg>
+                </div>
+              )}
             </div>
 
             {/* Community Info */}
@@ -295,22 +317,44 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                   className="group block bg-gray-50 dark:bg-gray-700 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="relative h-48 w-full">
-                    <Image
-                      src={relatedCommunity.cover_url || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200'}
-                      alt={relatedCommunity.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    {relatedCommunity.cover_url ? (
+                      <>
+                        <Image
+                          src={relatedCommunity.cover_url}
+                          alt={relatedCommunity.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <svg className="w-16 h-16 text-white/20" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </>
+                    )}
                     
                     {/* Avatar overlay */}
                     <div className="absolute bottom-3 left-3 w-16 h-16 rounded-xl overflow-hidden border-2 border-white">
-                      <Image
-                        src={relatedCommunity.avatar_url || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400'}
-                        alt={relatedCommunity.name}
-                        fill
-                        className="object-cover"
-                      />
+                      {relatedCommunity.avatar_url ? (
+                        <Image
+                          src={relatedCommunity.avatar_url}
+                          alt={relatedCommunity.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                          </svg>
+                        </div>
+                      )}
                     </div>
                   </div>
                   

@@ -233,12 +233,15 @@ export async function uploadBlockImage(formData: FormData) {
     
     // Генерируем уникальное имя файла
     const fileExt = file.name.split('.').pop()
-    const fileName = `${communityId}/${Date.now()}.${fileExt}`
+    const timestamp = Date.now()
+    const randomStr = Math.random().toString(36).substring(7)
+    const fileName = `${timestamp}-${randomStr}.${fileExt}`
+    const filePath = `${communityId}/${fileName}`
     
     // Загружаем в bucket
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('community-media')
-      .upload(fileName, file, {
+      .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false
       })
@@ -248,12 +251,34 @@ export async function uploadBlockImage(formData: FormData) {
       return { success: false, error: uploadError.message }
     }
     
-    // Получаем публичный URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('community-media')
-      .getPublicUrl(fileName)
+    // Используем прокси URL (как в медиагалерее)
+    const fileUrl = `/api/storage/community-media/${filePath}`
     
-    return { success: true, data: { url: publicUrl, path: fileName } }
+    // Сохраняем запись в таблицу community_media
+    const { data: mediaRecord, error: dbError } = await supabase
+      .from('community_media')
+      .insert({
+        community_id: communityId,
+        file_path: filePath,
+        file_url: fileUrl,
+        file_name: file.name,
+        file_size: file.size,
+        mime_type: file.type
+      })
+      .select()
+      .single()
+    
+    if (dbError) {
+      console.error('Error saving media record:', dbError)
+      // Удаляем файл из storage если не удалось сохранить в БД
+      await supabase.storage.from('community-media').remove([filePath])
+      return { success: false, error: 'Ошибка сохранения в медиагалерею' }
+    }
+    
+    // Инвалидируем кеш медиагалереи
+    revalidatePath(`/dashboard/community/[slug]/media`, 'page')
+    
+    return { success: true, data: { url: fileUrl, path: filePath } }
   } catch (error) {
     console.error('Unexpected error uploading image:', error)
     return { success: false, error: 'Произошла ошибка при загрузке изображения' }
