@@ -1,7 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import type { ContentBlock, BlockType, BlockContent } from '@/lib/types/content-blocks'
 import { 
   createContentBlock, 
@@ -22,15 +21,10 @@ interface ContentBuilderProps {
 }
 
 export default function ContentBuilder({ communityId, communitySlug, initialBlocks, isReadOnly = false }: ContentBuilderProps) {
-  const router = useRouter()
   const [blocks, setBlocks] = useState<ContentBlock[]>(initialBlocks)
   const [isAddingBlock, setIsAddingBlock] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
-
-  useEffect(() => {
-    setBlocks(initialBlocks)
-  }, [initialBlocks])
 
   const handleAddBlock = async (blockType: BlockType) => {
     setIsSaving(true)
@@ -64,7 +58,6 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
         setBlocks([...blocks, result.data])
         setIsAddingBlock(false)
         setMessage({ type: 'success', text: 'Блок добавлен' })
-        router.refresh()
       } else {
         setMessage({ type: 'error', text: result.error || 'Ошибка при добавлении блока' })
       }
@@ -89,7 +82,6 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
       if (result.success && result.data) {
         setBlocks(blocks.map(b => b.id === blockId ? result.data! : b))
         setMessage({ type: 'success', text: 'Блок обновлен' })
-        router.refresh()
       } else {
         setMessage({ type: 'error', text: result.error || 'Ошибка при обновлении блока' })
       }
@@ -115,7 +107,6 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
       if (result.success) {
         setBlocks(blocks.filter(b => b.id !== blockId))
         setMessage({ type: 'success', text: 'Блок удален' })
-        router.refresh()
       } else {
         setMessage({ type: 'error', text: result.error || 'Ошибка при удалении блока' })
       }
@@ -131,22 +122,29 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
     const newIndex = direction === 'up' ? index - 1 : index + 1
     if (newIndex < 0 || newIndex >= blocks.length) return
 
+    // Создаем новый массив с обновленными позициями
     const newBlocks = [...blocks]
     const temp = newBlocks[index]
     newBlocks[index] = newBlocks[newIndex]
     newBlocks[newIndex] = temp
+    
+    // Обновляем поле position у всех блоков
+    const blocksWithUpdatedPositions = newBlocks.map((block, idx) => ({
+      ...block,
+      position: idx
+    }))
 
-    setBlocks(newBlocks)
+    // Оптимистично обновляем UI
+    setBlocks(blocksWithUpdatedPositions)
 
-    // Сохраняем новый порядок
+    // Сохраняем новый порядок на сервере
     setIsSaving(true)
     try {
-      const blockIds = newBlocks.map(b => b.id)
+      const blockIds = blocksWithUpdatedPositions.map(b => b.id)
       const result = await reorderContentBlocks(communityId, blockIds)
       
       if (result.success) {
         setMessage({ type: 'success', text: 'Порядок блоков изменен' })
-        router.refresh()
       } else {
         // Откатываем изменения при ошибке
         setBlocks(blocks)
@@ -154,6 +152,7 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
       }
     } catch (error) {
       console.error('Error reordering blocks:', error)
+      // Откатываем изменения при ошибке
       setBlocks(blocks)
       setMessage({ type: 'error', text: 'Произошла ошибка при изменении порядка' })
     } finally {

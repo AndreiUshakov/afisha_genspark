@@ -183,19 +183,39 @@ export async function reorderContentBlocks(communityId: string, blockIds: string
       return { success: false, error: 'У вас нет прав для редактирования этого сообщества' }
     }
     
-    // Обновляем позиции блоков
-    const updates = blockIds.map((id, index) => 
-      supabase
+    // Шаг 1: Устанавливаем временные позиции (отрицательные числа)
+    // чтобы избежать конфликта с unique constraint
+    for (let i = 0; i < blockIds.length; i++) {
+      const { error } = await supabase
         .from('community_content_blocks')
-        .update({ position: index })
-        .eq('id', id)
+        .update({ position: -(i + 1) })
+        .eq('id', blockIds[i])
         .eq('community_id', communityId)
-    )
+      
+      if (error) {
+        console.error(`Error setting temporary position for block ${blockIds[i]}:`, error)
+        return { success: false, error: `Ошибка обновления позиции блока: ${error.message}` }
+      }
+    }
     
-    await Promise.all(updates)
+    // Шаг 2: Устанавливаем правильные позиции
+    for (let i = 0; i < blockIds.length; i++) {
+      const { error } = await supabase
+        .from('community_content_blocks')
+        .update({ position: i })
+        .eq('id', blockIds[i])
+        .eq('community_id', communityId)
+      
+      if (error) {
+        console.error(`Error updating final position for block ${blockIds[i]}:`, error)
+        return { success: false, error: `Ошибка обновления позиции блока: ${error.message}` }
+      }
+    }
     
-    revalidatePath(`/dashboard/community/[slug]/settings/content`, 'page')
-    revalidatePath(`/communities/[slug]`, 'page')
+    // Не вызываем revalidatePath для операций перестановки,
+    // чтобы избежать перезагрузки компонента и откатывания изменений.
+    // Публичная страница обновится при следующей загрузке.
+    // revalidatePath(`/communities/[slug]`, 'page')
     
     return { success: true }
   } catch (error) {

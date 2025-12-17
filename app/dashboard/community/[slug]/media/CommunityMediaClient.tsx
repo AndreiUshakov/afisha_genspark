@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { uploadCommunityMedia, deleteCommunityMedia } from './actions'
 
 interface Community {
@@ -172,9 +173,17 @@ export default function CommunityMediaClient({ community, initialMedia }: Commun
     <div className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-8">
+        <Link
+          href={`/dashboard/community/${community.slug}/settings`}
+          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white mb-4"
+        >
+          <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          Вернуться к настройкам сообщества
+        </Link>
         <div className="flex items-center justify-between">
           <div>
-            
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               Медиагалерея
             </h1>
