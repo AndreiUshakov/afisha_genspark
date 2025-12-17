@@ -85,6 +85,12 @@ export default function BasicSettingsForm({ community, categories, isReadOnly = 
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact_email)) {
       newErrors.contact_email = 'Некорректный email адрес'
     }
+    
+    if (!formData.contact_phone || !formData.contact_phone.trim()) {
+      newErrors.contact_phone = 'Телефон обязателен'
+    } else if (!/^\+7 \d{3} \d{3} \d{2} \d{2}$/.test(formData.contact_phone)) {
+      newErrors.contact_phone = 'Введите телефон в формате +7 999 123 45 67'
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
@@ -203,9 +209,19 @@ export default function BasicSettingsForm({ community, categories, isReadOnly = 
 
       {/* Фильтры аудитории */}
       <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-gray-200 dark:border-neutral-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
           Фильтры и аудитория
         </h2>
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <p className="text-sm text-blue-800 dark:text-blue-300">
+              Это типовые настройки по умолчанию для всех мероприятий. При создании конкретного мероприятия вы сможете установить индивидуальные настройки для каждого события.
+            </p>
+          </div>
+        </div>
         
         <div className="space-y-5">
           <div className={isReadOnly ? 'pointer-events-none opacity-60' : ''}>
@@ -272,17 +288,46 @@ export default function BasicSettingsForm({ community, categories, isReadOnly = 
 
           <div>
             <label htmlFor="contact_phone" className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
-              Телефон
+              Телефон *
             </label>
             <input
               type="tel"
               id="contact_phone"
               value={formData.contact_phone}
-              onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
+              onChange={(e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0 && !value.startsWith('7')) {
+                  value = '7' + value;
+                }
+                if (value.length > 11) {
+                  value = value.slice(0, 11);
+                }
+                let formatted = '+7';
+                if (value.length > 1) {
+                  formatted += ' ' + value.slice(1, 4);
+                }
+                if (value.length > 4) {
+                  formatted += ' ' + value.slice(4, 7);
+                }
+                if (value.length > 7) {
+                  formatted += ' ' + value.slice(7, 9);
+                }
+                if (value.length > 9) {
+                  formatted += ' ' + value.slice(9, 11);
+                }
+                setFormData({ ...formData, contact_phone: formatted });
+              }}
               disabled={isReadOnly}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              placeholder="+7 (999) 123-45-67"
+              className={`w-full px-4 py-3 rounded-lg border ${
+                errors.contact_phone
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-300 dark:border-neutral-600 focus:ring-emerald-500'
+              } bg-white dark:bg-neutral-900 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed`}
+              placeholder="+7 999 123 45 67"
             />
+            {errors.contact_phone && (
+              <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.contact_phone}</p>
+            )}
           </div>
         </div>
       </div>
@@ -361,7 +406,7 @@ export default function BasicSettingsForm({ community, categories, isReadOnly = 
         <div className="flex justify-end">
           <button
             type="submit"
-            disabled={isSaving}
+            disabled={isSaving || isReadOnly}
             className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:ring-4 focus:ring-emerald-500/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             {isSaving ? 'Сохранение...' : 'Сохранить изменения'}

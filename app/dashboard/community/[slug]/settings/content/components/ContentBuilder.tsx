@@ -255,12 +255,12 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
       {!isReadOnly && !isAddingBlock ? (
         <button
           onClick={() => setIsAddingBlock(true)}
-          disabled={isSaving}
+          disabled={isSaving || isReadOnly}
           className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-lg text-gray-600 dark:text-neutral-400 hover:border-blue-400 dark:hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
           + Добавить блок
         </button>
-      ) : (
+      ) : !isReadOnly ? (
         <div className="bg-white dark:bg-neutral-800 border-2 border-blue-400 dark:border-blue-600 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Выберите тип блока
@@ -268,7 +268,7 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button
               onClick={() => handleAddBlock('heading')}
-              disabled={isSaving}
+              disabled={isSaving || isReadOnly}
               className="p-6 border-2 border-gray-200 dark:border-neutral-700 rounded-lg hover:border-blue-400 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg inline-block mb-3">
@@ -282,7 +282,7 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
 
             <button
               onClick={() => handleAddBlock('text')}
-              disabled={isSaving}
+              disabled={isSaving || isReadOnly}
               className="p-6 border-2 border-gray-200 dark:border-neutral-700 rounded-lg hover:border-purple-400 dark:hover:border-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg inline-block mb-3">
@@ -296,7 +296,7 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
 
             <button
               onClick={() => handleAddBlock('image')}
-              disabled={isSaving}
+              disabled={isSaving || isReadOnly}
               className="p-6 border-2 border-gray-200 dark:border-neutral-700 rounded-lg hover:border-green-400 dark:hover:border-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg inline-block mb-3">
@@ -312,14 +312,14 @@ export default function ContentBuilder({ communityId, communitySlug, initialBloc
           <div className="mt-4">
             <button
               onClick={() => setIsAddingBlock(false)}
-              disabled={isSaving}
+              disabled={isSaving || isReadOnly}
               className="px-4 py-2 text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Отмена
             </button>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   )
 }

@@ -222,11 +222,11 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
         <Link
           href={`/communities/${slug}`}
           target="_blank"
-          className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white hover:from-orange-600 hover:to-orange-700 transition-all hover:scale-105"
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
         >
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-white/20 rounded-lg">
-              <svg className="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+            <div className="p-3 bg-orange-50 rounded-lg dark:bg-orange-900/20">
+              <svg className="size-6 text-orange-600 dark:text-orange-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -235,7 +235,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
               <h3 className="text-lg font-semibold mb-1">
                 Предпросмотр
               </h3>
-              <p className="text-sm text-orange-100">
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Посмотреть как видят пользователи
               </p>
             </div>

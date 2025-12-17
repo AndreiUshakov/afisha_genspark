@@ -40,6 +40,13 @@ export function validateStep1(data: Step1FormData): {
     errors.contact_email = 'Некорректный формат email';
   }
 
+  // Телефон
+  if (!data.contact_phone || !data.contact_phone.trim()) {
+    errors.contact_phone = 'Телефон обязателен';
+  } else if (!/^\+7 \d{3} \d{3} \d{2} \d{2}$/.test(data.contact_phone)) {
+    errors.contact_phone = 'Введите телефон в формате +7 999 123 45 67';
+  }
+
   return {
     isValid: Object.keys(errors).length === 0,
     errors

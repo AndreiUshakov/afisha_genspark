@@ -102,7 +102,7 @@ export default async function BasicSettingsPage({ params }: BasicSettingsPagePro
         </p>
       </div>
 
-      <BasicSettingsForm community={community} categories={categories} />
+      <BasicSettingsForm community={community} categories={categories} isReadOnly={isOnModeration} />
     </div>
   )
 }
