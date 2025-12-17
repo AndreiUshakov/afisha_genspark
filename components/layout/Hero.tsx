@@ -99,9 +99,57 @@ function getCategoryColorClasses(color: string) {
 
 export default function Hero() {
   const featuredCategories = getCategoriesFeaturedOnHero();
+  
+  // Настройки фона
+  const BACKGROUND_CONFIG = {
+    // Фоновое изображение (раскомментируйте для использования)
+    image: undefined as string | undefined,
+    //image: '/images/hero-background.jpg',
+    
+    // Фоновое видео (закомментируйте image и раскомментируйте video для использования)
+    //video: undefined as string | undefined,
+    video: '/videos/hero-background.mp4',
+    
+    // Прозрачность белого оверлея (0-1, где 0 - полностью прозрачный, 1 - полностью непрозрачный)
+    overlayOpacity: 0.7,
+  };
+  
   return (
-    <div className="relative overflow-hidden">
-      <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-24">
+    <div className="relative overflow-hidden min-h-screen flex items-center">
+      {/* Фоновое изображение */}
+      {BACKGROUND_CONFIG.image && !BACKGROUND_CONFIG.video && (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${BACKGROUND_CONFIG.image})` }}
+          aria-hidden="true"
+        />
+      )}
+      
+      {/* Фоновое видео */}
+      {BACKGROUND_CONFIG.video && (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden="true"
+        >
+          <source src={BACKGROUND_CONFIG.video} type="video/mp4" />
+        </video>
+      )}
+      
+      {/* Белый оверлей с настраиваемой прозрачностью */}
+      {(BACKGROUND_CONFIG.image || BACKGROUND_CONFIG.video) && (
+        <div
+          className="absolute inset-0 bg-white dark:bg-neutral-900"
+          style={{ opacity: BACKGROUND_CONFIG.overlayOpacity }}
+          aria-hidden="true"
+        />
+      )}
+      
+      {/* Контент */}
+      <div className="relative z-10 w-full max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-24">
         <div className="text-center">
           <h1 className="text-4xl sm:text-6xl font-bold text-gray-800 dark:text-neutral-200">
             Город <span className="text-pink-600">Живёт!</span>
