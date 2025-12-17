@@ -120,6 +120,20 @@ export async function createCommunity(data: CreateCommunityData) {
       };
     }
 
+    // Добавляем владельца в таблицу community_members с ролью owner
+    const { error: memberError } = await supabase
+      .from('community_members')
+      .insert({
+        community_id: community.id,
+        user_id: user.id,
+        role: 'owner'
+      });
+
+    if (memberError) {
+      console.error('Error adding owner to community_members:', memberError);
+      // Не прерываем процесс, так как сообщество уже создано
+    }
+
     // Обновляем кеш
     revalidatePath('/communities');
     revalidatePath('/dashboard/community');

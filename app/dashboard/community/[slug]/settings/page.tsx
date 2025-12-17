@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
-import { CommunityStatusLabels, CommunityStatus } from '@/lib/supabase/communities'
+import { CommunityStatusLabels, CommunityStatus, getMembersCount, formatMembersCount } from '@/lib/supabase/communities'
 import SubmitToModerationButton from './components/SubmitToModerationButton'
 
 interface SettingsPageProps {
@@ -41,6 +41,9 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
     console.log('⚙️ Settings page - Community not found, showing 404');
     notFound()
   }
+  
+  // Получаем количество участников
+  const membersCount = await getMembersCount(community.id);
   
   console.log('⚙️ Settings page - Rendering for community:', community.name);
 
@@ -109,7 +112,7 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
             <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
               {community.description || 'Описание не указано'}
             </p>
-            <div className="mt-2">
+            <div className="mt-2 flex items-center gap-3 flex-wrap">
               <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
                 community.status === 'published'
                   ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
@@ -121,6 +124,12 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
                 </svg>
                 {CommunityStatusLabels[community.status as CommunityStatus]}
+              </span>
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                </svg>
+                {formatMembersCount(membersCount)} {membersCount === 1 ? 'участник' : membersCount < 5 ? 'участника' : 'участников'}
               </span>
             </div>
           </div>
@@ -306,12 +315,15 @@ export default async function CommunitySettingsPage({ params }: SettingsPageProp
                 Удалить сообщество
               </h3>
               <p className="text-sm text-red-700 dark:text-red-400/80">
-                После удаления все данные будут безвозвратно потеряны
+                Сообщество будет мягко удалено и скрыто от пользователей
               </p>
             </div>
-            <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">
+            <Link
+              href={`/dashboard/community/${slug}/settings/delete`}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+            >
               Удалить
-            </button>
+            </Link>
           </div>
         </div>
       </div>

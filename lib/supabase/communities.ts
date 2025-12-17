@@ -187,11 +187,26 @@ export function formatMembersCount(count: number): string {
 
 /**
  * Получить количество участников сообщества
- * (заглушка, пока нет таблицы community_members)
  */
-export function getMembersCount(communityId: string): number {
-  // TODO: Implement when community_members table is ready
-  return 0;
+export async function getMembersCount(communityId: string): Promise<number> {
+  try {
+    const supabase = await createClient();
+    
+    const { count, error } = await supabase
+      .from('community_members')
+      .select('*', { count: 'exact', head: true })
+      .eq('community_id', communityId);
+
+    if (error) {
+      console.error('Error counting members:', error);
+      return 0;
+    }
+
+    return count || 0;
+  } catch (error) {
+    console.error('Unexpected error counting members:', error);
+    return 0;
+  }
 }
 
 /**

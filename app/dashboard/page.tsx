@@ -47,7 +47,7 @@ async function getUserData() {
     .eq('user_id', user.id)
     .eq('status', 'attended')
 
-  // Получаем сообщества пользователя с категориями
+  // Получаем сообщества пользователя с категориями (исключая удаленные)
   const { data: communities } = await supabase
     .from('communities')
     .select(`
@@ -58,6 +58,7 @@ async function getUserData() {
       )
     `)
     .eq('owner_id', user.id)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
   // Получаем профиль эксперта

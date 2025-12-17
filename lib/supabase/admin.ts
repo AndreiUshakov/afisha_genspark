@@ -211,9 +211,15 @@ export async function updateCommunityPublishStatus(
   try {
     const supabase = await createClient();
     
+    // Определяем новый статус на основе isPublished
+    const newStatus = isPublished ? 'published' : 'draft';
+    
     const { error } = await supabase
       .from('communities')
-      .update({ is_published: isPublished })
+      .update({
+        status: newStatus,
+        is_published: isPublished
+      })
       .eq('id', communityId);
     
     if (error) {

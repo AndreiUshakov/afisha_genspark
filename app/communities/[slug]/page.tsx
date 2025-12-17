@@ -7,6 +7,7 @@ import ImageGallery from '@/components/communities/ImageGallery';
 import ContentBlocksPreview from '@/components/content-blocks/ContentBlocksPreview';
 import { getContentBlocks } from '@/app/dashboard/community/[slug]/settings/content/actions';
 import { createClient } from '@/lib/supabase/server';
+import { checkMembership } from '@/app/communities/[slug]/actions';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -25,10 +26,13 @@ export default async function CommunityDetailPage({ params }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser();
   const isOwner = user?.id === community.owner_id;
 
+  // Проверяем статус участия
+  const membershipStatus = await checkMembership(community.id);
+
   const relatedCommunities = await getRelatedCommunities(slug, community.category_id);
   
   // Получаем данные для отображения
-  const membersCount = getMembersCount(community.id);
+  const membersCount = await getMembersCount(community.id);
   const eventsCount = getEventsCount(community.id);
   
   // Получаем блоки контента
@@ -167,9 +171,13 @@ export default async function CommunityDetailPage({ params }: PageProps) {
           <div className="lg:col-span-1 space-y-6">
             {/* Action Card */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 sticky top-6">
-              <CommunityActions 
+              <CommunityActions
                 communityId={community.id}
+                communitySlug={community.slug}
                 communityName={community.name}
+                initialIsMember={membershipStatus.isMember}
+                initialIsOwner={membershipStatus.isOwner}
+                isAuthenticated={membershipStatus.isAuthenticated}
               />
 
               {/* Quick Info */}
@@ -326,7 +334,7 @@ export default async function CommunityDetailPage({ params }: PageProps) {
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                         </svg>
-                        <span>{formatMembersCount(getMembersCount(relatedCommunity.id))}</span>
+                        <span>0</span>
                       </div>
                       {getEventsCount(relatedCommunity.id) > 0 && (
                         <div className="flex items-center gap-1">

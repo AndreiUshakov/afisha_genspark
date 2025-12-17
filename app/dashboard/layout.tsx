@@ -15,12 +15,13 @@ export default async function Layout({ children }: { children: React.ReactNode }
         .single()
     : { data: null };
 
-  // Получаем список сообществ пользователя
+  // Получаем список сообществ пользователя (исключая удаленные)
   const { data: communities } = user
     ? await supabase
         .from('communities')
         .select('id, name, slug, avatar_url, status')
         .eq('owner_id', user.id)
+        .is('deleted_at', null)
         .order('created_at', { ascending: false })
     : { data: null };
 

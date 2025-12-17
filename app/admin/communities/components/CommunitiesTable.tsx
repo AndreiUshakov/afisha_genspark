@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { toggleCommunityPublishStatus } from '@/app/admin/communities/actions';
+import { toggleCommunityPublishStatus, restoreCommunity, hardDeleteCommunity } from '@/app/admin/communities/actions';
 
 // Типы статусов сообщества (дублируем здесь для клиентского компонента)
 export type CommunityStatus = 'draft' | 'pending_moderation' | 'published';
@@ -22,6 +22,7 @@ interface Community {
   status: CommunityStatus;
   is_published: boolean;
   is_verified: boolean;
+  deleted_at: string | null;
   created_at: string;
   categories?: {
     name: string;
@@ -39,20 +40,29 @@ interface CommunitiesTableProps {
 
 export default function CommunitiesTable({ communities: initialCommunities }: CommunitiesTableProps) {
   const [communities, setCommunities] = useState(initialCommunities);
-  const [filter, setFilter] = useState<'all' | 'published' | 'pending_moderation' | 'draft'>('all');
+  const [filter, setFilter] = useState<'all' | 'active' | 'deleted' | 'published' | 'pending_moderation' | 'draft'>('active');
   const [loading, setLoading] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const filteredCommunities = communities.filter(c => {
     if (filter === 'all') return true;
-    return c.status === filter;
+    if (filter === 'active') return !c.deleted_at;
+    if (filter === 'deleted') return !!c.deleted_at;
+    if (filter === 'published') return c.status === 'published' && !c.deleted_at;
+    if (filter === 'pending_moderation') return c.status === 'pending_moderation' && !c.deleted_at;
+    if (filter === 'draft') return c.status === 'draft' && !c.deleted_at;
+    return true;
   });
+
+  const activeCommunities = communities.filter(c => !c.deleted_at);
+  const deletedCommunities = communities.filter(c => !!c.deleted_at);
 
   const handleTogglePublish = async (communityId: string, currentStatus: CommunityStatus) => {
     setLoading(communityId);
     try {
-      // Если опубликовано - снимаем, иначе публикуем
-      const newStatus = currentStatus === 'published';
-      const result = await toggleCommunityPublishStatus(communityId, !newStatus);
+      const isCurrentlyPublished = currentStatus === 'published';
+      const shouldPublish = !isCurrentlyPublished;
+      const result = await toggleCommunityPublishStatus(communityId, shouldPublish);
       
       if (result.success) {
         setCommunities(prev =>
@@ -60,8 +70,8 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
             c.id === communityId
               ? {
                   ...c,
-                  status: newStatus ? 'draft' : 'published',
-                  is_published: !newStatus
+                  status: shouldPublish ? 'published' : 'draft',
+                  is_published: shouldPublish
                 }
               : c
           )
@@ -76,6 +86,58 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
     }
   };
 
+  const handleRestore = async (communityId: string) => {
+    if (!confirm('Вы уверены, что хотите восстановить это сообщество?')) {
+      return;
+    }
+
+    setLoading(communityId);
+    try {
+      const result = await restoreCommunity(communityId);
+      
+      if (result.success) {
+        setCommunities(prev =>
+          prev.map(c =>
+            c.id === communityId
+              ? { ...c, deleted_at: null }
+              : c
+          )
+        );
+        alert('Сообщество успешно восстановлено');
+      } else {
+        alert('Ошибка: ' + result.error);
+      }
+    } catch (error) {
+      alert('Произошла ошибка при восстановлении');
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleHardDelete = async (communityId: string) => {
+    if (confirmDelete !== communityId) {
+      setConfirmDelete(communityId);
+      return;
+    }
+
+    setLoading(communityId);
+    try {
+      const result = await hardDeleteCommunity(communityId);
+      
+      if (result.success) {
+        setCommunities(prev => prev.filter(c => c.id !== communityId));
+        setConfirmDelete(null);
+        alert('Сообщество навсегда удалено из базы данных');
+      } else {
+        alert('Ошибка: ' + result.error);
+      }
+    } catch (error) {
+      alert('Произошла ошибка при удалении');
+    } finally {
+      setLoading(null);
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-gray-200 dark:border-neutral-700">
       {/* Фильтры */}
@@ -84,7 +146,27 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Список сообществ
           </h2>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setFilter('active')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                filter === 'active'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
+              }`}
+            >
+              Активные ({activeCommunities.length})
+            </button>
+            <button
+              onClick={() => setFilter('deleted')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                filter === 'deleted'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
+              }`}
+            >
+              Удаленные ({deletedCommunities.length})
+            </button>
             <button
               onClick={() => setFilter('all')}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
@@ -103,7 +185,7 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
               }`}
             >
-              Опубликованные ({communities.filter(c => c.status === 'published').length})
+              Опубликованные ({activeCommunities.filter(c => c.status === 'published').length})
             </button>
             <button
               onClick={() => setFilter('pending_moderation')}
@@ -113,17 +195,7 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
               }`}
             >
-              На модерации ({communities.filter(c => c.status === 'pending_moderation').length})
-            </button>
-            <button
-              onClick={() => setFilter('draft')}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                filter === 'draft'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-gray-300 dark:hover:bg-neutral-600'
-              }`}
-            >
-              Черновики ({communities.filter(c => c.status === 'draft').length})
+              На модерации ({activeCommunities.filter(c => c.status === 'pending_moderation').length})
             </button>
           </div>
         </div>
@@ -163,17 +235,26 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
               </tr>
             ) : (
               filteredCommunities.map((community) => (
-                <tr key={community.id} className="hover:bg-gray-50 dark:hover:bg-neutral-700/50">
+                <tr 
+                  key={community.id} 
+                  className={`hover:bg-gray-50 dark:hover:bg-neutral-700/50 ${
+                    community.deleted_at ? 'bg-red-50/50 dark:bg-red-900/10' : ''
+                  }`}
+                >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       {community.avatar_url ? (
                         <img
                           src={community.avatar_url}
                           alt={community.name}
-                          className="size-10 rounded-lg object-cover"
+                          className={`size-10 rounded-lg object-cover ${
+                            community.deleted_at ? 'opacity-50' : ''
+                          }`}
                         />
                       ) : (
-                        <div className="size-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                        <div className={`size-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center ${
+                          community.deleted_at ? 'opacity-50' : ''
+                        }`}>
                           <svg className="size-6 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
@@ -186,13 +267,22 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
                         <Link
                           href={`/communities/${community.slug}`}
                           target="_blank"
-                          className="font-medium text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400"
+                          className={`font-medium hover:text-red-600 dark:hover:text-red-400 ${
+                            community.deleted_at 
+                              ? 'text-gray-500 dark:text-gray-500 line-through' 
+                              : 'text-gray-900 dark:text-white'
+                          }`}
                         >
                           {community.name}
                         </Link>
                         <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                           {community.slug}
                         </p>
+                        {community.deleted_at && (
+                          <p className="text-xs text-red-600 dark:text-red-400 mt-1">
+                            Удалено: {new Date(community.deleted_at).toLocaleDateString('ru-RU')}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -221,40 +311,71 @@ export default function CommunitiesTable({ communities: initialCommunities }: Co
                     })}
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      community.status === 'published'
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                        : community.status === 'pending_moderation'
-                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
-                    }`}>
-                      {CommunityStatusLabels[community.status]}
-                    </span>
+                    {community.deleted_at ? (
+                      <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                        Удалено
+                      </span>
+                    ) : (
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        community.status === 'published'
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                          : community.status === 'pending_moderation'
+                          ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                          : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
+                      }`}>
+                        {CommunityStatusLabels[community.status]}
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => handleTogglePublish(community.id, community.status)}
-                      disabled={loading === community.id}
-                      className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                        community.status === 'published'
-                          ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30'
-                          : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
-                    >
-                      {loading === community.id ? (
-                        <span className="flex items-center gap-2">
-                          <svg className="animate-spin size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Загрузка...
-                        </span>
-                      ) : community.status === 'published' ? (
-                        'Снять с публикации'
+                    <div className="flex items-center justify-end gap-2">
+                      {community.deleted_at ? (
+                        <>
+                          <button
+                            onClick={() => handleRestore(community.id)}
+                            disabled={loading === community.id}
+                            className="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Восстановить
+                          </button>
+                          <button
+                            onClick={() => handleHardDelete(community.id)}
+                            disabled={loading === community.id}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                              confirmDelete === community.id
+                                ? 'bg-red-600 text-white hover:bg-red-700'
+                                : 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30'
+                            }`}
+                          >
+                            {confirmDelete === community.id ? '⚠️ Подтвердить удаление' : 'Удалить навсегда'}
+                          </button>
+                        </>
                       ) : (
-                        'Опубликовать'
+                        <button
+                          onClick={() => handleTogglePublish(community.id, community.status)}
+                          disabled={loading === community.id}
+                          className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                            community.status === 'published'
+                              ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30'
+                              : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/30'
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          {loading === community.id ? (
+                            <span className="flex items-center gap-2">
+                              <svg className="animate-spin size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              </svg>
+                              Загрузка...
+                            </span>
+                          ) : community.status === 'published' ? (
+                            'Снять с публикации'
+                          ) : (
+                            'Опубликовать'
+                          )}
+                        </button>
                       )}
-                    </button>
+                    </div>
                   </td>
                 </tr>
               ))
