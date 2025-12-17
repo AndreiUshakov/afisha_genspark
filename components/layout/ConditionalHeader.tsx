@@ -1,14 +1,10 @@
 import Header from './Header';
+import HeaderWrapper from './HeaderWrapper';
 
-interface ConditionalHeaderProps {
-  pathname: string;
-}
-
-export default function ConditionalHeader({ pathname }: ConditionalHeaderProps) {
-  // Не показываем header на страницах dashboard и admin
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
-    return null;
-  }
-  
-  return <Header />;
+export default async function ConditionalHeader() {
+  return (
+    <HeaderWrapper>
+      <Header />
+    </HeaderWrapper>
+  );
 }
