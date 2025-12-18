@@ -110,8 +110,37 @@ export async function getCommunityBySlug(slug: string): Promise<Community | null
       return publishedCommunity;
     }
 
-    // Если пользователь авторизован, проверяем, является ли он владельцем
+    // Если пользователь авторизован, проверяем роль администратора или владельца
     if (user) {
+      // Проверяем роль администратора
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      
+      const isAdmin = profile?.role === 'admin';
+      
+      // Если администратор, возвращаем сообщество в любом статусе
+      if (isAdmin) {
+        const { data: adminCommunity, error: adminError } = await supabase
+          .from('communities')
+          .select(`
+            *,
+            categories (
+              name,
+              slug
+            )
+          `)
+          .eq('slug', slug)
+          .single();
+
+        if (adminCommunity && !adminError) {
+          return adminCommunity;
+        }
+      }
+      
+      // Если не администратор, проверяем владельца
       const { data: ownerCommunity, error: ownerError } = await supabase
         .from('communities')
         .select(`

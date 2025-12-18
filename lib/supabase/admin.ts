@@ -332,7 +332,8 @@ export async function getAllCommunities() {
         ),
         profiles:owner_id (
           email,
-          full_name
+          full_name,
+          phone
         )
       `)
       .order('created_at', { ascending: false });
