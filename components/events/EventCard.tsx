@@ -18,17 +18,25 @@ interface SimpleEvent {
 interface DetailedEvent {
   id: string;
   title: string;
-  slug: string;
-  description: string;
-  cover_image_url: string;
-  category_name?: string;
-  event_date: string;
-  location: string;
-  price_type: 'free' | 'paid' | 'donation';
+  slug?: string;
+  description?: string;
+  cover_image_url?: string;
+  category_id?: string;
+  start_date: string;
+  end_date?: string;
+  location_type?: 'physical' | 'online' | 'hybrid';
+  venue_name?: string;
+  venue_address?: string;
+  online_link?: string;
+  is_free?: boolean;
   price_min?: number;
   price_max?: number;
-  format: 'online' | 'offline' | 'hybrid';
-  age_restriction?: string;
+  currency?: string;
+  age_categories?: string[];
+  community?: {
+    name: string;
+    slug: string;
+  };
 }
 
 type Event = SimpleEvent | DetailedEvent;
@@ -40,16 +48,16 @@ interface EventCardProps {
 
 // Type guard to check if event is DetailedEvent
 function isDetailedEvent(event: Event): event is DetailedEvent {
-  return 'slug' in event && 'cover_image_url' in event;
+  return 'start_date' in event;
 }
 
 export default function EventCard({ event, isFavorited = false }: EventCardProps) {
   // Format data based on event type
-  const href = isDetailedEvent(event) ? `/events/${event.slug}` : `/events/${event.id}`;
+  const href = `/events/${event.id}`;
   const title = event.title;
-  const category = isDetailedEvent(event) ? event.category_name || 'Событие' : event.category;
-  const location = event.location;
+  const category = isDetailedEvent(event) ? event.community?.name || 'Событие' : event.category;
   
+  let location = '';
   let dateText = '';
   let timeText = '';
   let priceText = '';
@@ -58,14 +66,29 @@ export default function EventCard({ event, isFavorited = false }: EventCardProps
   let coverImageUrl = '';
 
   if (isDetailedEvent(event)) {
-    const eventDate = new Date(event.event_date);
-    dateText = eventDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-    timeText = eventDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    // Локация
+    if (event.location_type === 'online') {
+      location = 'Онлайн';
+    } else if (event.location_type === 'hybrid') {
+      location = event.venue_name || 'Гибридный формат';
+    } else {
+      location = event.venue_name || event.venue_address || 'Место уточняется';
+    }
+
+    // Дата и время
+    const eventDate = new Date(event.start_date);
     
-    if (event.price_type === 'free') {
+    if (!isNaN(eventDate.getTime())) {
+      dateText = eventDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+      timeText = eventDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+    } else {
+      dateText = 'Дата уточняется';
+      timeText = '';
+    }
+    
+    // Цена
+    if (event.is_free) {
       priceText = 'Бесплатно';
-    } else if (event.price_type === 'donation') {
-      priceText = 'Донейшн';
     } else if (event.price_min && event.price_max && event.price_min !== event.price_max) {
       priceText = `${event.price_min} - ${event.price_max} ₽`;
     } else if (event.price_min) {
@@ -74,10 +97,12 @@ export default function EventCard({ event, isFavorited = false }: EventCardProps
       priceText = 'Уточняется';
     }
     
-    formatText = event.format === 'online' ? 'Онлайн' :  'Оффлайн' ;
+    // Формат
+    formatText = event.location_type === 'online' ? 'Онлайн' : event.location_type === 'hybrid' ? 'Гибрид' : 'Оффлайн';
     hasCoverImage = !!event.cover_image_url;
-    coverImageUrl = event.cover_image_url;
+    coverImageUrl = event.cover_image_url || '';
   } else {
+    location = event.location;
     dateText = event.date;
     timeText = event.time;
     priceText = event.price;
@@ -89,7 +114,7 @@ export default function EventCard({ event, isFavorited = false }: EventCardProps
       {/* Favorite Button - Positioned absolutely */}
       <div className="absolute top-3 right-3 z-10">
         <FavoriteButton
-          eventId={isDetailedEvent(event) ? event.slug : String(event.id)}
+          eventId={String(event.id)}
           initialFavorited={isFavorited}
           variant="compact"
         />

@@ -151,7 +151,7 @@ export default async function CreateEventPage({ params, searchParams }: CreateEv
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                Контент события
+                Страница события
               </h3>
               <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Детальное описание с помощью блоков

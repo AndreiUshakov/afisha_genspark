@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import { PublishEventButton } from './components/PublishEventButton'
 
 interface EditEventPageProps {
   params: {
@@ -89,7 +90,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
       </div>
 
       {/* Разделы управления мероприятием */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Основные настройки */}
         <Link
           href={`/dashboard/community/${slug}/events/${id}/edit/basic`}
@@ -148,10 +149,35 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                Контент события
+                Страница события
               </h3>
               <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Детальное описание с помощью блоков
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        {/* Предпросмотр страницы */}
+        <Link
+          href={`/events/${id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
+        >
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-indigo-50 rounded-lg dark:bg-indigo-900/20">
+              <svg className="size-6 text-indigo-600 dark:text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                Предпросмотр страницы
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Посмотреть, как видят мероприятие пользователи
               </p>
             </div>
           </div>
@@ -178,6 +204,49 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
             </div>
           </div>
         </Link>
+
+        {/* Медиагалерея сообщества */}
+        <Link
+          href={`/dashboard/community/${slug}/media`}
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
+        >
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-pink-50 rounded-lg dark:bg-pink-900/20">
+              <svg className="size-6 text-pink-600 dark:text-pink-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                Медиагалерея сообщества
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Управление изображениями для мероприятий
+              </p>
+            </div>
+          </div>
+        </Link>
+      </div>
+
+      {/* Кнопка публикации */}
+      <div className="mt-8 bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              Публикация мероприятия
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-neutral-400">
+              {event.is_published
+                ? 'Мероприятие опубликовано и видно всем пользователям'
+                : 'Мероприятие находится в черновике и видно только вам'}
+            </p>
+          </div>
+          <PublishEventButton
+            eventId={id}
+            isPublished={event.is_published}
+            communitySlug={slug}
+          />
+        </div>
       </div>
 
       {/* Текущий статус мероприятия */}
