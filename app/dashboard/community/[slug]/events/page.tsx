@@ -67,7 +67,7 @@ export default async function CommunityEventsPage({ params }: EventsPageProps) {
             </p>
           </div>
           <Link
-            href={`/dashboard/community/${slug}/events/create`}
+            href={`/dashboard/community/${slug}/events/create/basic`}
             className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +178,7 @@ export default async function CommunityEventsPage({ params }: EventsPageProps) {
               </div>
               <div className="mt-4">
                 <Link
-                  href={`/dashboard/community/${slug}/events/create`}
+                  href={`/dashboard/community/${slug}/events/create/basic`}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

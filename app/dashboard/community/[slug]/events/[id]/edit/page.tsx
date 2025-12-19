@@ -47,18 +47,27 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       {/* Заголовок страницы */}
       <div className="mb-6">
+        <Link
+          href={`/dashboard/community/${slug}/events`}
+          className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-white mb-4"
+        >
+          <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+          Вернуться к мероприятиям
+        </Link>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Редактировать мероприятие
+          Управление мероприятием
         </h1>
         <p className="mt-2 text-gray-600 dark:text-neutral-400">
           Редактирование мероприятия "{event.title}"
         </p>
       </div>
 
-      {/* Информационное сообщение */}
+      {/* Информационный баннер */}
       <div className="bg-blue-50 border-l-4 border-blue-400 p-6 mb-6 dark:bg-blue-900/20 dark:border-blue-600">
         <div className="flex items-start">
           <div className="flex-shrink-0">
@@ -68,91 +77,147 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
           </div>
           <div className="ml-3">
             <h3 className="text-lg font-medium text-blue-800 dark:text-blue-200">
-              Форма редактирования мероприятия в разработке
+              Управление мероприятием
             </h3>
             <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
               <p>
-                Форма редактирования мероприятия будет реализована на следующем этапе. 
-                Пока вы можете вернуться к списку мероприятий.
+                Выберите раздел для редактирования вашего мероприятия. Все изменения сохраняются автоматически.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Информация о мероприятии */}
-      <div className="bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 p-6 mb-6">
+      {/* Разделы управления мероприятием */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Основные настройки */}
+        <Link
+          href={`/dashboard/community/${slug}/events/${id}/edit/basic`}
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
+        >
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-blue-50 rounded-lg dark:bg-blue-900/20">
+              <svg className="size-6 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                Основные настройки
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Название, описание, дата, место проведения, цена
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        {/* Оформление */}
+        <Link
+          href={`/dashboard/community/${slug}/events/${id}/edit/design`}
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
+        >
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-purple-50 rounded-lg dark:bg-purple-900/20">
+              <svg className="size-6 text-purple-600 dark:text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                Оформление
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Обложка, фотогалерея, команда спикеров
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        {/* Контент */}
+        <Link
+          href={`/dashboard/community/${slug}/events/${id}/edit/content`}
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
+        >
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-green-50 rounded-lg dark:bg-green-900/20">
+              <svg className="size-6 text-green-600 dark:text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                Контент события
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Детальное описание с помощью блоков
+              </p>
+            </div>
+          </div>
+        </Link>
+
+        {/* Участники */}
+        <Link
+          href={`/dashboard/community/${slug}/events/${id}/participants`}
+          className="bg-white border border-gray-200 rounded-xl p-6 dark:bg-neutral-800 dark:border-neutral-700 hover:shadow-lg transition-all hover:scale-105"
+        >
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-orange-50 rounded-lg dark:bg-orange-900/20">
+              <svg className="size-6 text-orange-600 dark:text-orange-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                Участники
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">
+                Список зарегистрированных участников
+              </p>
+            </div>
+          </div>
+        </Link>
+      </div>
+
+      {/* Текущий статус мероприятия */}
+      <div className="mt-8 bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 p-6">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          Текущие данные мероприятия
+          Текущий статус мероприятия
         </h2>
-        <dl className="grid grid-cols-1 gap-4">
+        <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <dt className="text-sm font-medium text-gray-500 dark:text-neutral-400">Название</dt>
             <dd className="mt-1 text-sm text-gray-900 dark:text-white">{event.title}</dd>
           </div>
-          {event.description && (
-            <div>
-              <dt className="text-sm font-medium text-gray-500 dark:text-neutral-400">Описание</dt>
-              <dd className="mt-1 text-sm text-gray-900 dark:text-white">{event.description}</dd>
-            </div>
-          )}
           <div>
             <dt className="text-sm font-medium text-gray-500 dark:text-neutral-400">Дата начала</dt>
             <dd className="mt-1 text-sm text-gray-900 dark:text-white">
               {new Date(event.start_date).toLocaleString('ru-RU')}
             </dd>
           </div>
-          {event.end_date && (
-            <div>
-              <dt className="text-sm font-medium text-gray-500 dark:text-neutral-400">Дата окончания</dt>
-              <dd className="mt-1 text-sm text-gray-900 dark:text-white">
-                {new Date(event.end_date).toLocaleString('ru-RU')}
-              </dd>
-            </div>
-          )}
           <div>
-            <dt className="text-sm font-medium text-gray-500 dark:text-neutral-400">Статус</dt>
+            <dt className="text-sm font-medium text-gray-500 dark:text-neutral-400">Статус публикации</dt>
             <dd className="mt-1">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                 event.is_published
                   ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
                   : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
               }`}>
-                {event.is_published ? 'Опубликовано' : 'Черновик'}
+                {event.is_published ? '✓ Опубликовано' : '○ Черновик'}
               </span>
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-gray-500 dark:text-neutral-400">Зарегистрировано участников</dt>
+            <dd className="mt-1 text-sm text-gray-900 dark:text-white">
+              {event.registered_count || 0} {event.capacity ? `/ ${event.capacity}` : ''}
             </dd>
           </div>
         </dl>
       </div>
 
-      {/* Заглушка формы */}
-      <div className="bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 p-8">
-        <div className="text-center">
-          <svg className="mx-auto h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-          <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
-            Форма редактирования мероприятия
-          </h3>
-          <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400">
-            Здесь будет расположена полная форма для редактирования мероприятия<br />
-            с возможностью изменить все параметры события
-          </p>
-        </div>
-      </div>
-
-      {/* Ссылка назад */}
-      <div className="mt-6">
-        <Link
-          href={`/dashboard/community/${slug}/events`}
-          className="inline-flex items-center gap-2 text-gray-600 dark:text-neutral-400 hover:text-gray-900 dark:hover:text-white"
-        >
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Вернуться к мероприятиям
-        </Link>
-      </div>
+      
     </div>
   )
 }
