@@ -28,7 +28,7 @@ export default async function FavoritesPage() {
         slug: event.slug,
         description: event.description || '',
         cover_image_url: event.cover_image_url || '',
-        event_date: event.start_date,
+        start_date: event.start_date,
         end_date: event.end_date,
         location: event.venue_name || 'Онлайн',
         address: event.venue_address || '',

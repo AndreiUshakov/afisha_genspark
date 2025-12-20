@@ -13,7 +13,7 @@ export default async function EventsPage({
   const targetAudience = typeof params.audience === 'string' ? params.audience.split(',') : undefined;
   const ageCategories = typeof params.age === 'string' ? params.age.split(',') : undefined;
   const format = typeof params.format === 'string' ? params.format as any : undefined;
-  const priceType = typeof params.priceType === 'string' ? params.priceType as any : undefined;
+  const price = typeof params.price === 'string' ? params.price as any : undefined;
   const dateFrom = typeof params.dateFrom === 'string' ? params.dateFrom : undefined;
   const dateTo = typeof params.dateTo === 'string' ? params.dateTo : undefined;
   const sortBy = typeof params.sortBy === 'string' ? params.sortBy as any : 'date';
@@ -27,7 +27,7 @@ export default async function EventsPage({
     targetAudience,
     ageCategories,
     format,
-    priceType,
+    price,
     dateFrom,
     dateTo,
     sortBy,
