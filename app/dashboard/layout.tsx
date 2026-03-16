@@ -2,6 +2,10 @@ import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { createClient } from '@/lib/supabase/server';
 import { getUserRole } from '@/lib/supabase/admin';
 
+// Принудительный динамический рендеринг для всех страниц dashboard
+// Необходимо, так как используется cookies() для аутентификации
+export const dynamic = 'force-dynamic';
+
 export default async function Layout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

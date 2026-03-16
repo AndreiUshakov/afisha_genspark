@@ -3,6 +3,10 @@ import { isAdmin } from '@/lib/supabase/admin';
 import AdminDashboardLayout from '@/components/admin/AdminDashboardLayout';
 import { createClient } from '@/lib/supabase/server';
 
+// Принудительный динамический рендеринг для всех админ-страниц
+// Необходимо, так как используется cookies() для аутентификации
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   // Проверяем, является ли пользователь администратором
   const admin = await isAdmin();

@@ -2,6 +2,9 @@ import { getCommunities, getMembersCount, getEventsCount } from '@/lib/supabase/
 import { createClient } from '@/lib/supabase/server';
 import CommunityCard from '@/components/communities/CommunityCard';
 
+// Принудительный динамический рендеринг, так как используется cookies() для проверки пользователя
+export const dynamic = 'force-dynamic';
+
 export default async function CommunitiesPage() {
   const communities = await getCommunities();
   const supabase = await createClient();
